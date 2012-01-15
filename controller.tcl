@@ -22,6 +22,8 @@
 ##############################################################################
 puts [::msgcat::mc loadmodule "Master Bot Controller"]
 
+if {![info exists service]} { set service 0 }
+
 proc socket_control {sock} {
   global mysock network
   set argv [gets $sock arg]
@@ -32,14 +34,13 @@ proc socket_control {sock} {
   }
   set arg [::tools::charfilter $arg]
   if {$mysock(debug)==1} {
-    foreach s $mysock(plauthed) { puts $s "<<< $sock <<< [:tools::stripmirc $arg]" }
     puts "<<< $sock <<< [::tools::stripmirc $arg]"
   }
 
   if {[lrange $arg 1 end]=="NOTICE AUTH :*** Looking up your hostname..."} {
     fsend $sock "PROTOCTL NOQUIT NICKv2 UMODE2 VL SJ3 NS TKLEXT CLK"
     fsend $sock "PASS $mysock(password)"
-    fsend $sock "SERVER $mysock(servername) 1 :U2310-Fh6XiOoEe-$mysock(numeric) TCL Game Server V.$mysock(version)"
+    fsend $sock "SERVER $mysock(servername) 1 :U2310-Fh6XiOoEe-$mysock(numeric) UnrealIRCD Service Framework V.$mysock(version)"
     bot_init $mysock(nick) $mysock(username) $mysock(hostname) $mysock(realname)
     fsend $sock "NETINFO 0 [::tools::unixtime] 2310 * 0 0 0 :$mysock(networkname)"
     fsend $sock "EOS"
@@ -91,7 +92,7 @@ proc socket_control {sock} {
       close $mysock(sock)
       exit 0
     } else {
-      ::tools::write_pid
+      ::tools::write_pid $mysock(pid)
     }
   }
 
@@ -114,11 +115,11 @@ proc socket_control {sock} {
       lappend network(userlist) $nickname
       set network(userlist) [::tools::nodouble $network(userlist)]
     }
-    if {![info exists network(users-[string tolower $network(servername-$numeric)])]} {
-      set network(users-[string tolower $network(servername-$numeric)]) $nickname
+    if {![info exists network(users-[string tolower $network(servername-[::tools::base2dec $numeric $::tools::chars])])]} {
+      set network(users-[string tolower $network(servername-[::tools::base2dec $numeric $::tools::chars])]) $nickname
     } else {
-      lappend network(users-[string tolower $network(servername-$numeric)]) $nickname
-      set network(users-[string tolower $network(servername-$numeric)]) [::tools::nodouble $network(users-[string tolower $network(servername-$numeric)])]
+      lappend network(users-[string tolower $network(servername-[::tools::base2dec $numeric $::tools::chars])]) $nickname
+      set network(users-[string tolower $network(servername-[::tools::base2dec $numeric $::tools::chars])]) [::tools::nodouble $network(users-[string tolower $network(servername-[::tools::base2dec $numeric $::tools::chars])])]
     }
   }
   #<<< :Yume NICK Yuki 1326485191
@@ -267,7 +268,7 @@ proc socket_control {sock} {
     set from [string range [lindex $arg 0] 1 end]
     set to [lindex $arg 2]
     set commc [list [string range [lindex $arg 3] 1 end] [lrange $arg 4 end]]
-    set comm [::tools::stripmirc [commc]]
+    set comm [::tools::stripmirc $commc]
 
     # Send info to addon proc for master bot
     if {[string index $to 0]=="#"} {
@@ -310,4 +311,4 @@ proc socket_control {sock} {
   }
 }
 
-set service 1
+if {$service=="0"} { puts [::msgcat::mc cont_netconn]; socket_connect; set service 1 }

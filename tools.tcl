@@ -83,7 +83,28 @@ namespace eval tools {
     return [expr { int( rand() * $multiplier ) }]
   }
 
-
+  # Conversion of unreal server numeric from unreal specific base 64 to decimal
+  set chars { 0 1 2 3 4 5 6 7 8 9 A B C D E F G H I J K L M N O P Q R S T U V W X Y Z a b c d e f g h i j k l m n o p q r s t u v w x y z \{ \} }
+  proc dec2base { num baselist } {
+    set res {}
+    set base [llength $baselist]
+    while {$num/$base != 0} {
+      set rest [expr { $num % $base } ]
+      set res [lindex $baselist $rest]$res
+      set num [expr { $num / $base } ]
+    }
+    set res [lindex $baselist $num]$res
+    return $res
+  }
+  proc base2dec { num baselist } {
+    set sum 0
+    foreach char [split $num ""] {
+      set d [lsearch $baselist $char]
+      if {$d == -1} {error "invalid unrealbase-64 digit '$char' in $num"}
+      set sum [expr {$sum * 64 + $d}]
+    }
+    return $sum
+  }
 }
 
 
@@ -97,7 +118,6 @@ proc socket_connect {} {
   vwait mysock(wait)
   return
 }
-
 
 # Proc gestion du service
 proc my_rehash {} {
@@ -123,27 +143,26 @@ proc my_rehash {} {
 
 proc fsend {sock data} {
   global mysock
-  puts $sock $data
   if {$mysock(debug)==1} {
-    set datanc [stripmirc $data]
-    foreach s $mysock(plauthed) { if {![string equal $s $sock]} { puts $s ">>> $sock >>> $datanc" } }
+    set datanc [::tools::stripmirc $data]
     puts ">>> \002$sock\002 >>> $datanc"
   }
+  puts $sock $data
   return
 }
 
 proc bot_init { nick user host gecos } {
   global mysock network
-  fsend $mysock(sock) "TKL + Q * $nick $mysock(servername) 0 [unixtime] :Reserved for Game Server"
-  fsend $mysock(sock) "NICK $nick 0 [unixtime] $user $host $mysock(servername) 0 +oSqB * * :$gecos"
+  fsend $mysock(sock) "TKL + Q * $nick $mysock(servername) 0 [::tools::unixtime] :Reserved for Game Server"
+  fsend $mysock(sock) "NICK $nick 0 [::tools::unixtime] $user $host $mysock(servername) 0 +oSqB * * :$gecos"
   if {$nick==$mysock(nick)} {
     join_chan $mysock(nick) $mysock(adminchan)
     foreach chan $mysock(chanlist) {
       join_chan $mysock(nick) $chan
     }
   }
-  if {[info exists mysock(botlist)]} { lappend mysock(botlist) $nick; set mysock(botlist) [nodouble $mysock(botlist)] } else { set mysock(botlist) $nick }
-  if {[info exists network(userlist)]} { lappend network(userlist) $nick; set network(userlist) [nodouble $network(userlist)] } else { set network(userlist) $nick }
+  if {[info exists mysock(botlist)]} { lappend mysock(botlist) $nick; set mysock(botlist) [::tools::nodouble $mysock(botlist)] } else { set mysock(botlist) $nick }
+  if {[info exists network(userlist)]} { lappend network(userlist) $nick; set network(userlist) [::tools::nodouble $network(userlist)] } else { set network(userlist) $nick }
   if {$mysock(debug)==1} { puts "My bots are : $mysock(botlist)" }
   return
 }
@@ -160,8 +179,8 @@ proc join_chan {bot chan} {
       fsend $mysock(sock) ":$bot JOIN $chan"
       fsend $mysock(sock) ":$mysock(nick) MODE $chan +ao $bot $bot"
     }
-    if {[info exists mysock(mychans)]} { lappend mysock(mychans) $chan; set mysock(mychans) [join [nodouble $mysock(mychans)]] } else { set mysock(mychans) $bot }
-    if {[info exists network(users-[string tolower $chan])]} { lappend network(users-[string tolower $chan]) $bot; set network(users-[string tolower $chan]) [nodouble $network(users-[string tolower $chan])] } else { set network(users-[string tolower $chan]) $bot }
+    if {[info exists mysock(mychans)]} { lappend mysock(mychans) $chan; set mysock(mychans) [join [::tools::nodouble $mysock(mychans)]] } else { set mysock(mychans) $bot }
+    if {[info exists network(users-[string tolower $chan])]} { lappend network(users-[string tolower $chan]) $bot; set network(users-[string tolower $chan]) [::tools::nodouble $network(users-[string tolower $chan])] } else { set network(users-[string tolower $chan]) $bot }
     if {$mysock(debug)==1} { puts "My chans are : $mysock(mychans)" }
   }
   return

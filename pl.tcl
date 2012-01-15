@@ -22,6 +22,14 @@
 ##############################################################################
 puts [::msgcat::mc loadmodule "PartyLine"]
 
+if {[info exists pl]} {
+  if {$mysock(debug)==1} { puts [::msgcat::mc pl_alreadyload] }
+} else {
+  set pl 0
+  set mysock(pl) ""
+  set mysock(plauthed) ""
+}
+
 set mysock(plprotcmd) ".pass .close"
 
 proc pl_server {} {
@@ -132,4 +140,5 @@ proc pl_control { sockpl } {
 }
 
 puts [::msgcat::mc pl_loaded]
-set pl 1
+if {$pl=="0"} { puts [::msgcat::mc pl_activation $mysock(plip) $mysock(plport)]; pl_server; set pl 1 }
+

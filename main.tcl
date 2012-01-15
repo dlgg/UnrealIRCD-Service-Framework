@@ -37,7 +37,3 @@ foreach file $mysock(toload) {
     puts [::msgcat::mc filenotexist $file]
   }
 }
-
-puts "[::msgcat::mc startserv]"
-if {$pl=="1"} { puts [::msgcat::mc pl_activation $mysock(plip) $mysock(plport)]; pl_server; set pl 2 }
-if {$service=="1"} { puts [::msgcat::mc cont_netconn]; socket_connect; set service 2 }

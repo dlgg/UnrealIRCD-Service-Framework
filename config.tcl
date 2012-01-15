@@ -56,7 +56,7 @@ set mysock(hub) "irc1.hebeo.fr"
 set mysock(nick) FrameWork
 set mysock(username) tclsh
 set mysock(hostname) "tcl2.hebeo.fr"
-set mysock(realname) "TCL GameServer Controller"
+set mysock(realname) "UnrealIRCD Service Framework Controller"
 set mysock(adminchan) "#Services"
 set mysock(chanlist) "#opers #blabla"
 set mysock(root) "Yume"
@@ -73,14 +73,6 @@ set mysock(toload) ""
 # Internal variables
 set mysock(version) "0.1"
 set mysock(proc-addon) ""
-set service 0
-if {[info exists pl]} {
-  if {$mysock(debug)==1} { puts [::msgcat::mc pl_alreadyload] }
-} else {
-  set pl 0
-  set mysock(pl) ""
-  set mysock(plauthed) ""
-}
 set network(servername-$mysock(numeric)) $mysock(servername)
 set mysock(mychans) "$mysock(adminchan) $mysock(chanlist)" 
 
