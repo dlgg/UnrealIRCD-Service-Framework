@@ -1,0 +1,136 @@
+########################################################################
+#                          TCL Game Service 
+########################################################################
+
+# Index
+########################################################################
+
+1. Description
+2. Download
+3. Installation
+4. Configuration
+5. Modules
+6. Credits
+
+# 1. Description
+########################################################################
+
+UnrealIRCD Service Framework is a framework who provide an easy way to
+develop a service which link to an Unreal 3.2 network.
+With a little configuration it can link an connect a bot on many chans
+but he do nothing until it is completed by modules.
+
+# 2. Download
+########################################################################
+    a. Latest stable version
+    ------------------------
+There is no stable version for the moment
+
+    b. Latest live version
+    ----------------------
+Download live archive from
+  https://github.com/dlgg/UnrealIRCD-Service-Framework/tarball/master
+or you can use git :
+  git clone git://github.com/dlgg/UnrealIRCD-Service-Framework.git
+
+
+# 3. Installation 
+########################################################################
+- Extract it
+- Rename folder
+- Modify config.tcl
+- Run it
+
+You can add a crontab :
+* * * * * /path/to/framework.sh start
+
+# 4. Configuration
+########################################################################
+You will find below a list of variable which are safe to be changed.
+Please avoid to modify other variable unless you know what you do or if
+the developpers ask you to do it.
+
+    a. General options
+    ------------------
+mysock(debug)       0 for no debug / 1 (default) for debug informations
+                    in log.
+mysock(lang)        Available for the moment : en fr.
+mysock(toload)      Lists of modules to load. This is the name of files
+                    under the games directory whitout the extension.
+
+    b. Service configuration
+    ------------------------
+mysock(ip)          IP address of your IRC hub for the connection of the
+                    UnrealIRCD Framework Service.
+mysock(port)        Port of your irchub. This need to be a serverport.
+mysock(password)    Password specified un unrealircd.conf for the link.
+mysock(numeric)     Unique identifier on the network of the service.
+mysock(servername)  Full DNS address of the service on the network.
+mysock(networkname) Name of your IRC Network. Please be careful, this is
+                    case-sensitive and need to be the same on all the
+                    IRC servers.
+mysock(hub)         Full DNS address of the hub where you connect the
+                    TCL Game Service.
+
+    c. Master Bot Controller
+    ------------------------
+mysock(nick)        Nickname of the main bot
+mysock(username)    Username of the main bot
+mysock(hostname)    Hostname of the main bot
+mysock(realname)    GECOS of the main bot
+mysock(adminchan)   Logchan for the services
+mysock(chanlist)    Lists of all chans where the main bot needs to be.
+                    Don't add the games chans. The bot will join it
+                    automatically.
+                    The masters bots addons will be active on all chans
+                    by default unless they are coded for filtering the
+                    chans.
+mysock(root)        Name of the main adminsitrator of the service. For
+                    the moment this is the only one person who can use
+                    the admin commands. Administrators of the service
+                    will be add soon.
+mysock(cmdchar)     Character to use for prefixing the command. For not
+                    confusing with other bots or hiding the commands.
+
+
+    d. Partyline configuration
+    --------------------------
+mysock(plip)        IP to listen for the partyline. By default listen
+                    on all IP of the system (bind on 0.0.0.0)
+mysock(plport)      Port to listen for the partyline. By default 45000
+mysock(plpass)      Port to use for authentification on partyline. It is
+                    the same for all admins for the moment until admins
+                    code is done.
+
+    e. Unreal link block
+    --------------------
+link tcl.hebeo.fr
+{
+        username        *;
+        hostname        *;
+        bind-ip         192.168.42.1;
+        port            7029;
+        hub             *;
+        password-connect "tclpur";
+        password-receive "tclpur";
+        class           servers;
+};
+
+You also need to add the servername of UnrealIRCD Framework Service to
+ulines block.
+
+ulines
+{
+  services.hebeo.fr;
+  tcl.hebeo.fr;
+};
+
+
+# 5. Modules
+########################################################################
+TODO
+
+# 6. Credits
+########################################################################
+TODO
+
