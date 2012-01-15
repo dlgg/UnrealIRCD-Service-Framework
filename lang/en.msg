@@ -39,7 +39,7 @@
 ::msgcat::mcset en pl_incconn "Connexion incoming on partyline."
 ::msgcat::mcset en pl_activated "\00304\002PL activated :\002\003 %s > %d:%s:%d"
 ::msgcat::mcset en pl_close "Closing of partyline socket %s by user %s"
-::msgcat::mcset en pl_help0 "Help of TCL GameService v%s"
+::msgcat::mcset en pl_help0 "Help of UnrealIRCD Service Framework v%s"
 ::msgcat::mcset en pl_help1 "Partyline commands"
 ::msgcat::mcset en pl_help2 "Close your partyline or a given partyline"
 ::msgcat::mcset en pl_help3 "Print list of users on partyline"

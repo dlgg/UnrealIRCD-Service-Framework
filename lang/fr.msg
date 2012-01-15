@@ -39,7 +39,7 @@
 ::msgcat::mcset fr pl_incconn "Arrivée d'une connexion Partyline."
 ::msgcat::mcset fr pl_activated "\00304\002PL activée :\017 %s > %d:%s:%d"
 ::msgcat::mcset fr pl_close "Fermeture du socket PL %s par l'utilisateur %s"
-::msgcat::mcset fr pl_help0 "Aide de TCL GameService v%s"
+::msgcat::mcset fr pl_help0 "Aide du framework de services UnrealIRCD v%s"
 ::msgcat::mcset fr pl_help1 "Commandes partyline"
 ::msgcat::mcset fr pl_help2 "Ferme votre PL ou une PL donnée en paramètre"
 ::msgcat::mcset fr pl_help3 "Affiche la liste des personnes en PL"
