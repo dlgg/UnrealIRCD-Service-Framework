@@ -122,12 +122,12 @@ proc socket_connect {} {
 # Proc gestion du service
 proc my_rehash {} {
   global mysock
-  puts [::msgcat::mc closepls]
-  foreach pl $mysock(pl) { closepl $pl "rehash" }
+  #puts [::msgcat::mc closepls]
+  #foreach pl $mysock(pl) { closepl $pl "rehash" }
   source config.tcl
   source tools.tcl
   source controller.tcl
-  source pl.tcl
+  #source pl.tcl
   foreach file $mysock(toload) {
     append file ".tcl"
     set file modules/$file

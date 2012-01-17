@@ -25,7 +25,7 @@
 source config.tcl
 source tools.tcl
 source controller.tcl
-source pl.tcl
+#source pl.tcl
 
 # Load modules
 foreach file $mysock(toload) {
