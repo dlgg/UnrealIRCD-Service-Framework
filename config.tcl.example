@@ -1,0 +1,92 @@
+#!/usr/bin/tclsh
+##############################################################################
+#
+# This program is free software; you can redistribute it and/or modify
+# it under the terms of the GNU General Public License as published by
+# the Free Software Foundation; either version 2 of the Licence, or
+# (at your option) any later version.
+# 
+# This program is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# GNU General Public License for more details.
+# 
+# You should have received a copy of the GNU General Public License
+# along with this program; if not, write to the Free Software
+# Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
+#
+# Product name : UnrealIRCD Service Framework
+# Copyright (C) 2011 Damien Lesgourgues
+# Author(s): Damien Lesgourgues
+#
+##############################################################################
+# packages needed
+package require msgcat
+
+# Debug ... or not ?
+set debug 1
+
+# Chargement des fichiers de langue
+foreach file [glob -directory lang/ *.msg] {
+  if {$::debug==1} { set_lang "en"; puts [::msgcat::mc loading $file] }
+  source $file
+}
+
+namespace irc eval {
+  # System configuration
+  variable lang   "fr"
+  variable pid    "framework.pid"
+
+  # Service configuration
+  variable ip         192.168.42.4
+  variable port       7000
+  variable password   "tclpur"
+  variable numeric    51
+  variable servername "tcl2.hebeo.fr"
+  variable netname    "Hebeo"
+  variable hub        "irc1.hebeo.fr"
+
+  # Master Bot Controller
+  variable nick       "FrameWork"
+  variable username   "tclsh"
+  variable hostname   $servername
+  variable realname   "UnrealIRCD Service Framework Controller"
+  variable adminchan  "#Services"
+  variable chanlist   "#opers #blabla"
+  variable root       "Yume"
+  variable cmdchar    "."
+
+  # Modules to load
+  variable module     ""
+
+  # Internal variables
+  variable version "0.1"
+  variable hook
+  #set mysock(proc-addon) ""
+  # array for keeping map between servername <-> numeric
+  variable srvname2num
+  set srvname2num($numeric) $servername
+  variable mychans "$mysock(adminchan) $mysock(chanlist)"
+  # Variables for network
+  if {![info exists ::irc::userlist]} { variable userlist $nick }
+  if {![info exists ::irc::chanlist]} { variable chanlist $mychans }
+  variable users
+  if {![info exists ::irc::users([string tolower $::irc::adminchan])]} { set ::irc::users([string tolower $::irc::adminchan]) $nick }
+  foreach chan [string tolower $::irc::chanlist] {
+    if {![info exists ::irc::users($chan)]} { set ::irc::users($chan) $nick } }
+}
+
+namespace eval pl {
+  # Partyline Configuration
+  variable ip         0.0.0.0
+  variable port       46000
+  variable pass       "password"
+}
+
+# Setting default lang
+proc ::irc::set_lang {lang} { if {$lang != ""} { ::msgcat::mclocale $lang } }
+set_lang $::irc::lang
+
+# Logging message
+puts [::msgcat::mc loadmodule "Configuration"]
+
