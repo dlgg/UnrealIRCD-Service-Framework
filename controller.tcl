@@ -115,11 +115,11 @@ proc socket_control {sock} {
       lappend network(userlist) $nickname
       set network(userlist) [::tools::nodouble $network(userlist)]
     }
-    if {![info exists network(users-[string tolower $network(servername-[::tools::base2dec $numeric $::tools::chars])])]} {
-      set network(users-[string tolower $network(servername-[::tools::base2dec $numeric $::tools::chars])]) $nickname
+    if {![info exists network(users-[string tolower $network(servername-[::tools::base2dec $numeric $::tools::ub64chars])])]} {
+      set network(users-[string tolower $network(servername-[::tools::base2dec $numeric $::tools::ub64chars])]) $nickname
     } else {
-      lappend network(users-[string tolower $network(servername-[::tools::base2dec $numeric $::tools::chars])]) $nickname
-      set network(users-[string tolower $network(servername-[::tools::base2dec $numeric $::tools::chars])]) [::tools::nodouble $network(users-[string tolower $network(servername-[::tools::base2dec $numeric $::tools::chars])])]
+      lappend network(users-[string tolower $network(servername-[::tools::base2dec $numeric $::tools::ub64chars])]) $nickname
+      set network(users-[string tolower $network(servername-[::tools::base2dec $numeric $::tools::ub64chars])]) [::tools::nodouble $network(users-[string tolower $network(servername-[::tools::base2dec $numeric $::tools::chars])])]
     }
   }
   #<<< :Yume NICK Yuki 1326485191
