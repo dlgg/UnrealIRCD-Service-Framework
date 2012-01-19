@@ -37,6 +37,12 @@ namespace eval tools {
   # Return the current datetime in epoch format
   proc unixtime {} { return [clock seconds] }
 
+  # if/then/else compacted
+  # Usage : [proc who return boolean value] { then cmd to execute } { else cmd to execute }
+  # Ex: [expr $x<100] {puts Yes} {puts No}
+  proc 0 {then else} {uplevel 1 $else}
+  proc 1 {then else} {uplevel 1 $then}
+
   # Write the pid of the current process in a file fro crons systems
   proc write_pid { pidfile } {
     set f [open $pidfile "WRONLY CREAT TRUNC" 0600]
@@ -105,6 +111,16 @@ namespace eval tools {
     }
     return $sum
   }
+
+  # Using an array as persistent database
+  # ::tools::writeDB $array $file
+  proc writeDB { var file } {
+    set fp [open Library.db w]
+    puts $fp [list array set db [array get db]]
+    close $fp
+  }
+  # unset $array; set array [readDB $file]
+  proc readDB { file } { source $file } 
 }
 
 
