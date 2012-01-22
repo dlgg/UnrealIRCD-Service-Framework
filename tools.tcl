@@ -77,6 +77,7 @@ namespace eval tools {
     }
     return $final
   }
+
   # Eggdrop tcl command
   proc duration {s} {
     set days [expr {$s / 86400}]
