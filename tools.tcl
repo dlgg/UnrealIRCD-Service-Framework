@@ -58,6 +58,11 @@ namespace eval tools {
     foreach l $list { if {![string equal -nocase $l $element]} { lappend final $l } }
     return $final
   }
+  proc llreplace { list old new } {
+    set final ""
+    foreach l $list { if {[string equal -nocase $l $old]} { lappend final $new } else { lappend final $l } }
+    return $final
+  }
   
   proc nodouble { var } {
     set final ""
