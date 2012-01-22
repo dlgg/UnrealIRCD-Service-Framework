@@ -125,26 +125,24 @@ namespace eval tools {
 
 
 # Link to IRC Network
-proc socket_connect {} {
-  global mysock
-  if {$mysock(debug)==1} { puts [::msgcat::mc initlink1 $mysock(ip) $mysock(port)] }
-  if {[catch {set mysock(sock) [socket $mysock(ip) $mysock(port)]} error]} { puts [::msgcat::mc sockerror $error]); close $mysock(sock); socket_connect; return 0 }
-  fileevent $mysock(sock) readable [list socket_control $mysock(sock)]
-  fconfigure $mysock(sock) -buffering line
-  vwait mysock(wait)
+proc ::irc::socket_connect {} {
+  if {$::debug)==1} { puts [::msgcat::mc initlink1 $::irc::ip $::irc::port] }
+  if {[catch {set ::irc::sock [socket $::irc::ip $::irc::port]} error]} { puts [::msgcat::mc sockerror $error]); close $::irc::sock; ::irc::socket_connect; return 0 }
+  fileevent $::irc::sock readable ::irc::socket_control
+  fconfigure $::irc::sock -buffering line
+  vwait ::irc::wait
   return
 }
 
 # Proc gestion du service
-proc my_rehash {} {
-  global mysock
+proc ::irc::rehash {} {
   #puts [::msgcat::mc closepls]
   #foreach pl $mysock(pl) { closepl $pl "rehash" }
   source config.tcl
   source tools.tcl
   source controller.tcl
   #source pl.tcl
-  foreach file $mysock(toload) {
+  foreach file ::irc::toload {
     append file ".tcl"
     set file modules/$file
     if {[file exists $file]} {
@@ -153,58 +151,65 @@ proc my_rehash {} {
       puts [::msgcat::mc filenotexist $file]
     }
   }
-  fsend $mysock(sock) ":$mysock(nick) PRIVMSG $mysock(adminchan) :\00304[::msgcat::mc rehashdone]"
+  ::irc::send ":$::irc::nick PRIVMSG $::irc::adminchan :\00304[::msgcat::mc rehashdone]"
   return
 }
 
-proc fsend {sock data} {
-  global mysock
-  if {$mysock(debug)==1} {
+proc ::irc::send {data} {
+  if {$::debug==1} {
     set datanc [::tools::stripmirc $data]
-    puts ">>> \002$sock\002 >>> $datanc"
+    puts ">>> \002$::irc::sock\002 >>> $datanc"
   }
-  puts $sock $data
+  puts $::irc::sock $data
+  return
+}
+proc ::pl::send {data} {
+  if {$::debug==1} {
+    set datanc [::tools::stripmirc $data]
+    puts ">>> \002$::pl::sock\002 >>> $datanc"
+  }
+  puts $::pl::sock $data
   return
 }
 
-proc bot_init { nick user host gecos } {
-  global mysock network
-  fsend $mysock(sock) "TKL + Q * $nick $mysock(servername) 0 [::tools::unixtime] :Reserved for Game Server"
-  fsend $mysock(sock) "NICK $nick 0 [::tools::unixtime] $user $host $mysock(servername) 0 +oSqB * * :$gecos"
-  if {$nick==$mysock(nick)} {
-    join_chan $mysock(nick) $mysock(adminchan)
-    foreach chan $mysock(chanlist) {
-      join_chan $mysock(nick) $chan
+proc ::irc::bot_init { nick user host gecos } {
+  ::irc::send "TKL + Q * $nick $::irc::servername 0 [::tools::unixtime] :Reserved for ::irc::svcname"
+  ::irc::send "NICK $nick 0 [::tools::unixtime] $user $host $::irc::servername 0 +oSqB * * :$gecos"
+  if {$nick==$::irc::nick} {
+    join_chan $::irc::nick $::irc::adminchan
+    foreach chan $::irc::chanlist {
+      join_chan $::irc::nick $chan
     }
   }
-  if {[info exists mysock(botlist)]} { lappend mysock(botlist) $nick; set mysock(botlist) [::tools::nodouble $mysock(botlist)] } else { set mysock(botlist) $nick }
-  if {[info exists network(userlist)]} { lappend network(userlist) $nick; set network(userlist) [::tools::nodouble $network(userlist)] } else { set network(userlist) $nick }
-  if {$mysock(debug)==1} { puts "My bots are : $mysock(botlist)" }
+  lappend ::irc::botlist $nick
+  set ::irc::botlist [::tools::nodouble $::irc::botlist]
+  lappend ::irc::userlist $nick
+  set ::irc::userlist [::tools::nodouble $::irc::userlist]
+  lappend ::irc::users($::irc::servername) $nick
+  set ::irc::users($::irc::servername) [::tools::nodouble $::irc::users($::irc::servername)
+  if {$::debug==1} { puts "My bots are : $::irc::botlist" }
   return
 }
 
-proc join_chan {bot chan} {
-  global mysock network
+proc ::irc::join_chan {bot chan} {
   if {$chan=="0"} {
-    fsend $mysock(sock) ":$mysock(nick) PRIVMSG $mysock(adminchan) :[::msgcat::mc botjoin0 $bot]"
+    ::irc::send ":$::irc::nick PRIVMSG $::irc::adminchan :[::msgcat::mc botjoin0 $bot]"
   } else {
-    if {$bot==$mysock(nick)} {
-      fsend $mysock(sock) ":$bot JOIN $chan"
-      fsend $mysock(sock) ":$bot MODE $chan +qo $bot $bot"
+    if {$bot==$::irc::nick} {
+      ::irc::send ":$bot JOIN $chan"
+      ::irc::send ":$bot MODE $chan +qo $bot $bot"
     } else {
-      fsend $mysock(sock) ":$bot JOIN $chan"
-      fsend $mysock(sock) ":$mysock(nick) MODE $chan +ao $bot $bot"
+      ::irc::send ":$bot JOIN $chan"
+      ::irc::send ":$::irc::nick MODE $chan +ao $bot $bot"
     }
-    if {[info exists mysock(mychans)]} { lappend mysock(mychans) $chan; set mysock(mychans) [join [::tools::nodouble $mysock(mychans)]] } else { set mysock(mychans) $bot }
-    if {[info exists network(users-[string tolower $chan])]} { lappend network(users-[string tolower $chan]) $bot; set network(users-[string tolower $chan]) [::tools::nodouble $network(users-[string tolower $chan])] } else { set network(users-[string tolower $chan]) $bot }
-    if {$mysock(debug)==1} { puts "My chans are : $mysock(mychans)" }
+    lappend ::irc::mychans [join $chan]
+    set ::irc::mychans [::tools::nodouble $mysock(mychans)]
+    lappend ::irc::users([string tolower $chan]) $bot
+    set ::irc::users([string tolower $chan]) [::tools::nodouble $::irc::users([string tolower $chan])]
+    if {$::debug==1} { puts "My chans are : $::irc::mychans" }
   }
   return
 }
 
-proc is_admin { nick configArray } {
-  if {[string equal -nocase $nick $configArray(root)]} { return 1 }
-  return 0
-}
-
-proc ischan { chan } { if {[string index $chan 0]=="#"} { return 1 } else { return 0 } }
+proc ::irc::is_admin { nick } { [string equal -nocase $nick $::irc::root] { return 1 } { return 0 } }
+proc ::irc::ischan { chan } { [string equal [string index $chan 0] "#"] { return 1 } { return 0 } }
