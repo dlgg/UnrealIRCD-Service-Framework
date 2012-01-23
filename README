@@ -140,7 +140,7 @@ You'll find below the variables that are not explain in the config part.
 ::irc::chanlist           Keep list of all the chans.
 ::irc::users($chan)       Keep list of users on a chan. 
 ::irc::users($servername) Keep list of users on a server.
-::irc::sername2num($numeric) Keep a map betweenn servernames and numeric
+::irc::srvname2num($numeric) Keep a map betweenn servernames and numeric
                              in decimal format.
 ::tools::ub64chars        Base64 map for unreal numeric NICK and SJOIN
 ::tools::ub64charsnickip  Base64 map for unreal NICKIP
