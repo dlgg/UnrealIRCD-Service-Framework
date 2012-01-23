@@ -194,7 +194,7 @@ proc ::irc::bot_init { nick user host gecos } {
   lappend ::irc::userlist $nick
   set ::irc::userlist [::tools::nodouble $::irc::userlist]
   lappend ::irc::users($::irc::servername) $nick
-  set ::irc::users($::irc::servername) [::tools::nodouble $::irc::users($::irc::servername)
+  set ::irc::users($::irc::servername) [::tools::nodouble $::irc::users($::irc::servername)]
   if {$::debug==1} { puts "My bots are : $::irc::botlist" }
   return
 }
