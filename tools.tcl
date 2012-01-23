@@ -211,7 +211,7 @@ proc ::irc::join_chan {bot chan} {
       ::irc::send ":$::irc::nick MODE $chan +ao $bot $bot"
     }
     lappend ::irc::mychans [join $chan]
-    set ::irc::mychans [::tools::nodouble $mysock(mychans)]
+    set ::irc::mychans [::tools::nodouble $::irc::mychans]
     lappend ::irc::users([string tolower $chan]) $bot
     set ::irc::users([string tolower $chan]) [::tools::nodouble $::irc::users([string tolower $chan])]
     if {$::debug==1} { puts "My chans are : $::irc::mychans" }
