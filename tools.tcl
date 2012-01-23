@@ -170,12 +170,13 @@ proc ::irc::send {data} {
   puts $::irc::sock $data
   return
 }
-proc ::pl::send {data} {
+proc ::pl::send {sock data} {
+  # TODO check if given sock is a pl
   if {$::debug==1} {
     set datanc [::tools::stripmirc $data]
-    puts ">>> \002$::pl::sock\002 >>> $datanc"
+    puts ">>> \002$sock\002 >>> $datanc"
   }
-  puts $::pl::sock $data
+  puts $sock $data
   return
 }
 
