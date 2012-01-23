@@ -97,6 +97,7 @@ namespace eval tools {
 
   # Conversion of unreal server numeric from unreal specific base 64 to decimal
   set ub64chars { 0 1 2 3 4 5 6 7 8 9 A B C D E F G H I J K L M N O P Q R S T U V W X Y Z a b c d e f g h i j k l m n o p q r s t u v w x y z \{ \} }
+  set ub64charsnickip { A B C D E F G H I J K L M N O P Q R S T U V W X Y Z a b c d e f g h i j k l m n o p q r s t u v w x y z 0 1 2 3 4 5 6 7 8 9 + / }
   proc dec2base { num baselist } {
     set res {}
     set base [llength $baselist]
