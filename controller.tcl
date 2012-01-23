@@ -291,7 +291,7 @@ proc ::irc::socket_control {} {
           ::irc::send ":$::irc::nick PRIVMSG $::irc::adminchan :[::msgcat::mc cont_rehash $from]"
         }
         source {
-          source $comm
+          source [lindex $comm 1]
           ::irc::send ":$::irc::nick PRIVMSG $::irc::adminchan :[::msgcat::mc cont_source $comm $from]"
         }
         die {
