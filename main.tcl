@@ -28,12 +28,16 @@ source controller.tcl
 #source pl.tcl
 
 # Load modules
-foreach file ::irc::modules {
+if {$debug==1} { puts "List of modules to load : $::irc::modules" }
+foreach file $::irc::modules {
   append file ".tcl"
   set file modules/$file
+  if {$debug==1} { puts "Checking if exist : $file" }
   if {[file exists $file]} {
+    if {$debug==1} { puts "Trying to load : $file" }
     if {[catch {source $file} err]} { puts "Error loading $file \n$err" }
   } else {
+    if {$debug==1} { puts "File not exists : $file" }
     puts [::msgcat::mc filenotexist $file]
   }
 }
