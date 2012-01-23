@@ -228,7 +228,7 @@ part $nick $chan
 part-chan $nick
     List of procs to call when $nick part the specific $chan.
 
-privmsg $nick $chan $text
+privmsg-chan $nick $chan $text
     List of procs to call when a PRIVMSG is send to a $chan where a bot
     is.
     $text is send escaped for security
