@@ -26,7 +26,8 @@ package require http
 
 namespace eval youtube {
 # Register Master Bot Addon
-  if {[info exists ::mysock(proc-addon)]} { lappend ::mysock(proc-addon) "youtube_control"; set ::mysock(proc-addon) [nodouble $::mysock(proc-addon)] } else { set ::mysock(proc-addon) "youtube_control" }
+  lappend ::irc::hook(privmsgchan) "youtube_control"
+  set ::irc::hook(privmsgchan) [::tools::nodouble $::irc::hook(privmsgchan)]
 
 # Vars for addon
   set logo "\002\00301,00You\00300,04Tube\002\017"
@@ -36,15 +37,14 @@ namespace eval youtube {
  
 # Proc for searching youtube URI
   proc youtube_control { nick chan text } {
-    global ::mysock
     set textnc [::tools::stripmirc $text]
     set watch [regexp -nocase -- {\/watch\?v\=([^\s]{11})} $textnc youtubeid]
     if {!$watch} { set watch [regexp -nocase -- {youtu\.be\/([^\s]{11})} $textnc yt youtubeidd]; if {$watch} {set youtubeid "/watch?v=$youtubeidd"} }
     if {$watch && $youtubeid != ""} {
-      set link "$base$youtubeid"
-      ::fsend $::mysock(sock) ":$::mysock(nick) PRIVMSG $::mysock(adminchan) :$youtube(logo) \002$nick\002 on \002$chan\002 : $link"
-      set t [::http::config -useragent $youtube(agent)]
-      set t [::http::geturl "$link" -timeout $youtube(timeout)]
+      set link "$::youtube::base$youtubeid"
+      ::irc::send ":$::irc::nick PRIVMSG $::irc::adminchan :$::youtube::logo \002$nick\002 on \002$chan\002 : $link"
+      set t [::http::config -useragent $::youtube::agent]
+      set t [::http::geturl $link -timeout $::youtube::timeout]
       set data [::http::data $t]
       ::http::cleanup $t
       set l [regexp -all -inline -- {<meta name="title" content="(.*?)">.*?<span class="watch-view-count">.*?<strong>(.*?)</strong>} $data]
@@ -60,7 +60,7 @@ namespace eval youtube {
         regsub -all {<.*?>} $c {} c
         regsub -all {<.*?>} $d {} d
         regsub -all {<.*?>} $e {} e
-        fsend $::mysock(sock) ":$::mysock(nick) PRIVMSG [join [list $chan $::mysock(adminchan)] ,]  :$logo $a \002(\002[::tools::duration $length]\002) Viewed\002 $b"
+        ::irc::send ":$::irc::nick PRIVMSG [join [list $chan $::irc::adminchan] ,]  :$::youtube::logo $a \002(\002[::tools::duration $length]\002) Viewed\002 $b"
       }
     }
   }
