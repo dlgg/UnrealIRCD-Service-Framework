@@ -39,7 +39,7 @@ proc ::irc::socket_control {} {
     ::irc::send "PASS $::irc::password"
     ::irc::send "SERVER $::irc::servername 1 :U2310-Fh6XiOoEe-$::irc::numeric UnrealIRCD Service Framework V.$::irc::version"
     ::irc::bot_init $::irc::nick $::irc::username $::irc::hostname $::irc::realname
-    ::irc::send "NETINFO 0 [::tools::unixtime] 2310 * 0 0 0 :$::irc::networkname"
+    ::irc::send "NETINFO 0 [::tools::unixtime] 2310 * 0 0 0 :$::irc::netname"
     ::irc::send "EOS"
     return 0
   }
@@ -51,7 +51,7 @@ proc ::irc::socket_control {} {
   #<<< PASS :tclpur
   if {[lindex $arg 0]=="PASS"} {
     set recv_pass [string range [lindex $arg 1] 1 end]
-    if {[::tools::testcs $::irc::password) $recv_pass]} {
+    if {[::tools::testcs $::irc::password $recv_pass]} {
       if {$::debug==1} { puts "Received password is OK !" }
     } else {
       puts "Received password is not OK ! Link abort !"
@@ -64,7 +64,7 @@ proc ::irc::socket_control {} {
     set hubname [lindex $arg 1]
     set numeric [lindex $arg 2]
     set description [lrange $arg 4 end]
-    if {[::tools::testcs $hubname $mysock(hub)]} {
+    if {[::tools::testcs $hubname $::irc::hub]} {
       if {$::debug==1} { puts "Received hubname is OK !" }
       set ::irc::srvname2num($numeric) $hubname
     } else {
@@ -82,10 +82,10 @@ proc ::irc::socket_control {} {
     if {$hubtime != $currtime} {
       puts "Cloak are not sync. Difference is [expr $currtime - $hubtime] seconds."
     }
-    if {![::tools::testcs $netname $::irc::networkname]} {
-      puts "Received network name doesn't correspond to given network name in configuration. I have received $netname but I am waiting for $::irc::networkname. Abort link."
-      fsend $mysock(sock) ":$::irc::servername SQUIT $::irc::hub :Configuration error."
-      close $mysock(sock)
+    if {![::tools::testcs $netname $::irc::netname]} {
+      puts "Received network name doesn't correspond to given network name in configuration. I have received $netname but I am waiting for $::irc::netname. Abort link."
+      ::irc::send ":$::irc::servername SQUIT $::irc::hub :Configuration error."
+      close $::irc::sock
       exit 0
     } else {
       ::tools::write_pid $mysock(pid)
@@ -108,8 +108,8 @@ proc ::irc::socket_control {} {
     #set gecos [string range [lrange $arg 11 end] 1 end]
     lappend ::irc::userlist $nickname
     set ::irc::userlist [::tools::nodouble $::irc::userlist]
-    lappend ::irc::users($::irc::srvname2num([::tools::base2dec $numeric $::toools::ub64chars])) $nickname
-    set ::irc::users($::irc::srvname2num([::tools::base2dec $numeric $::toools::ub64chars])) [::tools::nodouble $::irc::users($::irc::srvname2num([::tools::base2dec $numeric $::toools::ub64chars]))]
+    lappend ::irc::users($::irc::srvname2num([::tools::base2dec $numeric $::tools::ub64chars])) $nickname
+    set ::irc::users($::irc::srvname2num([::tools::base2dec $numeric $::tools::ub64chars])) [::tools::nodouble $::irc::users($::irc::srvname2num([::tools::base2dec $numeric $::tools::ub64chars]))]
   }
   #<<< :Yume NICK Yuki 1326485191
   if {[lindex $arg 1]=="NICK"} {
@@ -197,9 +197,9 @@ proc ::irc::socket_control {} {
     set servername [lindex $arg 1]
     #set reason [string range [lrange $arg 2 end] 1 end]
     foreach user $::irc::users([string tolower $servername]) {
-      set ::irc::userlist [::tools::lremove $::irc::userlist $nickname]
+      set ::irc::userlist [::tools::lremove $::irc::userlist $user]
       foreach arr [array names ::irc::users *] {
-        set ::irc::users($arr) [::tools::lremove $::irc::users($arr) $nickname]
+        set ::irc::users($arr) [::tools::lremove $::irc::users($arr) $user]
       }
     }
   }
@@ -284,7 +284,7 @@ proc ::irc::socket_control {} {
     if {[::irc::is_admin $from] && [test [string index [lindex $comm 0] 0] $::irc::cmdchar]} {
       switch [string range [lindex $comm 0] 1 end] {
         rehash {
-          my_rehash
+          ::irc::my_rehash
           ::irc::send ":$::irc::nick PRIVMSG $::irc::adminchan :[::msgcat::mc cont_rehash $from]"
         }
         source {
