@@ -22,43 +22,40 @@
 ##############################################################################
 puts [::msgcat::mc loadmodule "Master Bot Controller"]
 
-if {![info exists service]} { set service 0 }
+[info exists service] { } { set service 0 }
 
-proc socket_control {sock} {
-  global mysock network
-  set argv [gets $sock arg]
+proc ::irc::socket_control {} {
+  set argv [gets $::irc::sock rawarg]
   if {$argv=="-1"} {
     puts [::msgcat::mc cont_sockclose]
-    close $sock
+    close $::irc::sock
     exit 0
   }
-  set arg [::tools::charfilter $arg]
-  if {$mysock(debug)==1} {
-    puts "<<< $sock <<< [::tools::stripmirc $arg]"
-  }
+  set arg [::tools::charfilter $rawarg]
+  if {$::debug==1} { puts "<<< $::irc::sock <<< [::tools::stripmirc $arg]" }
 
   if {[lrange $arg 1 end]=="NOTICE AUTH :*** Looking up your hostname..."} {
-    fsend $sock "PROTOCTL NOQUIT NICKv2 UMODE2 VL SJ3 NS TKLEXT CLK"
-    fsend $sock "PASS $mysock(password)"
-    fsend $sock "SERVER $mysock(servername) 1 :U2310-Fh6XiOoEe-$mysock(numeric) UnrealIRCD Service Framework V.$mysock(version)"
-    bot_init $mysock(nick) $mysock(username) $mysock(hostname) $mysock(realname)
-    fsend $sock "NETINFO 0 [::tools::unixtime] 2310 * 0 0 0 :$mysock(networkname)"
-    fsend $sock "EOS"
+    ::irc::send "PROTOCTL NOQUIT NICKv2 UMODE2 VL SJ3 NS TKLEXT CLK"
+    ::irc::send "PASS $::irc::password"
+    ::irc::send "SERVER $::irc::servername 1 :U2310-Fh6XiOoEe-$::irc::numeric UnrealIRCD Service Framework V.$::irc::version"
+    ::irc::bot_init $::irc::nick $::irc::username $::irc::hostname $::irc::realname
+    ::irc::send "NETINFO 0 [::tools::unixtime] 2310 * 0 0 0 :$::irc::networkname"
+    ::irc::send "EOS"
     return 0
   }
 
   #<<< PING :irc1.hebeo.fr
   if {[lindex $arg 0]=="PING"} {
-    fsend $sock "PONG $mysock(servername) [lindex $arg 1]"; return 0
+    fsend $sock "PONG $::irc::servername [lindex $arg 1]"; return 0
   }
   #<<< PASS :tclpur
   if {[lindex $arg 0]=="PASS"} {
     set recv_pass [string range [lindex $arg 1] 1 end]
-    if {[::tools::testcs $mysock(password) $recv_pass]} {
-      if {$mysock(debug)==1} { puts "Received password is OK !" }
+    if {[::tools::testcs $::irc::password) $recv_pass]} {
+      if {$::debug==1} { puts "Received password is OK !" }
     } else {
       puts "Received password is not OK ! Link abort !"
-      close $sock
+      close $::irc::sock
       exit 0
     }
   }
@@ -68,12 +65,11 @@ proc socket_control {sock} {
     set numeric [lindex $arg 2]
     set description [lrange $arg 4 end]
     if {[::tools::testcs $hubname $mysock(hub)]} {
-      if {$mysock(debug)==1} { puts "Received hubname is OK !" }
-      set network(servername-$numeric) $hubname
-      set network(serverdesc-$numeric) $description
+      if {$::debug==1} { puts "Received hubname is OK !" }
+      set ::irc::srvname2num($numeric) $hubname
     } else {
       puts "Received hubname is not OK ! Link abort !"
-      close $sock
+      close $::irc::sock
       exit 0
     }
   }
@@ -86,9 +82,9 @@ proc socket_control {sock} {
     if {$hubtime != $currtime} {
       puts "Cloak are not sync. Difference is [expr $currtime - $hubtime] seconds."
     }
-    if {![::tools::testcs $netname $mysock(networkname)]} {
-      puts "Received network name doesn't correspond to given network name in configuration. I have received $netname but I am waiting for $mysock(networkname). Abort link."
-      fsend $mysock(sock) ":$mysock(servername) SQUIT $mysock(hub) :Configuration error."
+    if {![::tools::testcs $netname $::irc::networkname]} {
+      puts "Received network name doesn't correspond to given network name in configuration. I have received $netname but I am waiting for $::irc::networkname. Abort link."
+      fsend $mysock(sock) ":$::irc::servername SQUIT $::irc::hub :Configuration error."
       close $mysock(sock)
       exit 0
     } else {
@@ -96,7 +92,8 @@ proc socket_control {sock} {
     }
   }
 
-  #<<< NICK Yume 1 1326268587 chaton 192.168.42.1 1 0 +iowghaAxNz * 851AC590.11BF4B94.149A40B0.IP :Structure of Body
+  #<<< NICK Yume       1 1326268587 chaton 192.168.42.1 1 0 +iowghaAxNz * 851AC590.11BF4B94.149A40B0.IP :Structure of Body
+  #<<< NICK GameServer 1 1326702996 tclsh  tcl.hebeo.fr g 0 +oSqB       * heb1-EAB106C8.hebeo.fr        :TCL GameServer Controller
   if {[lindex $arg 0]=="NICK"} {
     set nickname [lindex $arg 1]
     #set hopcount [lindex $arg 2]
@@ -109,40 +106,28 @@ proc socket_control {sock} {
     #set cloakhost [lindex $arg 9]
     #set vhost [lindex $arg 10]
     #set gecos [string range [lrange $arg 11 end] 1 end]
-    if {![info exists network(userlist)]} {
-      set network(userlist) $nickname
-    } else {
-      lappend network(userlist) $nickname
-      set network(userlist) [::tools::nodouble $network(userlist)]
-    }
-    if {![info exists network(users-[string tolower $network(servername-[::tools::base2dec $numeric $::tools::ub64chars])])]} {
-      set network(users-[string tolower $network(servername-[::tools::base2dec $numeric $::tools::ub64chars])]) $nickname
-    } else {
-      lappend network(users-[string tolower $network(servername-[::tools::base2dec $numeric $::tools::ub64chars])]) $nickname
-      set network(users-[string tolower $network(servername-[::tools::base2dec $numeric $::tools::ub64chars])]) [::tools::nodouble $network(users-[string tolower $network(servername-[::tools::base2dec $numeric $::tools::chars])])]
-    }
+    lappend ::irc::userlist $nickname
+    set ::irc::userlist [::tools::nodouble $::irc::userlist]
+    lappend ::irc::users($::irc::srvname2num([::tools::base2dec $numeric $::toools::ub64chars])) $nickname
+    set ::irc::users($::irc::srvname2num([::tools::base2dec $numeric $::toools::ub64chars])) [::tools::nodouble $::irc::users($::irc::srvname2num([::tools::base2dec $numeric $::toools::ub64chars]))]
   }
   #<<< :Yume NICK Yuki 1326485191
   if {[lindex $arg 1]=="NICK"} {
     set oldnick [string range [lindex $arg 0] 1 end]
     set newnick [lindex $arg 2]
     #set timestamp [lindex $arg 3]
-    if {![info exists network(userlist)]} {
-      set network(userlist) $newnick
-    } else {
-      set network(userlist) [::tools::lremove network(userlist) $oldnick]
-      lappend network(userlist) $nickname]
-      set network(userlist) [::tools::nodouble $network(userlist)]
-      foreach arr [array names network users-*] {
-        set network($arr) [::tools::lremove $network($arr) $oldnick]
-        lappend network($arr) $newnick
-        set network($arr) [::tools::nodouble $network($arr)]
-      }
+    set ::irc::userlist [::tools::llreplace $::irc::userlist $oldnick $newnick]
+    foreach arr [array names ::irc::users *] {
+      set ::irc::users($arr) [::tools::llreplace $::irc::users($arr) $oldnick $newnick]
     }
   }
 
   #<<< :Yume UMODE2 +oghaAN
   if {[lindex $arg 1]=="UMODE2"} {
+    # not in use
+  }
+  #<<< @10 SVS2MODE Poker-egg +d 1
+  if {[lindex $arg 1]=="SVS2MODE"} {
     # not in use
   }
 
@@ -151,9 +136,9 @@ proc socket_control {sock} {
   if {[lindex $arg 1]=="QUIT"} {
     set nickname [string range [lindex $arg 0] 1 end]
     #set reason [string range [lrange $arg 2 end] 1 end]
-    set network(userlist) [::tools::lremove network(userlist) $nickname]
-    foreach arr [array names network users-*] {
-      set network($arr) [::tools::lremove $network($arr) $nickname]
+    set ::irc::userlist [::tools::lremove $::irc::userlist $nickname]
+    foreach arr [array names ::irc::users *] {
+      set ::irc::users($arr) [::tools::lremove $::irc::users($arr) $nickname]
     }
   }
 
@@ -163,17 +148,12 @@ proc socket_control {sock} {
     set nickname [lindex $arg 2]
     #set path [string range [lindex $arg 3] 1 end]
     #set reason [string range [lrange $arg 4 end] 1 end-1]
-    set network(userlist) [::tools::lremove network(userlist) $nickname]
-    foreach arr [array names network users-*] {
-      set network($arr) [::tools::lremove $network($arr) $nickname]
+    set ::irc::userlist [::tools::lremove $::irc::userlist $nickname]
+    foreach arr [array names ::irc::users *] {
+      set ::irc::users($arr) [::tools::lremove $::irc::users($arr) $nickname]
     }
-    if {[lindex $arg 2]==$mysock(nick)} {
-      bot_init $mysock(nick) $mysock(username) $mysock(hostname) $mysock(realname)
-    }
-    foreach game $mysock(gamelist) {
-      if {[lindex $arg 2]==$game} {
-        gamebot_init $nickname
-      }
+    if {[lindex $arg 2]==$::irc::nick} {
+      bot_init $::irc::nick $::irc::username $::irc::hostname $::irc::realname
     }
   }
 
@@ -190,33 +170,33 @@ proc socket_control {sock} {
   if {[lindex $arg 1]=="WHOIS"} {
     set source [string range [lindex $arg 0] 1 end]
     set target [string range [lindex $arg 3] 1 end]
-    if {[lsearch [string tolower $mysock(botlist)] [string tolower $target]]<0} { return }
-    fsend $mysock(sock) ":$mysock(nick) PRIVMSG $mysock(adminchan) :[::msgcat::mc cont_whois0 $source $target]"
-    fsend $mysock(sock) ":$mysock(nick) NOTICE $source :[::msgcat::mc cont_whois1 $target]"
+    if {[lsearch [string tolower $::irc::botlist] [string tolower $target]]<0} { return }
+    ::irc::send ":$::irc::nick PRIVMSG $::irc::adminchan :[::msgcat::mc cont_whois0 $source $target]"
+    ::irc::send ":$::irc::nick NOTICE $source :[::msgcat::mc cont_whois1 $target]"
     #fsend $mysock(sock) ":$target 320 whois is not implemented."
     #fsend $mysock(sock) ":$target 318 :End of /WHOIS list."
   }
 
-  #<<< @1 SERVER irc2.hebeo.fr 2 2 :Hebeo irc1 server
+  #<<< @1 SERVER irc2.hebeo.fr 2 2   :Hebeo irc1 server
+  #<<< @1 SERVER irc2.hebeo.fr 2 131 :Hebeo irc2 server
   # Introducing distant server by hub
   if {[lindex $arg 1]=="SERVER"} {
     #set srcnumeric [string range [lindex $arg 0] 1 end]
     set servername [lindex $arg 2]
     #set hopcount [lindex $arg 3]
     set numeric [lindex $arg 4]
-    set description [string range [lrange $arg 5 end] 1 end]
+    #set description [string range [lrange $arg 5 end] 1 end]
     set network(servername-$numeric) $servername
-    set network(serverdesc-$numeric) $description
   }
 
   #<<< SQUIT irc2.hebeo.fr :Yume
   if {[lindex $arg 0]=="SQUIT"} {
     set servername [lindex $arg 1]
     #set reason [string range [lrange $arg 2 end] 1 end]
-    foreach user $network(users-[string tolower $servername]) {
-      set network(userlist) [::tools::lremove network(userlist) $user]
-      foreach arr [array names network users-*] {
-        set network($arr) [::tools::lremove $network($arr) $user]
+    foreach user $::irc::users([string tolower $servername]) {
+      set ::irc::userlist [::tools::lremove $::irc::userlist $nickname]
+      foreach arr [array names ::irc::users *] {
+        set ::irc::users($arr) [::tools::lremove $::irc::users($arr) $nickname]
       }
     }
   }
