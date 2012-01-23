@@ -131,7 +131,6 @@ namespace eval tools {
   proc readDB { file } { source $file } 
 }
 
-
 # Link to IRC Network
 proc ::irc::socket_connect {} {
   if {$::debug)==1} { puts [::msgcat::mc initlink1 $::irc::ip $::irc::port] }
