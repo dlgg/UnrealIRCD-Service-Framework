@@ -199,7 +199,7 @@ send $raw
 bot_init $nick $username $hostname $gecos
     Connect a virtual bot with given nick, username, hostname and gecos
 
-join_chan
+join_chan $bot $chan
     Make a virtual bot join a chan and being +ao
 
 is_admin $nick
