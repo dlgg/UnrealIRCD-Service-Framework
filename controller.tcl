@@ -311,4 +311,3 @@ proc ::irc::socket_control {} {
   }
 }
 
-if {$service=="0"} { puts [::msgcat::mc cont_netconn]; ::irc::socket_connect; set service 1 }

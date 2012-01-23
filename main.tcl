@@ -37,3 +37,5 @@ foreach file ::irc::modules {
     puts [::msgcat::mc filenotexist $file]
   }
 }
+
+if {$service=="0"} { puts [::msgcat::mc cont_netconn]; ::irc::socket_connect; set service 1 }
