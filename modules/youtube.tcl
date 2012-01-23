@@ -43,6 +43,7 @@ namespace eval youtube {
     set textnc [::tools::stripmirc $text]
     set watch [regexp -nocase -- {\/watch\?v\=([^\s]{11})} $textnc "" youtubeidd]
     if {!$watch} { set watch [regexp -nocase -- {youtu\.be\/([^\s]{11})} $textnc "" youtubeidd] }
+    if {!$watch} { set watch [regexp -nocase -- {v\=([^\s]{11})} $textnc "" youtubeidd] }
     if {$watch && $youtubeidd != ""} {
       set youtubeid "/watch?v=$youtubeidd"
       set link "$::youtube::api$youtubeidd?v=2"
