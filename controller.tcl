@@ -287,7 +287,7 @@ proc ::irc::socket_control {} {
     if {[::irc::is_admin $from] && [::tools::test [string index [lindex $comm 0] 0] $::irc::cmdchar]} {
       switch [string range [lindex $comm 0] 1 end] {
         rehash {
-          ::irc::my_rehash
+          ::irc::rehash
           ::irc::send ":$::irc::nick PRIVMSG $::irc::adminchan :[::msgcat::mc cont_rehash $from]"
         }
         source {
