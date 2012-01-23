@@ -46,7 +46,7 @@ proc ::irc::socket_control {} {
 
   #<<< PING :irc1.hebeo.fr
   if {[lindex $arg 0]=="PING"} {
-    fsend $sock "PONG $::irc::servername [lindex $arg 1]"; return 0
+    ::irc::send "PONG $::irc::servername [lindex $arg 1]"; return 0
   }
   #<<< PASS :tclpur
   if {[lindex $arg 0]=="PASS"} {
@@ -88,7 +88,7 @@ proc ::irc::socket_control {} {
       close $::irc::sock
       exit 0
     } else {
-      ::tools::write_pid $mysock(pid)
+      ::tools::write_pid $::irc::pid
     }
   }
 
@@ -173,8 +173,8 @@ proc ::irc::socket_control {} {
     if {[lsearch [string tolower $::irc::botlist] [string tolower $target]]<0} { return }
     ::irc::send ":$::irc::nick PRIVMSG $::irc::adminchan :[::msgcat::mc cont_whois0 $source $target]"
     ::irc::send ":$::irc::nick NOTICE $source :[::msgcat::mc cont_whois1 $target]"
-    #fsend $mysock(sock) ":$target 320 whois is not implemented."
-    #fsend $mysock(sock) ":$target 318 :End of /WHOIS list."
+    #::irc::send ":$target 320 whois is not implemented."
+    #::irc::send ":$target 318 :End of /WHOIS list."
   }
 
   #<<< @1 SERVER irc2.hebeo.fr 2 2   :Hebeo irc1 server
@@ -186,7 +186,7 @@ proc ::irc::socket_control {} {
     #set hopcount [lindex $arg 3]
     set numeric [lindex $arg 4]
     #set description [string range [lrange $arg 5 end] 1 end]
-    set network(servername-$numeric) $servername
+    set ::irc::srvname2num($numeric) $servername
     if {$::debug==1} {
       puts "Adding server numeric $numeric for server $servername."
     }
@@ -281,7 +281,7 @@ proc ::irc::socket_control {} {
     # Hook for PRIVMSG to specific chan or user
     if {[info exists ::irc::hook(privmsg-[string tolower $to])]} { foreach hookp $::irc::hook(privmsg-[string tolower $to]) { $hookp $from "$commc" } }
 
-    if {[::irc::is_admin $from] && [test [string index [lindex $comm 0] 0] $::irc::cmdchar]} {
+    if {[::irc::is_admin $from] && [::tools::test [string index [lindex $comm 0] 0] $::irc::cmdchar]} {
       switch [string range [lindex $comm 0] 1 end] {
         rehash {
           ::irc::my_rehash
