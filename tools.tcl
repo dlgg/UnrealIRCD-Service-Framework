@@ -149,7 +149,7 @@ proc ::irc::rehash {} {
   source tools.tcl
   source controller.tcl
   #source pl.tcl
-  foreach file ::irc::toload {
+  foreach file ::irc::modules {
     append file ".tcl"
     set file modules/$file
     if {[file exists $file]} {

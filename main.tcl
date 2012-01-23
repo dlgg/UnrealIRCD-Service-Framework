@@ -28,7 +28,7 @@ source controller.tcl
 #source pl.tcl
 
 # Load modules
-foreach file ::irc::toload {
+foreach file ::irc::modules {
   append file ".tcl"
   set file modules/$file
   if {[file exists $file]} {
