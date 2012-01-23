@@ -128,7 +128,128 @@ ulines
 
 # 5. Modules
 ########################################################################
-TODO
+    a. Variables to use
+    -------------------
+You'll find below the variables that are not explain in the config part.
+
+::irc::botlist            Keep list of virtual users declared on the
+                          framework.
+::irc::mychans            Keep list of chans where the bots of
+                          framework are.
+::irc::userlist           Keep list of all users on the network.
+::irc::chanlist           Keep list of all the chans.
+::irc::users($chan)       Keep list of users on a chan. 
+::irc::users($servername) Keep list of users on a server.
+::irc::sername2num($numeric) Keep a map betweenn servernames and numeric
+                             in decimal format.
+::tools::ub64chars        Base64 map for unreal numeric NICK and SJOIN
+::tools::ub64charsnickip  Base64 map for unreal NICKIP
+
+
+    b. Specific Tools TCL proc
+    --------------------------
+All procs are in namespace ::tools so you need to prefix each of
+followings procs by ::tools:: or export it in your namespace.
+
+charfilter $arg
+    Strip $arg for escaping dangerous characters
+
+stripmirc $arg
+   Strip $arg for removing mirc text modifier codes
+
+test $string1 $string2
+   Test if $string1 and $string2 are equals
+
+testcs $string1 $string2
+   Test if $string1 and $string2 are case-sensitive equals
+
+unixtime
+   Return the current timestamp in EPOCH format
+
+lremove $list $element
+   Return $list without $element
+
+llreplace $list $oldelement $newelement
+   Return $list with $oldelement replaced by $newelement
+
+nodouble $list
+   Return $list without having an element who appear two times
+
+duration
+   Return a time in seconds in "xx days xx hours xx minutes xx seconds"
+
+rand $multiplier
+   Return a random integer from 0 to $multiplier
+
+dec2base/base2dec $num $baselist
+   Transform from/to base $num using $baselist as map
+
+
+    c. Specific IRC TCL proc
+    ------------------------
+All procs are in namespace ::irc so you need to prefix each of
+followings procs by ::irc:: or export it in your namespace.
+
+rehash
+    Rehash the service
+
+send $raw
+    Send a raw message by service
+
+bot_init $nick $username $hostname $gecos
+    Connect a virtual bot with given nick, username, hostname and gecos
+
+join_chan
+    Make a virtual bot join a chan and being +ao
+
+is_admin $nick
+    Return TRUE if the given nick is admin on the service
+
+ischan $string
+    Return TRUE if the given $string start with a #
+
+
+    d. Hooks for developping modules
+    --------------------------------
+All elements are array element of ::irc::hook() so you need to call them
+within the array (Ex: ::irc::hook(join-#accueil)
+
+join $nick $chan
+    List of procs to call when $nick join a chan. This is a global hook
+    who match on all chans of network
+
+join-$chan $nick
+    List of procs to call when $nick join the specific $chan.
+
+part $nick $chan
+    List of procs to call when $nick part a chan. This is a global hook
+    who match on all chans of network
+
+part-chan $nick
+    List of procs to call when $nick part the specific $chan.
+
+privmsg $nick $chan $text
+    List of procs to call when a PRIVMSG is send to a $chan where a bot
+    is.
+    $text is send escaped for security
+
+privmsg-#$chan $nick $text
+    List of procs to call when a PRIVMSG is send to a specific $chan.
+    $text is send escaped for security
+
+privmsg-$bot $nick $text
+    List of procs to call when a PRIVMSG is send to a specific $bot.
+    $text is send escaped for security
+    
+
+    e. Specific IRC TCL proc
+    ------------------------
+All procs are in namespace ::pl so you need to prefix each of
+followings procs by ::pl:: or export it in your namespace.
+
+send $sock $raw
+    Send a raw message to a pl sock
+
 
 # 6. Credits
 ########################################################################
