@@ -111,10 +111,11 @@ namespace eval tools {
   }
   proc base2dec { num baselist } {
     set sum 0
+    set base [llength $baselist]
     foreach char [split $num ""] {
       set d [lsearch $baselist $char]
-      if {$d == -1} {error "invalid unrealbase-64 digit '$char' in $num"}
-      set sum [expr {$sum * 64 + $d}]
+      if {$d == -1} {error "invalid base-$base digit '$char' in $num"}
+      set sum [expr {$sum * $base + $d}]
     }
     return $sum
   }
