@@ -37,11 +37,13 @@ namespace eval youtube {
  
 # Proc for searching youtube URI
   proc control { nick chan text } {
+      if {$::debug==1} { puts "YouTube : " }
     set textnc [::tools::stripmirc $text]
     set watch [regexp -nocase -- {\/watch\?v\=([^\s]{11})} $textnc youtubeid]
     if {!$watch} { set watch [regexp -nocase -- {youtu\.be\/([^\s]{11})} $textnc yt youtubeidd]; if {$watch} {set youtubeid "/watch?v=$youtubeidd"} }
     if {$watch && $youtubeid != ""} {
       set link "$::youtube::base$youtubeid"
+      if {$::debug==1} { puts "YouTube : Calling ::http::data with URI $link" }
       ::irc::send ":$::irc::nick PRIVMSG $::irc::adminchan :$::youtube::logo \002$nick\002 on \002$chan\002 : $link"
       set t [::http::config -useragent $::youtube::agent]
       set t [::http::geturl $link -timeout $::youtube::timeout]
@@ -49,6 +51,7 @@ namespace eval youtube {
       ::http::cleanup $t
       set l [regexp -all -inline -- {<meta name="title" content="(.*?)">.*?<span class="watch-view-count">.*?<strong>(.*?)</strong>} $data]
       regexp {"length_seconds": (\d+),} $data "" length
+      #if {$::debug==1} { puts "YouTube : duration $length" }
       foreach {black a b c d e} $l {
         set a [string map -nocase {\&\#39; \x27 &amp; \x26 &quot; \x22} $a]
         set b [string map [list \n ""] $b]
