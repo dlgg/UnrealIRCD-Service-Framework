@@ -264,42 +264,35 @@ proc ::irc::socket_control {} {
     set comm [::tools::stripmirc $commc]
 
     # Hooks for global PRIVMSG
-    if {([string index $to 0]=="#") && ([info exists ::irc::hook(privmsgchan)])} {
-      foreach hookp $::irc::hook(privmsg) { if {[info procs $addon]==$addon} { $hookp $from $to "$commc" } }
-    }
+    if {([string index $to 0]=="#") && ([info exists ::irc::hook(privmsgchan)])} { foreach hookp $::irc::hook(privmsgchan) { $hookp $from $to "$commc" } }
     # Hook for PRIVMSG to specific chan or user
-    if {[info exists mysock(proc-[string tolower $to])]} {
-      $mysock(proc-[string tolower $to]) $from "$commnc"
-    }
+    if {[info exists ::irc::hook(privmsg-[string tolower $to])]} { foreach hookp $::irc::hook(privmsg-[string tolower $to]) { $hookp $from "$commc" } }
 
-    if {[string match $mysock(root) [string range [lindex $arg 0] 1 end]] || [string match Yuki [string range [lindex $arg 0] 1 end]]} {
-      if {[string equal $mysock(cmdchar) [lindex $comm 0]]} {
-        fsend $sock [join [lrange $comm 1 end]]
-      }
-      # Commande !rehash
-      if {[string equal "$mysock(cmdchar)rehash" [lindex $comm 0]]} {
-        my_rehash
-        fsend $sock ":$mysock(nick) PRIVMSG $mysock(adminchan) :[::msgcat::mc cont_rehash $from]"
-      }
-      if {[string equal "$mysock(cmdchar)source" [lindex $comm 0]]} {
-        source $comm
-        fsend $sock ":$mysock(nick) PRIVMSG $mysock(adminchan) :[::msgcat::mc cont_source $comm $from]"
-      }
-      # Commande !die
-      if {[string equal -nocase "$mysock(cmdchar)die" [lindex $comm 0]]} {
-        fsend $mysock(sock) ":$mysock(servername) SQUIT $mysock(hub) :[::msgcat::mc cont_shutdown $from]"
-        close $mysock(sock)
-        exit 0
+    if {[::irc::is_admin $from] && [test [string index [lindex $comm 0] 0] $::irc::cmdchar]} {
+      switch [string range [lindex $comm 0] 1 end] {
+        rehash {
+          my_rehash
+          ::irc::send ":$::irc::nick PRIVMSG $::irc::adminchan :[::msgcat::mc cont_rehash $from]"
+        }
+        source {
+          source $comm
+          ::irc::send ":$::irc::nick PRIVMSG $::irc::adminchan :[::msgcat::mc cont_source $comm $from]"
+        }
+        die {
+          ::irc::send ":$::irc::servername SQUIT $::irc::hub :[::msgcat::mc cont_shutdown $from]"
+          close $::irc::sock
+          exit 0
+        }
       }
     }
     return 0
   }
   if {[lindex $arg 1]=="KICK"} {
     set to [lindex $arg 2]
-    if {[lindex $arg 3]==$mysock(nick)} {
-      join_chan $mysock(nick) $to
+    if {[lindex $arg 3]==$::irc::nick} {
+      join_chan $::irc::nick $to
     }
   }
 }
 
-if {$service=="0"} { puts [::msgcat::mc cont_netconn]; socket_connect; set service 1 }
+if {$service=="0"} { puts [::msgcat::mc cont_netconn]; ::irc::socket_connect; set service 1 }
