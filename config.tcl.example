@@ -58,7 +58,7 @@ namespace eval irc {
   variable cmdchar    "."
 
   # Modules to load
-  variable module     ""
+  variable modules    ""
 
   # Internal variables
   variable version    "0.1"
