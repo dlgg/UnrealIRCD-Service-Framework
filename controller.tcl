@@ -215,14 +215,14 @@ proc ::irc::socket_control {} {
     #set nick [string range [lindex $arg 4] 1 end]
     foreach nick [string tolower $nicks] {
       if {![string is alnum [string index $nick 0]]} { continue }
-      if {![info exists network(users-$chan)]} { set network(users-$chan) $nick }
-      if {[lsearch [string tolower $mysock(mychans)] [string tolower $chan]] > 0} {
-        lappend network(users-$chan) $nick
-        set network(users-$chan) [::tools::nodouble $network(users-$chan)]
-      }
-      if {[info exists mysock(join-[string tolower $chan])]} {
-        $mysock(join-[string tolower $chan]) $nick
-      }
+      lappend ::irc::users($chan) $nick
+      set ::irc::users($chan) [::tools::nodouble $::irc::users($chan)]
+      lappend ::irc::chanlist $chan
+      set ::irc::chanlist [::tools::nodouble $::irc::chanlist]
+      # Hooks for global join
+      if {[info exists ::irc::hook(join)]} { foreach hookj $::irc::hook(join) { $hookj $nick $chan } }
+      # Hooks for specific join on a chan
+      if {[info exists ::irc::hook(join-[string tolower $chan])]} { $::irc::hook(join-[string tolower $chan]) $nick }
     }
   }
   #<<< :Yume JOIN #blabla,#opers
@@ -230,18 +230,31 @@ proc ::irc::socket_control {} {
     set nick [string range [lindex $arg 0] 1 end]
     set chans [join [split [lindex $arg 2] ,]]
     foreach chan [string tolower $chans] {
-      if {![info exists network(users-$chan)]} { set network(users-$chan) $nick }
-      if {[lsearch [string tolower $mysock(mychans)] [string tolower $chan]] > 0} {
-        lappend network(users-$chan) $nick
-        set network(users-$chan) [::tools::nodouble $network(users-$chan)]
-      }
-      if {[info exists mysock(join-[string tolower $chan])]} {
-        $mysock(join-[string tolower $chan]) $nick
-      }
+      lappend ::irc::users($chan) $nick
+      set ::irc::users($chan) [::tools::nodouble $::irc::users($chan)]
+      lappend ::irc::chanlist $chan
+      set ::irc::chanlist [::tools::nodouble $::irc::chanlist]
+      # Hooks for global join
+      if {[info exists ::irc::hook(join)]} { foreach hookj $::irc::hook(join) { $hookj $nick $chan } }
+      # Hooks for specific join on a chan
+      if {[info exists ::irc::hook(join-[string tolower $chan])]} { $::irc::hook(join-[string tolower $chan]) $nick }
     }
   }
 
   #<<< :Yume PART #Poker
+  if {[lindex $arg 1]=="PART"} {
+    set nick [string range [lindex $arg 0] 1 end]
+    set chan [join [lindex $arg 2]]
+    foreach chan [string tolower $chans] {
+      lappend ::irc::users($chan) $nick
+      set ::irc::users($chan) [::tools::nodouble $::irc::users($chan)]
+      lappend ::irc::chanlist $chan
+      set ::irc::chanlist [::tools::nodouble $::irc::chanlist]
+      # Hooks for global part
+      if {[info exists ::irc::hook(part)]} { foreach hookj $::irc::hook(part) { $hookj $nick $chan } }
+      # Hooks for specific part on a chan
+      if {[info exists ::irc::hook(part-[string tolower $chan])]} { $::irc::hook(part-[string tolower $chan]) $nick }
+  }
   
   # PRIVMSG
   if {[lindex $arg 1]=="PRIVMSG"} {
@@ -250,15 +263,13 @@ proc ::irc::socket_control {} {
     set commc [list [string range [lindex $arg 3] 1 end] [lrange $arg 4 end]]
     set comm [::tools::stripmirc $commc]
 
-    # Send info to addon proc for master bot
-    if {[string index $to 0]=="#"} {
-      foreach addon $mysock(proc-addon) {
-        if {[info procs $addon]==$addon} { $addon $from $to "$commc" }
-      }
+    # Hooks for global PRIVMSG
+    if {([string index $to 0]=="#") && ([info exists ::irc::hook(privmsgchan)])} {
+      foreach hookp $::irc::hook(privmsg) { if {[info procs $addon]==$addon} { $hookp $from $to "$commc" } }
     }
-    # Send info to bot who need it
+    # Hook for PRIVMSG to specific chan or user
     if {[info exists mysock(proc-[string tolower $to])]} {
-      $mysock(proc-[string tolower $to]) $from "$comm"
+      $mysock(proc-[string tolower $to]) $from "$commnc"
     }
 
     if {[string match $mysock(root) [string range [lindex $arg 0] 1 end]] || [string match Yuki [string range [lindex $arg 0] 1 end]]} {
