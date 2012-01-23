@@ -257,6 +257,7 @@ proc ::irc::socket_control {} {
       if {[info exists ::irc::hook(part)]} { foreach hookj $::irc::hook(part) { $hookj $nick $chan } }
       # Hooks for specific part on a chan
       if {[info exists ::irc::hook(part-[string tolower $chan])]} { $::irc::hook(part-[string tolower $chan]) $nick }
+    }
   }
   
   # PRIVMSG
