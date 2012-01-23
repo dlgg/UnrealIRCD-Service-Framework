@@ -194,6 +194,7 @@ proc ::irc::socket_control {} {
 
   #<<< SQUIT irc2.hebeo.fr :Yume
   if {[lindex $arg 0]=="SQUIT"} {
+    # TODO : remove srvname2num($numeric) corresponding to server
     set servername [lindex $arg 1]
     #set reason [string range [lrange $arg 2 end] 1 end]
     foreach user $::irc::users([string tolower $servername]) {
@@ -202,6 +203,7 @@ proc ::irc::socket_control {} {
         set ::irc::users($arr) [::tools::lremove $::irc::users($arr) $user]
       }
     }
+    unset ::irc::users([string tolower $servername])
   }
 
   #SDESC
