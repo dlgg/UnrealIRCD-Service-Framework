@@ -54,7 +54,7 @@ proc ::irc::socket_control {} {
     if {[::tools::testcs $::irc::password $recv_pass]} {
       if {$::debug==1} { puts "Received password is OK !" }
     } else {
-      puts "Received password is not OK ! Link abort !"
+      puts "Received password is not OK ! Link abort ! I have received $recv_pass but i am waiting for $::irc::password"
       close $::irc::sock
       exit 0
     }
