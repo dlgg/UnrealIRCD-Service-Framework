@@ -221,3 +221,5 @@ proc ::irc::join_chan {bot chan} {
 
 proc ::irc::is_admin { nick } { [string equal -nocase $nick $::irc::root] { return 1 } { return 0 } }
 proc ::irc::ischan { chan } { [string equal [string index $chan 0] "#"] { return 1 } { return 0 } }
+
+namespace import ::tools::0 ::tools::1
