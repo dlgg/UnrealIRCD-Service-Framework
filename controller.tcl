@@ -16,7 +16,7 @@
 # Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
 #
 # Product name : UnrealIRCD Service Framework
-# Copyright (C) 2011 Damien Lesgourgues
+# Copyright (C) 2012 Damien Lesgourgues
 # Author(s): Damien Lesgourgues
 #
 ##############################################################################
