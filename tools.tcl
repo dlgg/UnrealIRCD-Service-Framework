@@ -133,7 +133,7 @@ namespace eval tools {
 
 # Link to IRC Network
 proc ::irc::socket_connect {} {
-  if {$::debug)==1} { puts [::msgcat::mc initlink1 $::irc::ip $::irc::port] }
+  if {$::debug==1} { puts [::msgcat::mc initlink1 $::irc::ip $::irc::port] }
   if {[catch {set ::irc::sock [socket $::irc::ip $::irc::port]} error]} { puts [::msgcat::mc sockerror $error]); close $::irc::sock; ::irc::socket_connect; return 0 }
   fileevent $::irc::sock readable ::irc::socket_control
   fconfigure $::irc::sock -buffering line

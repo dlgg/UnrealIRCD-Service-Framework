@@ -187,6 +187,9 @@ proc ::irc::socket_control {} {
     set numeric [lindex $arg 4]
     #set description [string range [lrange $arg 5 end] 1 end]
     set network(servername-$numeric) $servername
+    if {$::debug==1} {
+      puts "Adding server numeric $numeric for server $servername."
+    }
   }
 
   #<<< SQUIT irc2.hebeo.fr :Yume
@@ -264,7 +267,17 @@ proc ::irc::socket_control {} {
     set comm [::tools::stripmirc $commc]
 
     # Hooks for global PRIVMSG
-    if {([string index $to 0]=="#") && ([info exists ::irc::hook(privmsgchan)])} { foreach hookp $::irc::hook(privmsgchan) { $hookp $from $to "$commc" } }
+    if {$::debug==1} {
+      puts "First char of \$to is [string index $to 0]"
+      puts "::irc::hook(privmsgchan) exist ? [info exists ::irc::hook(privmsgchan)]"
+    }
+    if {([string index $to 0]=="#") && ([info exists ::irc::hook(privmsgchan)])} {
+      if {$::debug==1} { puts "Entering global privmsg hook for $from $to $comm" }
+      foreach hookp $::irc::hook(privmsgchan) {
+        if {$::debug==1} { puts "Calling hook $hookp" }
+        $hookp $from $to "$commc"
+      }
+    }
     # Hook for PRIVMSG to specific chan or user
     if {[info exists ::irc::hook(privmsg-[string tolower $to])]} { foreach hookp $::irc::hook(privmsg-[string tolower $to]) { $hookp $from "$commc" } }
 
