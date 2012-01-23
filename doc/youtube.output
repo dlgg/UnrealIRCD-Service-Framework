@@ -1,0 +1,65 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<entry xmlns='http://www.w3.org/2005/Atom' xmlns:media='http://search.yahoo.com/mrss/' xmlns:gd='http://schemas.google.com/g/2005' xmlns:yt='http://gdata.youtube.com/schemas/2007' gd:etag='W/&quot;D0AEQH47eCp7I2A9WhRUE04.&quot;'>
+  <id>tag:youtube.com,2008:video:NSPIpg1Ct9c</id>
+  <published>2011-08-11T16:18:36.000Z</published>
+  <updated>2012-01-23T16:21:41.000Z</updated>
+  <category scheme='http://schemas.google.com/g/2005#kind' term='http://gdata.youtube.com/schemas/2007#video'/>
+  <category scheme='http://gdata.youtube.com/schemas/2007/categories.cat' term='Music' label='Music'/>
+  <category scheme='http://gdata.youtube.com/schemas/2007/keywords.cat' term='Mr. Saxobeat'/>
+  <category scheme='http://gdata.youtube.com/schemas/2007/keywords.cat' term='Alexandra Stan'/>
+  <category scheme='http://gdata.youtube.com/schemas/2007/keywords.cat' term='Romania'/>
+  <category scheme='http://gdata.youtube.com/schemas/2007/keywords.cat' term='Lena Katina'/>
+  <category scheme='http://gdata.youtube.com/schemas/2007/keywords.cat' term='tATu'/>
+  <category scheme='http://gdata.youtube.com/schemas/2007/keywords.cat' term='t.A.T.u.'/>
+  <category scheme='http://gdata.youtube.com/schemas/2007/keywords.cat' term='RAWsession'/>
+  <category scheme='http://gdata.youtube.com/schemas/2007/keywords.cat' term='raw sessions'/>
+  <category scheme='http://gdata.youtube.com/schemas/2007/keywords.cat' term='acoustic'/>
+  <title>Alexandra Stan "Mr. Saxobeat" RAWsession by Lena Katina</title>
+  <content type='application/x-shockwave-flash' src='https://www.youtube.com/v/NSPIpg1Ct9c?version=3&amp;f=videos&amp;app=youtube_gdata'/>
+  <link rel='alternate' type='text/html' href='https://www.youtube.com/watch?v=NSPIpg1Ct9c&amp;feature=youtube_gdata'/>
+  <link rel='http://gdata.youtube.com/schemas/2007#video.responses' type='application/atom+xml' href='https://gdata.youtube.com/feeds/api/videos/NSPIpg1Ct9c/responses?v=2'/>
+  <link rel='http://gdata.youtube.com/schemas/2007#video.related' type='application/atom+xml' href='https://gdata.youtube.com/feeds/api/videos/NSPIpg1Ct9c/related?v=2'/>
+  <link rel='http://gdata.youtube.com/schemas/2007#mobile' type='text/html' href='https://m.youtube.com/details?v=NSPIpg1Ct9c'/>
+  <link rel='self' type='application/atom+xml' href='https://gdata.youtube.com/feeds/api/videos/NSPIpg1Ct9c?v=2'/>
+  <author>
+    <name>rawsession</name>
+    <uri>https://gdata.youtube.com/feeds/api/users/rawsession</uri>
+  </author>
+  <yt:accessControl action='comment' permission='allowed'/>
+  <yt:accessControl action='commentVote' permission='allowed'/>
+  <yt:accessControl action='videoRespond' permission='moderated'/>
+  <yt:accessControl action='rate' permission='allowed'/>
+  <yt:accessControl action='embed' permission='allowed'/>
+  <yt:accessControl action='list' permission='allowed'/>
+  <yt:accessControl action='autoPlay' permission='allowed'/>
+  <yt:accessControl action='syndicate' permission='allowed'/>
+  <gd:comments>
+    <gd:feedLink rel='http://gdata.youtube.com/schemas/2007#comments' href='https://gdata.youtube.com/feeds/api/videos/NSPIpg1Ct9c/comments?v=2' countHint='773'/>
+  </gd:comments>
+  <yt:hd/>
+  <media:group>
+    <media:category label='Music' scheme='http://gdata.youtube.com/schemas/2007/categories.cat'>Music</media:category>
+    <media:content url='https://www.youtube.com/v/NSPIpg1Ct9c?version=3&amp;f=videos&amp;app=youtube_gdata' type='application/x-shockwave-flash' medium='video' isDefault='true' expression='full' duration='245' yt:format='5'/>
+    <media:content url='rtsp://v3.cache4.c.youtube.com/CiILENy73wIaGQnXt0INpsgjNRMYDSANFEgGUgZ2aWRlb3MM/0/0/0/video.3gp' type='video/3gpp' medium='video' expression='full' duration='245' yt:format='1'/>
+    <media:content url='rtsp://v5.cache4.c.youtube.com/CiILENy73wIaGQnXt0INpsgjNRMYESARFEgGUgZ2aWRlb3MM/0/0/0/video.3gp' type='video/3gpp' medium='video' expression='full' duration='245' yt:format='6'/>
+    <media:credit role='uploader' scheme='urn:youtube'>rawsession</media:credit>
+    <media:description type='plain'>Lena Katina from t.A.T.u. performing Alexandra Stan's Mr. Saxobeat @RAWsession -- Thanks to all the Lena Fans and RAWsession .... Executive Producer Nils Gums</media:description>
+    <media:keywords>Mr. Saxobeat, Alexandra Stan, Romania, Lena Katina, tATu, t.A.T.u., RAWsession, raw sessions, acoustic</media:keywords>
+    <media:license type='text/html' href='http://www.youtube.com/t/terms'>youtube</media:license>
+    <media:player url='https://www.youtube.com/watch?v=NSPIpg1Ct9c&amp;feature=youtube_gdata_player'/>
+    <media:rating scheme='http://gdata.youtube.com/schemas/2007#mediarating' yt:country='all'>1</media:rating>
+    <media:thumbnail url='http://i.ytimg.com/vi/NSPIpg1Ct9c/default.jpg' height='90' width='120' time='00:02:02.500' yt:name='default'/>
+    <media:thumbnail url='http://i.ytimg.com/vi/NSPIpg1Ct9c/hqdefault.jpg' height='360' width='480' yt:name='hqdefault'/>
+    <media:thumbnail url='http://i.ytimg.com/vi/NSPIpg1Ct9c/1.jpg' height='90' width='120' time='00:01:01.250' yt:name='start'/>
+    <media:thumbnail url='http://i.ytimg.com/vi/NSPIpg1Ct9c/2.jpg' height='90' width='120' time='00:02:02.500' yt:name='middle'/>
+    <media:thumbnail url='http://i.ytimg.com/vi/NSPIpg1Ct9c/3.jpg' height='90' width='120' time='00:03:03.750' yt:name='end'/>
+    <media:title type='plain'>Alexandra Stan "Mr. Saxobeat" RAWsession by Lena Katina</media:title>
+    <yt:aspectRatio>widescreen</yt:aspectRatio>
+    <yt:duration seconds='245'/>
+    <yt:uploaded>2011-08-11T16:18:36.000Z</yt:uploaded>
+    <yt:videoid>NSPIpg1Ct9c</yt:videoid>
+  </media:group>
+  <gd:rating average='4.702821' max='5' min='1' numRaters='2517' rel='http://schemas.google.com/g/2005#overall'/>
+  <yt:statistics favoriteCount='1093' viewCount='208136'/>
+  <yt:rating numDislikes='187' numLikes='2330'/>
+</entry>
