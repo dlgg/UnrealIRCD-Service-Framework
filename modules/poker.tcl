@@ -23,24 +23,28 @@
 puts [::msgcat::mc loadgame "Poker"]
 
 namespace eval poker {
+  namespace import ::tools::0 ::tools::1
   # Parametres pour le jeu Poker
-  variable nick "Poker"
+  variable nick "Poker-FrameWork"
   variable username "poker"
-  variable hostname "poker.$::mysock(hostname)"
+  variable hostname "poker.$::irc::hostname"
   variable realname "Bot de jeu Poker"
   variable chan "#Poker"
   
   # Don't modify this
-  if {[info exists ::mysock(gamelist2)]} { lappend ::mysock(gamelist2) "poker"; set ::mysock(gamelist2) [::nodouble $::mysock(gamelist2)] } else { set ::mysock(gamelist2) "poker" }
-  if {![info exists ::network(users-[string tolower $poker::chan])]} { set ::network(users-[string tolower $poker::chan]) "" }
-  set ::mysock(proc2-[string tolower $poker::chan]) "::poker::control_pub"
-  set ::mysock(proc2-[string tolower $poker::nick]) "::poker::control_priv"
+  ::irc::bot_init $::poker::nick $::poker::username $::poker::hostname $::poker::realname
+  ::irc::join_chan $::poker::nick $::poker::chan
+  lappend ::irc::hook(privmsg-[string tolower $::poker::chan]) ::poker::control_pub
+  set ::irc::hook(privmsg-[string tolower $::poker::chan]) [::tools::nodouble $::irc::hook(privmsg-[string tolower $::poker::chan])]
+  lappend ::irc::hook(privmsg-[string tolower $::poker::nick]) ::poker::control_priv
+  set ::irc::hook(privmsg-[string tolower $::poker::nick]) [::tools::nodouble $::irc::hook(privmsg-[string tolower $::poker::nick])]
   
-  proc control_pub { nick text } {
-    fsend $::mysock(sock) ":$poker::nick PRIVMSG $poker::chan :\002PUB \002 $nick > [join $text]"
-  }
-  
-  proc control_priv { nick text } {
-    fsend $::mysock(sock) ":$poker::nick PRIVMSG $poker::chan :\002PRIV\002 $nick > [join $text]"
-  }
+}
+
+proc ::poker::control_pub { nick text } {
+  [is_admin $nick] { ::irc::send ":$::poker::nick PRIVMSG $::poker::chan :\002PUB \002 $nick > [join $text]" } { puts "$nick not admin" }
+}
+
+proc ::poker::control_priv { nick text } {
+  [is_admin $nick] { ::irc::send ":$::poker::nick PRIVMSG $::poker::chan :\002PRIV\002 $nick > [join $text]" } { puts "$nick not admin" }
 }
