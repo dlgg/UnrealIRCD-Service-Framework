@@ -20,9 +20,11 @@
 # Author(s): Damien Lesgourgues
 #
 ##############################################################################
-puts [::msgcat::mc loadaddon "YouTube"]
+#puts [::msgcat::mc loadaddon "YouTube"]
 
 package require http
+package require tls
+http::register https 443 [list ::tls::socket -require 0]
 
 namespace eval youtube {
 # Register Master Bot Addon
@@ -32,40 +34,47 @@ namespace eval youtube {
 # Vars for addon
   set logo "\002\00301,00You\00300,04Tube\002\017"
   set base "http://www.youtube.com"
+  set api "https://gdata.youtube.com/feeds/api/videos/"
   set agent "Mozilla/5.0 (Windows; U; Windows NT 5.1; ru; rv:1.9.0.1) Gecko/2008070208 Firefox/3.0.1"
   set timeout 30000
  
-# Proc for searching youtube URI
   proc control { nick chan text } {
-      if {$::debug==1} { puts "YouTube : " }
+    if {$::debug==1} { puts "YouTube : " }
     set textnc [::tools::stripmirc $text]
-    set watch [regexp -nocase -- {\/watch\?v\=([^\s]{11})} $textnc youtubeid]
-    if {!$watch} { set watch [regexp -nocase -- {youtu\.be\/([^\s]{11})} $textnc yt youtubeidd]; if {$watch} {set youtubeid "/watch?v=$youtubeidd"} }
-    if {$watch && $youtubeid != ""} {
-      set link "$::youtube::base$youtubeid"
+    set watch [regexp -nocase -- {\/watch\?v\=([^\s]{11})} $textnc "" youtubeidd]
+    if {!$watch} { set watch [regexp -nocase -- {youtu\.be\/([^\s]{11})} $textnc "" youtubeidd] }
+    if {$watch && $youtubeidd != ""} {
+      set youtubeid "/watch?v=$youtubeidd"
+      set link "$::youtube::api$youtubeidd?v=2"
       if {$::debug==1} { puts "YouTube : Calling ::http::data with URI $link" }
-      ::irc::send ":$::irc::nick PRIVMSG $::irc::adminchan :$::youtube::logo \002$nick\002 on \002$chan\002 : $link"
+      ::irc::send ":$::irc::nick PRIVMSG $::irc::adminchan :$::youtube::logo \002$nick\002 on \002$chan\002 : $::youtube::base$youtubeid"
       set t [::http::config -useragent $::youtube::agent]
       set t [::http::geturl $link -timeout $::youtube::timeout]
       set data [::http::data $t]
       ::http::cleanup $t
-      set l [regexp -all -inline -- {<meta name="title" content="(.*?)">.*?<span class="watch-view-count">.*?<strong>(.*?)</strong>} $data]
-      regexp {"length_seconds": (\d+),} $data "" length
-      #if {$::debug==1} { puts "YouTube : duration $length" }
-      foreach {black a b c d e} $l {
-        set a [string map -nocase {\&\#39; \x27 &amp; \x26 &quot; \x22} $a]
-        set b [string map [list \n ""] $b]
-        set c [string map [list \n ""] $c]
-        set d [string map [list \n ""] $d]
-        set e [string map -nocase {\&\#39; \x27 &amp; \x26 &quot; \x22} $e]
-        regsub -all {<.*?>} $a {} a
-        regsub -all {<.*?>} $b {} b
-        regsub -all {<.*?>} $c {} c
-        regsub -all {<.*?>} $d {} d
-        regsub -all {<.*?>} $e {} e
-        ::irc::send ":$::irc::nick PRIVMSG [join [list $chan $::irc::adminchan] ,]  :$::youtube::logo $a \002(\002[::tools::duration $length]\002) Viewed\002 $b"
+      regexp -all -- {<title>(.*?)</title>} $data "" title
+      regexp -all -- {<name>(.*?)</name>} $data "" author
+      regexp -all -- {favoriteCount='(.*?)'} $data "" favs
+      regexp -all -- {viewCount='(.*?)'} $data "" view
+      regexp -all -- {numRaters='(.*?)'} $data "" raters
+      regexp -all -- {average='(.*?)'} $data "" average
+      regexp -all -- {countHint='(.*?)'} $data "" comms
+      regexp -all -- {numDislikes='(.*?)'} $data "" dislike
+      regexp -all -- {numLikes='(.*?)'} $data "" like
+      regexp -all -- {<yt:duration seconds='(.*?)'/>} $data "" duration
+      if {$::debug==1} {
+        puts "Title    : $title"
+        puts "Author   : $author"
+        puts "Duration : $duration seconds"
+        puts "View     : $view"
+        puts "Favs     : $favs"
+        puts "Rate     : $average by $raters persons"
+        puts "Comms    : $comms"
+        puts "Likes    : $like"
+        puts "Dislikes : $dislike"
       }
+      ::irc::send ":$::irc::nick PRIVMSG [join [list $chan $::irc::adminchan] ,]  :$::youtube::logo \002$author\002 $title \002Durée\002[::tools::duration $duration] \002Vues\002 $view \002Favoris\002 $favs"
+      ::irc::send ":$::irc::nick PRIVMSG [join [list $chan $::irc::adminchan] ,]  :$::youtube::logo \002Note moyenne\002 $average \002par\002 $raters personnes \002Commentaires\002 $comms \002J'aime\002 $like \002Je n'aime pas\002 $dislike"
     }
   }
 }
-
