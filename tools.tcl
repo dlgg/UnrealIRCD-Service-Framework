@@ -123,7 +123,7 @@ namespace eval tools {
   # Using an array as persistent database
   # ::tools::writeDB $array $file
   proc writeDB { var file } {
-    set fp [open Library.db w]
+    set fp [open $file w]
     puts $fp [list array set db [array get db]]
     close $fp
   }
