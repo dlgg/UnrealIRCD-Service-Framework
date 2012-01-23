@@ -26,7 +26,7 @@ package require http
 
 namespace eval youtube {
 # Register Master Bot Addon
-  lappend ::irc::hook(privmsgchan) "youtube_control"
+  lappend ::irc::hook(privmsgchan) "::youtube::control"
   set ::irc::hook(privmsgchan) [::tools::nodouble $::irc::hook(privmsgchan)]
 
 # Vars for addon
@@ -36,7 +36,7 @@ namespace eval youtube {
   set timeout 30000
  
 # Proc for searching youtube URI
-  proc youtube_control { nick chan text } {
+  proc control { nick chan text } {
     set textnc [::tools::stripmirc $text]
     set watch [regexp -nocase -- {\/watch\?v\=([^\s]{11})} $textnc youtubeid]
     if {!$watch} { set watch [regexp -nocase -- {youtu\.be\/([^\s]{11})} $textnc yt youtubeidd]; if {$watch} {set youtubeid "/watch?v=$youtubeidd"} }
