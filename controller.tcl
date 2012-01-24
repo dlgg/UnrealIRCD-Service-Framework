@@ -45,12 +45,12 @@ proc ::irc::socket_control {} {
   }
 
   switch [lindex $arg 0] {
-    #<<< PING :irc1.hebeo.fr
     PING {
+    #<<< PING :irc1.hebeo.fr
       ::irc::send "PONG $::irc::servername [lindex $arg 1]"; return
     }
-    #<<< PASS :tclpur
     PASS {
+    #<<< PASS :tclpur
       set recv_pass [string range [lindex $arg 1] 1 end]
       if {[::tools::testcs $::irc::password $recv_pass]} {
         if {$::debug==1} { puts "Received password is OK !" }
@@ -61,8 +61,8 @@ proc ::irc::socket_control {} {
       }
       return
     }
-    #<<< SERVER irc1.hebeo.fr 1 :U2310-Fhin6XeOoE-1 Hebeo irc1 server
     SERVER {
+    #<<< SERVER irc1.hebeo.fr 1 :U2310-Fhin6XeOoE-1 Hebeo irc1 server
       set hubname [lindex $arg 1]
       set numeric [lindex $arg 2]
       set description [lrange $arg 4 end]
@@ -76,8 +76,8 @@ proc ::irc::socket_control {} {
         exit 0
       }
     }
-    #<<< NETINFO 5 1326465580 2310 MD5:4609f507a584411d7327af344c3ef61c 0 0 0 :Hebeo
     NETINFO {
+    #<<< NETINFO 5 1326465580 2310 MD5:4609f507a584411d7327af344c3ef61c 0 0 0 :Hebeo
       #set maxglobal [lindex $arg 1]
       set hubtime [lindex $arg 2]
       set currtime [::tools::unixtime]
@@ -93,9 +93,9 @@ proc ::irc::socket_control {} {
         return
       }
     }
+    NICK {
     #<<< NICK Yume       1 1326268587 chaton 192.168.42.1 1 0 +iowghaAxNz * 851AC590.11BF4B94.149A40B0.IP :Structure of Body
     #<<< NICK GameServer 1 1326702996 tclsh  tcl.hebeo.fr g 0 +oSqB       * heb1-EAB106C8.hebeo.fr        :TCL GameServer Controller
-    NICK {
       set nickname [lindex $arg 1]
       #set hopcount [lindex $arg 2]
       #set timestamp [lindex $arg 3]
@@ -113,9 +113,9 @@ proc ::irc::socket_control {} {
       set ::irc::users($::irc::srvname2num([::tools::base2dec $numeric $::tools::ub64chars])) [::tools::nodouble $::irc::users($::irc::srvname2num([::tools::base2dec $numeric $::tools::ub64chars]))]
       return
     }
-    #<<< SQUIT irc2.hebeo.fr :Yume
     SQUIT {
-      # TODO : remove srvname2num($numeric) corresponding to server
+    #<<< SQUIT irc2.hebeo.fr :Yume
+    # TODO : remove srvname2num($numeric) corresponding to server
       set servername [lindex $arg 1]
       #set reason [string range [lrange $arg 2 end] 1 end]
       foreach user $::irc::users([string tolower $servername]) {
@@ -125,16 +125,16 @@ proc ::irc::socket_control {} {
       unset ::irc::users([string tolower $servername])
       return
     }
-  # End of switch [lindex $arg 0]
   }
+  # End of switch [lindex $arg 0]
 
 ###
 ###
 ###
 
   switch [lindex $arg 1] {
+    PRIVMSG {
     # PRIVMSG
-    if {[lindex $arg 1]=="PRIVMSG"} {
       set from [string range [lindex $arg 0] 1 end]
       set to [lindex $arg 2]
       set commc [list [string range [lindex $arg 3] 1 end] [lrange $arg 4 end]]
@@ -160,9 +160,8 @@ proc ::irc::socket_control {} {
       }
       return
     }
-
-    #<<< :Yume NICK Yuki 1326485191
     NICK {
+    #<<< :Yume NICK Yuki 1326485191
       set oldnick [string range [lindex $arg 0] 1 end]
       set newnick [lindex $arg 2]
       #set timestamp [lindex $arg 3]
@@ -180,17 +179,17 @@ proc ::irc::socket_control {} {
       # not in use
       return
     }
+    QUIT {
     #<<< :s220nov8kjwu9p9 QUIT :Client exited
     #<<< :Poker-egg QUIT :\[irc1.hebeo.fr\] Local kill by Yume (calin :D)
-    QUIT {
       set nickname [string range [lindex $arg 0] 1 end]
       #set reason [string range [lrange $arg 2 end] 1 end]
       set ::irc::userlist [::tools::lremove $::irc::userlist $nickname]
       foreach arr [array names ::irc::users *] { set ::irc::users($arr) [::tools::lremove $::irc::users($arr) $nickname] }
       return
     }
-    #<<< :Yume KILL Poker-egg :851AC590.11BF4B94.149A40B0.IP!Yume (salope)
     KILL {
+    #<<< :Yume KILL Poker-egg :851AC590.11BF4B94.149A40B0.IP!Yume (salope)
       #set killer [string range [lindex $arg 0] 1 end]
       set nickname [lindex $arg 2]
       #set path [string range [lindex $arg 3] 1 end]
@@ -224,8 +223,8 @@ proc ::irc::socket_control {} {
       # not in use
       return
     }
-    #<<< :Yume WHOIS Uno :uno
     WHOIS {
+    #<<< :Yume WHOIS Uno :uno
       set source [string range [lindex $arg 0] 1 end]
       set target [string range [lindex $arg 3] 1 end]
       if {[lsearch [string tolower $::irc::botlist] [string tolower $target]]<0} { return }
@@ -235,10 +234,10 @@ proc ::irc::socket_control {} {
       #::irc::send ":$target 318 :End of /WHOIS list."
       return
     }
+    SERVER {
     #<<< @1 SERVER irc2.hebeo.fr 2 2   :Hebeo irc1 server
     #<<< @1 SERVER irc2.hebeo.fr 2 131 :Hebeo irc2 server
     # Introducing dh istant server by hub
-    SERVER {
       #set srcnumeric [string range [lindex $arg 0] 1 end]
       set servername [lindex $arg 2]
       #set hopcount [lindex $arg 3]
@@ -256,8 +255,8 @@ proc ::irc::socket_control {} {
       # not in use
       return
     }
-    #<<< @1 SJOIN 1325144112 #Poker :Yume 
     SJOIN {
+    #<<< @1 SJOIN 1325144112 #Poker :Yume 
       #set numeric [string range [lindex $arg 0] 1 end]
       #set timestamp [lindex $arg 2]
       set chan [lindex $arg 3]
@@ -275,8 +274,8 @@ proc ::irc::socket_control {} {
         if {[info exists ::irc::hook(join-[string tolower $chan])]} { $::irc::hook(join-[string tolower $chan]) $nick }
       }
     }
-    #<<< :Yume JOIN #blabla,#opers
     JOIN {
+    #<<< :Yume JOIN #blabla,#opers
       set nick [string range [lindex $arg 0] 1 end]
       set chans [join [split [lindex $arg 2] ,]]
       foreach chan [string tolower $chans] {
@@ -291,8 +290,8 @@ proc ::irc::socket_control {} {
       }
       return
     }
-    #<<< :Yume PART #Poker
     PART {
+    #<<< :Yume PART #Poker
       set nick [string range [lindex $arg 0] 1 end]
       set chan [join [lindex $arg 2]]
       foreach chan [string tolower $chans] {
@@ -312,8 +311,8 @@ proc ::irc::socket_control {} {
       return
     }
 
-  # End of switch [lindex $arg 1]
   }
+  # End of switch [lindex $arg 1]
 
   
 }
