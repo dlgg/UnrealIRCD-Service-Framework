@@ -3,4 +3,4 @@
 *.swp
 uno.cfg
 UnoScores
-config.tcl
+*.tcl
