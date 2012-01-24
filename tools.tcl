@@ -265,8 +265,9 @@ proc ::irc::parse_umodes { nick modes } {
 }
 proc ::irc::reguser { mode nick } {
   switch $mode {
-    add { lappend ::irc::regusers; set ::irc::regusers [::tools::nodouble $::irc::regusers] }
-    del { set ::irc::regusers [::tools::lremove $::irc::regusers $nick] }
+    add { puts "adding $nick to regusers"; lappend ::irc::regusers $nick; set ::irc::regusers [::tools::nodouble $::irc::regusers] }
+    del { puts "removing $nick from regusers"; set ::irc::regusers [::tools::lremove $::irc::regusers $nick] }
+    default { puts "Problem to eg an user. Call is ::irc::reguser $mode $nick" }
   }
   if {$::debug==1} { puts "List of registered users : $::irc::regusers" }
   return
