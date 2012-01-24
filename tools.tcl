@@ -305,4 +305,12 @@ proc ::irc::user_quit { nick } {
   foreach arr [array names ::irc::users *] { set ::irc::users($arr) [::tools::lremove $::irc::users($arr) $nick] }
 }
 
+proc ::irc::shutdown { nick } {
+  ::irc::send ":$::irc::nick QUIT :[::msgcat::mc cont_shutdown $nick]"
+  foreach bot $mysock(botlist) { ::irc::send ":$bot QUIT :[::msgcat::mc cont_shutdown $nick]" }
+  ::irc::send ":$::irc::servername SQUIT $::irc::hub :[::msgcat::mc cont_shutdown $nick]"
+  close $::irc::sock
+  exit 0
+}
+
 namespace import ::tools::0 ::tools::1
