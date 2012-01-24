@@ -275,8 +275,8 @@ proc ::irc::reguser { mode nick } {
 
 proc ::irc::userquit { nick } {
   ::irc::reguser del $nick
-  set ::irc::userlist [::tools::lremove $::irc::userlist $user]
-  foreach arr [array names ::irc::users *] { set ::irc::users($arr) [::tools::lremove $::irc::users($arr) $user] }
+  set ::irc::userlist [::tools::lremove $::irc::userlist $nick]
+  foreach arr [array names ::irc::users *] { set ::irc::users($arr) [::tools::lremove $::irc::users($arr) $nick] }
 }
 
 namespace import ::tools::0 ::tools::1
