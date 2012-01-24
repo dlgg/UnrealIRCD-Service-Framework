@@ -275,7 +275,6 @@ proc ::irc::socket_control {} {
       puts "::irc::hook(privmsgchan) exist ? [info exists ::irc::hook(privmsgchan)]"
     }
     if {([string index $to 0]=="#") && ([info exists ::irc::hook(privmsgchan)])} {
-      if {$::debug==1} { puts "Entering global privmsg hook for $from $to $comm. Hooks are : $::irc::hook(privmsgchan)" }
       foreach hookp $::irc::hook(privmsgchan) {
         if {$::debug==1} { puts "Calling hook $hookp" }
         $hookp $from $to "$commc"
