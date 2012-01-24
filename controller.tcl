@@ -169,14 +169,14 @@ proc ::irc::socket_control {} {
       foreach arr [array names ::irc::users *] { set ::irc::users($arr) [::tools::llreplace $::irc::users($arr) $oldnick $newnick] }
       return
     }
-    #<<< :Yume UMODE2 +oghaAN
     UMODE2 {
       # not in use
+    #<<< :Yume UMODE2 +oghaAN
       return
     }
-    #<<< @10 SVS2MODE Poker-egg +d 1
     SVS2MODE {
       # not in use
+    #<<< @10 SVS2MODE Poker-egg +d 1
       return
     }
     QUIT {
