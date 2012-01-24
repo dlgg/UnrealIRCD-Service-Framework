@@ -120,8 +120,7 @@ proc ::irc::socket_control {} {
       set servername [lindex $arg 1]
       #set reason [string range [lrange $arg 2 end] 1 end]
       foreach user $::irc::users([string tolower $servername]) {
-        set ::irc::userlist [::tools::lremove $::irc::userlist $user]
-        foreach arr [array names ::irc::users *] { set ::irc::users($arr) [::tools::lremove $::irc::users($arr) $user] }
+        ::irc::userquit $user
       }
       unset ::irc::users([string tolower $servername])
       return
@@ -204,8 +203,7 @@ proc ::irc::socket_control {} {
     #<<< :Poker-egg QUIT :\[irc1.hebeo.fr\] Local kill by Yume (calin :D)
       set nickname [string range [lindex $arg 0] 1 end]
       #set reason [string range [lrange $arg 2 end] 1 end]
-      set ::irc::userlist [::tools::lremove $::irc::userlist $nickname]
-      foreach arr [array names ::irc::users *] { set ::irc::users($arr) [::tools::lremove $::irc::users($arr) $nickname] }
+      ::irc::userquit $nickname
       return
     }
     KILL {
@@ -214,8 +212,7 @@ proc ::irc::socket_control {} {
       set nickname [lindex $arg 2]
       #set path [string range [lindex $arg 3] 1 end]
       #set reason [string range [lrange $arg 4 end] 1 end-1]
-      set ::irc::userlist [::tools::lremove $::irc::userlist $nickname]
-      foreach arr [array names ::irc::users *] { set ::irc::users($arr) [::tools::lremove $::irc::users($arr) $nickname] }
+      ::irc::userquit $nickname
       if {[lindex $arg 2]==$::irc::nick} { bot_init $::irc::nick $::irc::username $::irc::hostname $::irc::realname }
       return
     }
