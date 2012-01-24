@@ -103,7 +103,7 @@ proc ::irc::socket_control {} {
       #set realhost [lindex $arg 5]
       set numeric [lindex $arg 6]
       #set servicestamp [lindex $arg 7]
-      #set umodes [lindex $arg 8]
+      set umodes [lindex $arg 8]
       #set cloakhost [lindex $arg 9]
       #set vhost [lindex $arg 10]
       #set gecos [string range [lrange $arg 11 end] 1 end]
@@ -111,6 +111,7 @@ proc ::irc::socket_control {} {
       set ::irc::userlist [::tools::nodouble $::irc::userlist]
       lappend ::irc::users($::irc::srvname2num([::tools::base2dec $numeric $::tools::ub64chars])) $nickname
       set ::irc::users($::irc::srvname2num([::tools::base2dec $numeric $::tools::ub64chars])) [::tools::nodouble $::irc::users($::irc::srvname2num([::tools::base2dec $numeric $::tools::ub64chars]))]
+      ::irc::parse_umodes $nickname $umodes
       return
     }
     SQUIT {
@@ -169,14 +170,31 @@ proc ::irc::socket_control {} {
       foreach arr [array names ::irc::users *] { set ::irc::users($arr) [::tools::llreplace $::irc::users($arr) $oldnick $newnick] }
       return
     }
+    MODE {
+    # :user MODE user +/-xxxx
+      #set nick [lindex $arg 2]
+      #set modes [lindex $arg 3]
+      set nick [lindex $arg 2]
+      set modes [lindex $arg 3]
+      ::irc::parse_umodes $nick $modes
+      return
+    }
     UMODE2 {
-      # not in use
     #<<< :Yume UMODE2 +oghaAN
+    #<<< :Yume UMODE2 +owghaANqHp
+      set nick [string range [lindex $arg 0] 1 end]
+      set modes [lindex $arg 2]
+      ::irc::parse_umodes $nick $modes
       return
     }
     SVS2MODE {
-      # not in use
     #<<< @10 SVS2MODE Poker-egg +d 1
+    #<<< @10 SVS2MODE Yuki -r+d 1
+    #<<< @10 SVS2MODE Yume +rd 1327415440
+      set nick [lindex $arg 2]
+      set modes [lindex $arg 3]
+      #set timestamp [lindex $arg 4]
+      ::irc::parse_umodes $nick $modes
       return
     }
     QUIT {
