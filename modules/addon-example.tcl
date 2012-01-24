@@ -24,8 +24,7 @@ puts [::msgcat::mc loadaddon "AddonName"]
 
 namespace eval addon {
 # Register Master Bot Addon
-  lappend ::irc::hook(privmsgchan) "::addon::control"
-  set ::irc::hook(privmsgchan) [::tools::nodouble $::irc::hook(privmsgchan)]
+  ::irc::hook_register privmsgchan "::addon::control"
 
 # Vars for addon
   
