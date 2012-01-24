@@ -174,9 +174,10 @@ proc ::irc::socket_control {} {
     # :user MODE user +/-xxxx
       #set nick [lindex $arg 2]
       #set modes [lindex $arg 3]
-      set nick [lindex $arg 2]
+      set source [lindex $arg 2]
+      set target [lindex $arg 2]
       set modes [lindex $arg 3]
-      ::irc::parse_umodes $nick $modes
+      [ischan $target] { return } { ::irc::parse_umodes $nick $modes }
       return
     }
     UMODE2 {
