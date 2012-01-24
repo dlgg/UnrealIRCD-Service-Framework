@@ -83,8 +83,8 @@ namespace eval tools {
     set minutes [expr {($s / 60) % 60}]
     set seconds [expr {$s % 60}]
     set res ""
-    if {$days != 0} {append res "$days [::msgcat::mc days]"}
-    if {$hours != 0} {append res "$hours [::msgcat::mc hours]"}
+    if {$days != 0} {append res " $days [::msgcat::mc days]"}
+    if {$hours != 0} {append res " $hours [::msgcat::mc hours]"}
     if {$minutes != 0} {append res " $minutes [::msgcat::mc minutes]"}
     if {$seconds != 0} {append res " $seconds [::msgcat::mc seconds]"}
     return $res
