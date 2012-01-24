@@ -222,7 +222,7 @@ proc ::irc::join_chan {bot chan} {
 }
 
 proc ::irc::is_admin { nick } { [string equal -nocase $nick $::irc::root] { return [expr {[lsearch -exact $::irc::regusers $nick] >= 0}] } { return 0 } }
-proc ::irc::ischan { chan } { [string equal [string index $chan 0] "#"] { return 1 } { return 0 } }
+proc ::irc::is_chan { chan } { [string equal [string index $chan 0] "#"] { return 1 } { return 0 } }
 
 proc ::irc::parse_umodes { nick modes } {
   set mode "add"
@@ -263,7 +263,7 @@ proc ::irc::parse_umodes { nick modes } {
   }
   return
 }
-proc ::irc::reguser { mode nick } {
+proc ::irc::reg_user { mode nick } {
   switch $mode {
     add { puts "adding $nick to regusers"; lappend ::irc::regusers $nick; set ::irc::regusers [::tools::nodouble $::irc::regusers] }
     del { puts "removing $nick from regusers"; set ::irc::regusers [::tools::lremove $::irc::regusers $nick] }
@@ -273,8 +273,8 @@ proc ::irc::reguser { mode nick } {
   return
 }
 
-proc ::irc::userquit { nick } {
-  ::irc::reguser del $nick
+proc ::irc::user_quit { nick } {
+  ::irc::reg_user del $nick
   set ::irc::userlist [::tools::lremove $::irc::userlist $nick]
   foreach arr [array names ::irc::users *] { set ::irc::users($arr) [::tools::lremove $::irc::users($arr) $nick] }
 }

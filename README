@@ -206,7 +206,7 @@ join_chan $bot $chan
 is_admin $nick
     Return TRUE if the given nick is admin on the service
 
-ischan $string
+is_chan $string
     Return TRUE if the given $string start with a #
 
 

@@ -177,7 +177,7 @@ proc ::irc::socket_control {} {
       set source [lindex $arg 2]
       set target [lindex $arg 2]
       set modes [lindex $arg 3]
-      [ischan $target] { return } { ::irc::parse_umodes $nick $modes }
+      [is_chan $target] { return } { ::irc::parse_umodes $nick $modes }
       return
     }
     UMODE2 {
