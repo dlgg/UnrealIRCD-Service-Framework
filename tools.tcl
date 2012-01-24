@@ -228,7 +228,6 @@ proc ::irc::parse_umodes { nick modes } {
   set mode "add"
   if {$::debug==1} { puts "CHG UMODES : allmodes : $modes" }
   for {set i 0} {$i<[string length $modes]} {incr i} {
-    puts "CHG UMODE : loop mode : [string index $modes $i]"
     switch [string index $modes $i] {
       + { set mode "add" }
       - { set mode "del" }
