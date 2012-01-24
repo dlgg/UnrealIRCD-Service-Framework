@@ -74,8 +74,8 @@ namespace eval youtube {
         puts "Likes    : $like"
         puts "Dislikes : $dislike"
       }
-      ::irc::send ":$::irc::nick PRIVMSG [join [list $chan $::irc::adminchan] ,]  :$::youtube::logo \002$author\002 $title \002Durée\002[::tools::duration $duration] \002Vues\002 $view \002Favoris\002 $favs"
-      ::irc::send ":$::irc::nick PRIVMSG [join [list $chan $::irc::adminchan] ,]  :$::youtube::logo \002Note moyenne\002 $average \002par\002 $raters personnes \002Commentaires\002 $comms \002J'aime\002 $like \002Je n'aime pas\002 $dislike"
+      ::irc::send ":$::irc::nick PRIVMSG [join [list $chan $::irc::adminchan] ,]  :$::youtube::logo \002$author\002 $title | \002Durée\002 :[::tools::duration $duration] | \002Vues\002 : $view | \002Favoris\002 : $favs"
+      ::irc::send ":$::irc::nick PRIVMSG [join [list $chan $::irc::adminchan] ,]  :$::youtube::logo \002Note moyenne\002 : $average \002par\002 $raters personnes | \002Commentaires\002 : $comms | \002J'aime\002 : $like | \002Je n'aime pas\002 : $dislike"
     }
   }
 }
