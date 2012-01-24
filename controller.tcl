@@ -234,6 +234,11 @@ proc ::irc::socket_control {} {
       #::irc::send ":$target 318 :End of /WHOIS list."
       return
     }
+    SWHOIS {
+    #<<< @1 SWHOIS Yume :a trouve le passe de la oline magique
+      # not in use
+      return
+    }
     SERVER {
     #<<< @1 SERVER irc2.hebeo.fr 2 2   :Hebeo irc1 server
     #<<< @1 SERVER irc2.hebeo.fr 2 131 :Hebeo irc2 server
