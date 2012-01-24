@@ -312,10 +312,9 @@ proc ::irc::socket_control {} {
     }
     PART {
     #<<< :Yume PART #Poker
+    #<<< :Yume PART #test :bla bla ?
       set nick [string range [lindex $arg 0] 1 end]
       set chan [join [lindex $arg 2]]
-      foreach chan [string tolower $chans] {
-      }
       set reason "[string range [lindex $arg 3 end] 1 end]"
       # Hooks for global part
       if {[info exists ::irc::hook(part)]} { foreach hookj $::irc::hook(part) { $hookj $nick $chan $reason } }
@@ -323,6 +322,7 @@ proc ::irc::socket_control {} {
       if {[info exists ::irc::hook(part-[string tolower $chan])]} { $::irc::hook(part-[string tolower $chan]) $nick $reason }
       # Updating global variables
       ::irc::user_part $nick $chan
+      return
     }
     KICK {
       set to [lindex $arg 2]
