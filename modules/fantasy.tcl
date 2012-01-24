@@ -27,7 +27,7 @@ namespace eval fantasy {
   lappend ::irc::hook(privmsgchan) "::fantasy::control"
   set ::irc::hook(privmsgchan) [::tools::nodouble $::irc::hook(privmsgchan)]
 
-  variable cmdchar "%"
+  variable cmdchar $::irc::cmdchar
 }
 
 proc ::fantasy::control { nick chan text } {
