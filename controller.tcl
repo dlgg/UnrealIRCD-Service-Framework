@@ -301,14 +301,12 @@ proc ::irc::socket_control {} {
       set nick [string range [lindex $arg 0] 1 end]
       set chans [join [split [lindex $arg 2] ,]]
       foreach chan [string tolower $chans] {
-        lappend ::irc::users($chan) $nick
-        set ::irc::users($chan) [::tools::nodouble $::irc::users($chan)]
-        lappend ::irc::chanlist $chan
-        set ::irc::chanlist [::tools::nodouble $::irc::chanlist]
         # Hooks for global join
         if {[info exists ::irc::hook(join)]} { foreach hookj $::irc::hook(join) { $hookj $nick $chan } }
         # Hooks for specific join on a chan
         if {[info exists ::irc::hook(join-[string tolower $chan])]} { $::irc::hook(join-[string tolower $chan]) $nick }
+        # Updating global variables
+        ::irc::userjoin $nick $chan
       }
       return
     }
@@ -317,16 +315,14 @@ proc ::irc::socket_control {} {
       set nick [string range [lindex $arg 0] 1 end]
       set chan [join [lindex $arg 2]]
       foreach chan [string tolower $chans] {
-        lappend ::irc::users($chan) $nick
-        set ::irc::users($chan) [::tools::nodouble $::irc::users($chan)]
-        lappend ::irc::chanlist $chan
-        set ::irc::chanlist [::tools::nodouble $::irc::chanlist]
       }
       set reason "[string range [lindex $arg 3 end] 1 end]"
       # Hooks for global part
       if {[info exists ::irc::hook(part)]} { foreach hookj $::irc::hook(part) { $hookj $nick $chan $reason } }
       # Hooks for specific part on a chan
       if {[info exists ::irc::hook(part-[string tolower $chan])]} { $::irc::hook(part-[string tolower $chan]) $nick $reason }
+      # Updating global variables
+      ::irc::user_part $nick $chan
     }
     KICK {
       set to [lindex $arg 2]

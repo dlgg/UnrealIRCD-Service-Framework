@@ -273,6 +273,18 @@ proc ::irc::reg_user { mode nick } {
   return
 }
 
+proc ::irc::user_join { nick chan } {
+  lappend ::irc::users($chan) $nick
+  set ::irc::users($chan) [::tools::nodouble $::irc::users($chan)]
+  lappend ::irc::chanlist $chan
+  set ::irc::chanlist [::tools::nodouble $::irc::chanlist]
+}
+
+proc ::irc::user_part { nick chan } {
+  set ::irc::users($chan) [::tools::lremove $::irc::users($chan) $nick]
+  set ::irc::chanlist [::tools::lremove $::irc::chanlist $nick]
+}
+
 proc ::irc::user_quit { nick } {
   ::irc::reg_user del $nick
   set ::irc::userlist [::tools::lremove $::irc::userlist $nick]
