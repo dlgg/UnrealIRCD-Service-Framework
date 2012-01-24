@@ -330,8 +330,18 @@ proc ::irc::socket_control {} {
       return
     }
     KICK {
-      set to [lindex $arg 2]
-      if {[lindex $arg 3]==$::irc::nick} { join_chan $::irc::nick $to }
+    # <<< :Yume KICK # Yuki2 :<3 je t\'aime
+      set kicker [string range [lindex $arg 0] 1 end]
+      set chan [lindex $arg 2]
+      set nick [lindex $arg 3]
+      set reason [string range [lrange $arg 4 end] 1 end]
+      # Hooks for global kick
+      if {[info exists ::irc::hook(kick)]} { foreach hookj $::irc::hook(kick) { $hookj $kicker $chan $nick $reason } }
+      # Hooks for specific kick on a chan
+      if {[info exists ::irc::hook(part-[string tolower $chan])]} { $::irc::hook(part-[string tolower $chan]) $kicker $nick $reason }
+      # Updating global variables
+      ::irc::user_part $nick $chan
+      if {$nick==$::irc::nick} { join_chan $::irc::nick $chan }
       return
     }
 
