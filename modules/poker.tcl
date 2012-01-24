@@ -34,10 +34,8 @@ namespace eval poker {
   # Don't modify this
   ::irc::bot_init $::poker::nick $::poker::username $::poker::hostname $::poker::realname
   ::irc::join_chan $::poker::nick $::poker::chan
-  lappend ::irc::hook(privmsg-[string tolower $::poker::chan]) ::poker::control_pub
-  set ::irc::hook(privmsg-[string tolower $::poker::chan]) [::tools::nodouble $::irc::hook(privmsg-[string tolower $::poker::chan])]
-  lappend ::irc::hook(privmsg-[string tolower $::poker::nick]) ::poker::control_priv
-  set ::irc::hook(privmsg-[string tolower $::poker::nick]) [::tools::nodouble $::irc::hook(privmsg-[string tolower $::poker::nick])]
+  ::irc::hook_register privmsg-[string tolower $::poker::chan] "::poker::control_pub"
+  ::irc::hook_register privmsg-[string tolower $::poker::nick] "::poker::control_priv"
   
 }
 

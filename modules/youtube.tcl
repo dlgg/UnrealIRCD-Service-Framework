@@ -28,8 +28,7 @@ http::register https 443 [list ::tls::socket -require 0]
 
 namespace eval youtube {
 # Register Master Bot Addon
-  lappend ::irc::hook(privmsgchan) "::youtube::control"
-  set ::irc::hook(privmsgchan) [::tools::nodouble $::irc::hook(privmsgchan)]
+  ::irc::hook_register privmsgchan "::youtube::control"
 
 # Vars for addon
   set logo "\002\00301,00You\00300,04Tube\002\017"

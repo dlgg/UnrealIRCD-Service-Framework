@@ -24,8 +24,7 @@ puts [::msgcat::mc loadaddon "Fantasy commands"]
 
 namespace eval fantasy {
 # Register Master Bot Addon
-  lappend ::irc::hook(privmsgchan) "::fantasy::control"
-  set ::irc::hook(privmsgchan) [::tools::nodouble $::irc::hook(privmsgchan)]
+  ::irc::hook_register privmsgchan "::fantasy::control"
 
   variable cmdchar $::irc::cmdchar
 }

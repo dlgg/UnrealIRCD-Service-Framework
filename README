@@ -212,8 +212,10 @@ is_chan $string
 
     d. Hooks for developping modules
     --------------------------------
-All elements are array element of ::irc::hook() so you need to call them
-within the array (Ex: ::irc::hook(join-#accueil)
+For register a hook use the proc ::irc::hook_register follow by the
+signal you want to hook and the full name of your proc.
+Hooks are done in front of events so before updating variables. Thinks
+of this when you use ::irc:: variables.
 
 join $nick $chan
     List of procs to call when $nick join a chan. This is a global hook

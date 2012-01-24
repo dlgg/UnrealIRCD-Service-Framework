@@ -139,6 +139,21 @@ proc ::irc::socket_connect {} {
   return
 }
 
+# Proc to register a hook
+proc ::irc::hook_register { hook callpoint } {
+  if {$::debug==1} { puts "Registering hook : $hook => $callpoint" }
+  set valid 0
+  foreach el $::irc::hooklist {
+    if {[string match -nocase $el $hook]} { set valid 1 }
+  }
+  if {$valid==1} {
+    lappend ::irc::hook($hook) $callpoint
+    set ::irc::hook($hook) [::tools::nodouble $::irc::hook($hook)]
+  } else {
+    puts "Trying to register a non existing hook"
+  }
+}
+
 # Proc gestion du service
 proc ::irc::rehash {} {
   #puts [::msgcat::mc closepls]
