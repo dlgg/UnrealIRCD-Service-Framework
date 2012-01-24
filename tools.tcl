@@ -52,7 +52,7 @@ namespace eval tools {
   proc 1 {then else} {uplevel 1 $then}
 
   # One missing command for managing lists. Remove an element from the list without replacing it with an empty string
-  proc lremove { list pattern } { return [lsearch -all -inline -not -exact $list $pattern] }
+  proc lremove { list element } { return [lsearch -all -inline -not -exact $list $element] }
   proc lremove-old { list element } {
     set final ""
     foreach l $list { if {![string equal -nocase $l $element]} { lappend final $l } }
