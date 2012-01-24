@@ -65,15 +65,13 @@ namespace eval tools {
   }
   
   proc nodouble { var } {
+    if {[llength $var]==1} { return $var }
     set final ""
+    set var [join $var]
     foreach i $var {
-      if {[llength $final] == 1} {
-        return $i
-      } else {
-        set l 1
-        foreach j $final { if {[testcs $j $i]} { set l 0 } }
-        if {[test $l 1]} { lappend final $i }
-      }
+      set l 1
+      foreach j $final { if {[testcs $j $i]} { set l 0 } }
+      if {[test $l 1]} { lappend final $i }
     }
     return $final
   }
