@@ -229,6 +229,21 @@ part $nick $chan $reason
 part-chan $nick $reason
     List of procs to call when $nick part the specific $chan.
 
+kick $kicker $chan $nick $reason
+    List of procs to call when $nick is kicked by $kicker from a $chan
+    for the $reason.
+    This is a global hook who match on all chans of network
+
+kick-chan $kicker $nick $reason
+    List of procs to call when $nick is kicked by $kicker from the
+    specific $chan.
+
+quit $nick $reason
+    List of procs to call when $nick quit with the reason $reason.
+
+kill $nick $reason
+    List of procs to call when $nick is kill with the reason $reason.
+
 privmsgchan $nick $chan $text
     List of procs to call when a PRIVMSG is send to a $chan where a bot
     is.

@@ -120,7 +120,7 @@ proc ::irc::socket_control {} {
       set servername [lindex $arg 1]
       #set reason [string range [lrange $arg 2 end] 1 end]
       foreach user $::irc::users([string tolower $servername]) {
-        ::irc::userquit $user
+        ::irc::user_quit $user
       }
       unset ::irc::users([string tolower $servername])
       return
@@ -202,8 +202,10 @@ proc ::irc::socket_control {} {
     #<<< :s220nov8kjwu9p9 QUIT :Client exited
     #<<< :Poker-egg QUIT :\[irc1.hebeo.fr\] Local kill by Yume (calin :D)
       set nickname [string range [lindex $arg 0] 1 end]
-      #set reason [string range [lrange $arg 2 end] 1 end]
-      ::irc::userquit $nickname
+      set reason [string range [lrange $arg 2 end] 1 end]
+      # Hooks for quit
+      if {[info exists ::irc::hook(quit)]} { foreach hookj $::irc::hook(quit) { $hookj $nickname $reason } }
+      ::irc::user_quit $nickname
       return
     }
     KILL {
@@ -211,8 +213,10 @@ proc ::irc::socket_control {} {
       #set killer [string range [lindex $arg 0] 1 end]
       set nickname [lindex $arg 2]
       #set path [string range [lindex $arg 3] 1 end]
-      #set reason [string range [lrange $arg 4 end] 1 end-1]
-      ::irc::userquit $nickname
+      set reason [string range [lrange $arg 4 end] 1 end-1]
+      # Hooks for kill
+      if {[info exists ::irc::hook(kill)]} { foreach hookj $::irc::hook(kill) { $hookj $nickname $reason } }
+      ::irc::user_quit $nickname
       if {[lindex $arg 2]==$::irc::nick} { bot_init $::irc::nick $::irc::username $::irc::hostname $::irc::realname }
       return
     }
@@ -285,15 +289,16 @@ proc ::irc::socket_control {} {
       set nicks [lindex [split $arg :] 1]
       #set nick [string range [lindex $arg 4] 1 end]
       foreach nick [string tolower $nicks] {
-        if {![string is alnum [string index $nick 0]]} { continue }
-        lappend ::irc::users($chan) $nick
-        set ::irc::users($chan) [::tools::nodouble $::irc::users($chan)]
-        lappend ::irc::chanlist $chan
-        set ::irc::chanlist [::tools::nodouble $::irc::chanlist]
         # Hooks for global join
         if {[info exists ::irc::hook(join)]} { foreach hookj $::irc::hook(join) { $hookj $nick $chan } }
         # Hooks for specific join on a chan
         if {[info exists ::irc::hook(join-[string tolower $chan])]} { $::irc::hook(join-[string tolower $chan]) $nick }
+        if {![string is alnum [string index $nick 0]]} { continue }
+        # Updating global variables
+        lappend ::irc::users($chan) $nick
+        set ::irc::users($chan) [::tools::nodouble $::irc::users($chan)]
+        lappend ::irc::chanlist $chan
+        set ::irc::chanlist [::tools::nodouble $::irc::chanlist]
       }
     }
     JOIN {
