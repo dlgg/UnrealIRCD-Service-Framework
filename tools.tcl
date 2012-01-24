@@ -221,7 +221,7 @@ proc ::irc::join_chan {bot chan} {
   return
 }
 
-proc ::irc::is_admin { nick } { [string equal -nocase $nick $::irc::root] { return 1 } { return 0 } }
+proc ::irc::is_admin { nick } { [string equal -nocase $nick $::irc::root] { return [expr {[lsearch -exact $::irc::regusers $nick] >= 0}] } { return 0 } }
 proc ::irc::ischan { chan } { [string equal [string index $chan 0] "#"] { return 1 } { return 0 } }
 
 proc ::irc::parse_umodes { nick modes } {
