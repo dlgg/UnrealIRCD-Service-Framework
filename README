@@ -222,11 +222,11 @@ join $nick $chan
 join-$chan $nick
     List of procs to call when $nick join the specific $chan.
 
-part $nick $chan
+part $nick $chan $reason
     List of procs to call when $nick part a chan. This is a global hook
     who match on all chans of network
 
-part-chan $nick
+part-chan $nick $reason
     List of procs to call when $nick part the specific $chan.
 
 privmsgchan $nick $chan $text

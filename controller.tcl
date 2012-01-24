@@ -321,11 +321,12 @@ proc ::irc::socket_control {} {
         set ::irc::users($chan) [::tools::nodouble $::irc::users($chan)]
         lappend ::irc::chanlist $chan
         set ::irc::chanlist [::tools::nodouble $::irc::chanlist]
-        # Hooks for global part
-        if {[info exists ::irc::hook(part)]} { foreach hookj $::irc::hook(part) { $hookj $nick $chan } }
-        # Hooks for specific part on a chan
-        if {[info exists ::irc::hook(part-[string tolower $chan])]} { $::irc::hook(part-[string tolower $chan]) $nick }
       }
+      set reason "[string range [lindex $arg 3 end] 1 end]"
+      # Hooks for global part
+      if {[info exists ::irc::hook(part)]} { foreach hookj $::irc::hook(part) { $hookj $nick $chan $reason } }
+      # Hooks for specific part on a chan
+      if {[info exists ::irc::hook(part-[string tolower $chan])]} { $::irc::hook(part-[string tolower $chan]) $nick $reason }
     }
     KICK {
       set to [lindex $arg 2]
