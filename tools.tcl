@@ -248,7 +248,7 @@ proc ::irc::parse_umodes { nick modes } {
       p { if {$::debug==1} { puts "CHG UMODE : $nick hide his channels" } }
       q { if {$::debug==1} { puts "CHG UMODE : $nick cannot be kick" } }
       R { if {$::debug==1} { puts "CHG UMODE : $nick cannot receive priv msg/notice" } }
-      r { if {$::debug==1} { puts "CHG UMODE : $nick is reg. Call to ::irc::reguser $mode $nick" }; ::irc::regusers $mode $nick }
+      r { if {$::debug==1} { puts "CHG UMODE : $nick is reg. Call to ::irc::reguser $mode $nick" }; ::irc::reguser $mode $nick }
       S { if {$::debug==1} { puts "CHG UMODE : $nick is protect by services" } }
       s { if {$::debug==1} { puts "CHG UMODE : $nick can read server notices" } }
       T { if {$::debug==1} { puts "CHG UMODE : $nick cannot receive CTCP" } }
