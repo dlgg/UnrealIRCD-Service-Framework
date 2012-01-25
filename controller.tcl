@@ -161,7 +161,7 @@ proc ::irc::socket_control {} {
         switch [string range [lindex $comm 0] 1 end] {
           rehash { ::irc::rehash ; ::irc::send ":$::irc::nick PRIVMSG $::irc::adminchan :[::msgcat::mc cont_rehash $from]" }
           source { source [lindex $comm 1]; ::irc::send ":$::irc::nick PRIVMSG $::irc::adminchan :[::msgcat::mc cont_source $comm $from]" }
-          die { ::irc::shutdown $sockpl }
+          die { ::irc::shutdown $from }
         }
       }
       return
