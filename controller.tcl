@@ -41,7 +41,8 @@ proc ::irc::socket_control {} {
   }
 
   if {[lrange $arg 1 end]=="NOTICE AUTH :*** Looking up your hostname..."} {
-    ::irc::send "PROTOCTL NOQUIT NICKv2 UMODE2 VL SJ3 NS TKLEXT CLK"
+    #::irc::send "PROTOCTL NOQUIT NICKv2 UMODE2 VL SJ3 NS TKLEXT CLK"
+    ::irc::send "PROTOCTL NOQUIT NICKv2 UMODE2 VL NS TKLEXT CLK"
     ::irc::send "PASS $::irc::password"
     ::irc::send "SERVER $::irc::servername 1 :U2310-Fh6XiOoEe-$::irc::numeric UnrealIRCD Service Framework V.$::irc::version"
     ::irc::bot_init $::irc::nick $::irc::username $::irc::hostname $::irc::realname
