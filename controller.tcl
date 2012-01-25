@@ -296,6 +296,7 @@ proc ::irc::socket_control {} {
     }
     SJOIN {
     #<<< @1 SJOIN 1325144112 #Poker :Yume 
+    #<<< @1 SJOIN 1327468838 #UNO   :@Yume 
       #set numeric [string range [lindex $arg 0] 1 end]
       #set timestamp [lindex $arg 2]
       set chan [lindex $arg 3]
