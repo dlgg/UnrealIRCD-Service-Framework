@@ -317,7 +317,7 @@ proc ::irc::socket_control {} {
         # Hooks for specific join on a chan
         if {[info exists ::irc::hook(join-[string tolower $chan])]} { $::irc::hook(join-[string tolower $chan]) $nick }
         # Updating global variables
-        ::irc::userjoin $nick $chan
+        ::irc::user_join $nick $chan
       }
       return
     }
