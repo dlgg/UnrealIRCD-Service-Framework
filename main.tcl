@@ -20,6 +20,11 @@
 # Author(s): Damien Lesgourgues
 #
 ##############################################################################
+# TODO
+#  - base fantasy command of controller needs to work only where Master Bot is
+#  - parser for SJOIN
+#
+##############################################################################
 
 # Load internal needed scripts
 source config.tcl
