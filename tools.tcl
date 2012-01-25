@@ -300,14 +300,23 @@ proc ::irc::user_join { nick chan } {
 proc ::irc::user_part { nick chan } {
   set chan [string tolower $chan]
   set ::irc::users($chan) [::tools::lremove $::irc::users($chan) $nick]
-  if {$::debug==1} { puts "There is [llength $::irc::users($chan)] users on $chan : $::irc::users($chan)]" }
-  if {[llength $::irc::users($chan)==0]} { set ::irc::chanlist [::tools::lremove $::irc::chanlist $chan] }
+  if {$::debug==1} { puts "There is [llength $::irc::users($chan)] users on $chan : $::irc::users($chan)" }
+  if {[llength $::irc::users($chan)==0]} { if {$::debug==1} { puts "Removing $chan from ::irc::chanlist" }; set ::irc::chanlist [::tools::lremove $::irc::chanlist $chan]; unset ::irc::users($chan) }
 }
 
 proc ::irc::user_quit { nick } {
   ::irc::reg_user del $nick
   set ::irc::userlist [::tools::lremove $::irc::userlist $nick]
-  foreach arr [array names ::irc::users *] { set ::irc::users($arr) [::tools::lremove $::irc::users($arr) $nick] }
+  foreach arr [array names ::irc::users *] {
+    set ::irc::users($arr) [::tools::lremove $::irc::users($arr) $nick]
+    if {[llength $::irc::users($arr)==0]} {
+      if {[::irc::is_chan $arr]} {
+        if {$::debug==1} { puts "Removing $chan from ::irc::chanlist" }
+        set ::irc::chanlist [::tools::lremove $::irc::chanlist $chan]
+      }
+      unset ::irc::users($chan)
+    }
+  }
 }
 
 proc ::irc::shutdown { nick } {
