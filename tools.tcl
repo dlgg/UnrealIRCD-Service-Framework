@@ -300,7 +300,8 @@ proc ::irc::user_join { nick chan } {
 proc ::irc::user_part { nick chan } {
   set chan [string tolower $chan]
   set ::irc::users($chan) [::tools::lremove $::irc::users($chan) $nick]
-  set ::irc::chanlist [::tools::lremove $::irc::chanlist $nick]
+  if {$::debug==1} { puts "There is [llength $::irc::users($chan)] users on $chan : $::irc::users($chan)]" }
+  if {[llength $::irc::users($chan)==0]} { set ::irc::chanlist [::tools::lremove $::irc::chanlist $chan] }
 }
 
 proc ::irc::user_quit { nick } {
