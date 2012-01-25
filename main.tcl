@@ -47,4 +47,4 @@ foreach file $::irc::modules {
   }
 }
 
-if {$service=="0"} { puts [::msgcat::mc cont_netconn]; ::irc::socket_connect; set service 1 }
+if {$service=="0"} { puts [::msgcat::mc cont_netconn]; ::irc::socket_connect }
