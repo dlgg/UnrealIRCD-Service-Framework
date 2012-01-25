@@ -22,123 +22,110 @@
 ##############################################################################
 puts [::msgcat::mc loadmodule "PartyLine"]
 
-if {[info exists pl]} {
-  if {$mysock(debug)==1} { puts [::msgcat::mc pl_alreadyload] }
+if {[info exists ::pl]} {
+  if {$::debug==1} { puts [::msgcat::mc pl_alreadyload] }
 } else {
-  set pl 0
-  set mysock(pl) ""
-  set mysock(plauthed) ""
+  set ::pl 0
+  set ::pl::socks ""
+  set ::pl::authed ""
 }
 
-set mysock(plprotcmd) ".pass .close"
+set ::pl::protcmd ".pass .close"
 
-proc pl_server {} {
-  global mysock
-  if {[catch {socket -server pl -myaddr $mysock(plip) $mysock(plport)} error]} { puts "Erreur lors de l'ouverture du socket ([set error])"; return 0 }
+proc ::pl::server {} {
+  if {[catch {socket -server ::pl::waiting -myaddr $::pl::ip $::pl::port} error]} { puts "Erreur lors de l'ouverture du socket ([set error])"; return 0 }
   puts [::msgcat::mc pl_openport]
-  set mysock(server) "1"
+  set ::pl 1
 }
 
-proc pl { sockpl addr dstport } {
-  global mysock
+proc ::pl::waiting { sockpl addr dstport } {
   puts [::msgcat::mc pl_incconn]
-  fileevent $sockpl readable [list pl_control $sockpl]
-  lappend mysock(pl) $sockpl
-  set mysock(pl) [nodouble $mysock(pl)]
+  fileevent $sockpl readable [list ::pl::control $sockpl]
   fconfigure $sockpl -buffering line
-  fsend $mysock(sock) ":$mysock(nick) PRIVMSG $mysock(adminchan) :[::msgcat::mc pl_activated $sockpl $mysock(plport) $addr $dstport]"
+  lappend ::pl::socks $sockpl
+  set ::pl::socks [::tools::nodouble $::pl::socks]
+  ::irc::send ":$::irc::nick PRIVMSG $::irc::adminchan :[::msgcat::mc pl_activated $sockpl $::pl::port $addr $dstport]"
+  return
 }
 
-proc closepl { socktoclose sockpl } {
-  global mysock
-  set mysock(pl) [lremove $mysock(pl) $socktoclose]
-  set mysock(plauthed) [lremove $mysock(plauthed) $socktoclose]
+proc ::pl::closepl { socktoclose sockpl } {
+  set ::pl::socks [::tools::lremove $::pl::socks $socktoclose]
+  set ::pl::authed [::tools::lremove $::pl::authed $socktoclose]
   set msg [::msgcat::mc pl_close $socktoclose $sockpl]
-  fsend $socktoclose $msg
-  fsend $mysock(sock) ":$mysock(nick) PRIVMSG $mysock(adminchan) :\00304\002PL :\003\002 $msg"
+  ::pl::send $socktoclose $msg
+  ::irc::send ":$::irc::nick PRIVMSG $::irc::adminchan :\00304\002PL :\003\002 $msg"
   puts $msg
   close $socktoclose
+  return
 }
 
-proc pl_control { sockpl } {
-  global mysock
+proc ::pl::control { sockpl } {
   set argv [gets $sockpl arg]
   set isauth 0
-  foreach pl $mysock(plauthed) { if {[test $pl $sockpl]} { set isauth 1 } }
+  foreach pl $::pl::authed { if {[::tools::test $pl $sockpl]} { set isauth 1 } }
   if {$argv=="-1"} {
-    closepl $sockpl "system"
+    ::pl::closepl $sockpl "system"
   }
-  set arg [charfilter $arg]
-  if {$mysock(debug)==1} {
+  set arg [::tools::charfilter $arg]
+  if {$::debug==1} {
     set protected 0
-    foreach protcmd $mysock(plprotcmd) { if {[string tolower $protcmd]==[string tolower [lindex $arg 0]]} { set protected 1 } }
+    foreach protcmd $::pl::protcmd { if {[string tolower $protcmd]==[string tolower [lindex $arg 0]]} { set protected 1 } }
     if {$protected==0} {
       puts "<<< $sockpl <<< [join $arg]"
-      foreach s $mysock(plauthed) { if {![string equal $s $sockpl]} { puts $s ">>> $sock >>> [join $arg]" } }
-      puts $mysock(sock) ":$mysock(nick) PRIVMSG $mysock(adminchan) :\00312PL <<<\002 $sockpl \002<<<\003 [join $arg]"
+      foreach s $::pl::authed { if {![string equal $s $sockpl]} { puts $s "<<< $sock <<< [join $arg]" } }
+      ::irc::send ":$::irc::nick PRIVMSG $::irc::adminchan :\00312PL <<<\002 $sockpl \002<<<\003 [join $arg]"
     }
   }
   
   if {$isauth==1} {
-    if {[lindex $arg 0]==".help"} {
-      fsend $sockpl [::msgcat::mc pl_help0 $mysock(version)]
-      fsend $sockpl " "
-      fsend $sockpl [::msgcat::mc pl_help1]
-      fsend $sockpl "------------------------------"
-      fsend $sockpl " "
-      fsend $sockpl ".close     [::msgcat::mc pl_help2]"
-      fsend $sockpl ".who       [::msgcat::mc pl_help3]"
-      fsend $sockpl ".rehash    [::msgcat::mc pl_help4]"
-      fsend $sockpl ".die       [::msgcat::mc pl_help5]"
-    }
-    if {[lindex $arg 0]==".close"} {
-      if {[lindex $arg 1]==""} {
-        closepl $sockpl $sockpl
-      } else {
-        closepl [lindex $arg 1] $sockpl
+    switch [lindex $arg 0] {
+      .help {
+        ::pl::send $sockpl [::msgcat::mc pl_help0 $::irc::version]
+        ::pl::send $sockpl " "
+        ::pl::send $sockpl [::msgcat::mc pl_help1]
+        ::pl::send $sockpl "------------------------------"
+        ::pl::send $sockpl " "
+        ::pl::send $sockpl ".close     [::msgcat::mc pl_help2]"
+        ::pl::send $sockpl ".who       [::msgcat::mc pl_help3]"
+        ::pl::send $sockpl ".rehash    [::msgcat::mc pl_help4]"
+        ::pl::send $sockpl ".die       [::msgcat::mc pl_help5]"
+        return
       }
-    }
-    if {[lindex $arg 0]==".who"} {
-      fsend $sockpl [::msgcat::mc pl_inpl $mysock(pl)]
-      fsend $sockpl [::msgcat::mc pl_inplauth $mysock(plauthed)]
-    }
-    if {[lindex $arg 0]==".rehash"} {
-      my_rehash
-      fsend $mysock(sock) ":$mysock(nick) PRIVMSG $mysock(adminchan) :\00304\002PL :\003\002 [::msgcat::mc pl_rehash $sockpl]"
-    }
-    if {[lindex $arg 0]==".die"} {
-      fsend $mysock(sock) ":$mysock(nick) PRIVMSG $mysock(adminchan) :\00304\002PL :\003\002 [::msgcat::mc pl_die $sockpl]"
-      foreach bot $mysock(botlist) {
-        fsend $mysock(sock) ":$bot QUIT :[::msgcat::mc cont_shutdown $sockpl]"
-      }
-      fsend $mysock(sock) ":$mysock(servername) SQUIT $mysock(hub) :[::msgcat::mc cont_shutdown $sockpl]"
-      exit 0
+      .close { [expr {"[lindex $arg 1]" == ""}] { ::pl::closepl $sockpl $sockpl } { ::pl::closepl [lindex $arg 1] $sockpl }; return }
+      .who { ::pl::send $sockpl [::msgcat::mc pl_inpl $::pl::socks]; ::pl::send $sockpl [::msgcat::mc pl_inplauth $::pl::authed]; return }
+      .rehash { ::irc::rehash ; ::irc::send ":$::irc::nick PRIVMSG $::irc::adminchan :\00304\002PL :\003\002 [::msgcat::mc pl_rehash $sockpl]"; return }
+      .die { ::irc::send ":$::irc::nick PRIVMSG $::irc::adminchan :\00304\002PL :\003\002 [::msgcat::mc pl_die $sockpl]"; ::irc::shutdown $sockpl; return }
     }
   } else {
     if {([lindex $arg 0]==".pass")} {
-      if {([string equal [lindex $arg 1] $mysock(plpass)])} {
-        lappend mysock(plauthed) $sockpl
-        set mysock(plauthed) [nodouble $mysock(plauthed)]
-        fsend $sockpl [::msgcat::mc pl_auth0]
-        fsend $mysock(sock) ":$mysock(nick) PRIVMSG $mysock(adminchan) :[::msgcat::mc pl_auth1 $sockpl]"
-        foreach s $mysock(plauthed) { if {![string equal $s $sockpl]} { puts $s ">>> $sock >>> [::msgcat::mc pl_auth1 $sockpl]" } }
+      if {[string equal [lindex $arg 1] $::pl::pass]} {
+        ::pl::send $sockpl [::msgcat::mc pl_auth0]
+        ::irc::send ":$::irc::nick PRIVMSG $::irc::adminchan :[::msgcat::mc pl_auth1 $sockpl]"
+        foreach s $::pl::authed { ::pl::send $s ">>> $sockpl >>> [::msgcat::mc pl_auth1 $sockpl]" }
+        lappend ::pl::authed $sockpl
+        set ::pl::authed [::tools::nodouble $::pl::authed]
+        return
       } else {
-        fsend $sockpl [::msgcat::mc pl_notauth]
-        fsend $mysock(sock) ":$mysock(nick) PRIVMSG $mysock(adminchan) :[::msgcat::mc pl_auth2 $sockpl]"
-        foreach s $mysock(plauthed) { if {![string equal $s $sockpl]} { puts $s ">>> $sock >>> [::msgcat::mc pl_auth2 $sockpl]" } }
+        ::pl::send $sockpl [::msgcat::mc pl_notauth]
+        ::irc::send ":$::irc::nick PRIVMSG $::irc::adminchan :[::msgcat::mc pl_auth2 $sockpl]"
+        foreach s $::pl::authed { ::pl::send $s ">>> $sockpl >>> [::msgcat::mc pl_auth2 $sockpl]" }
+        return
       }
     } elseif {[lindex $arg 0]==".close"} {
       if {[lindex $arg 1]==""} {
-        closepl $sockpl $sockpl
+        ::pl::closepl $sockpl $sockpl
+        return
       } else {
-        closepl [lindex $arg 1] $sockpl
+        ::pl::closepl [lindex $arg 1] $sockpl
+        return
       } 
     } else {
-      fsend $sockpl [::msgcat::mc pl_notauth]
+      ::pl::send $sockpl [::msgcat::mc pl_notauth]
+      return
     }
   }
 }
 
 puts [::msgcat::mc pl_loaded]
-if {$pl=="0"} { puts [::msgcat::mc pl_activation $mysock(plip) $mysock(plport)]; pl_server; set pl 1 }
+if {$::pl==0} { puts [::msgcat::mc pl_activation $::pl::ip $::pl::port]; ::pl::server }
 

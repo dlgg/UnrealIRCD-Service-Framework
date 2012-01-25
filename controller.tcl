@@ -32,7 +32,13 @@ proc ::irc::socket_control {} {
     exit 0
   }
   set arg [::tools::charfilter $rawarg]
-  if {$::debug==1} { puts "<<< $::irc::sock <<< [::tools::stripmirc $arg]" }
+  if {$::debug==1} {
+    set ncarg [::tools::stripmirc $arg]
+    if {[info exists ::pl]} { if {$::pl==1} {
+      foreach s $::pl::authed { ::pl::send "<<< IRC <<< $ncarg" }
+    } }
+    puts "<<< IRC <<< $ncarg"
+  }
 
   if {[lrange $arg 1 end]=="NOTICE AUTH :*** Looking up your hostname..."} {
     ::irc::send "PROTOCTL NOQUIT NICKv2 UMODE2 VL SJ3 NS TKLEXT CLK"

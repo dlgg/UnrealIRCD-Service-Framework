@@ -156,12 +156,14 @@ proc ::irc::hook_register { hook callpoint } {
 
 # Proc gestion du service
 proc ::irc::rehash {} {
-  #puts [::msgcat::mc closepls]
-  #foreach pl $mysock(pl) { closepl $pl "rehash" }
+  if {$::pl==1} {
+    puts [::msgcat::mc closepls]
+    foreach pl $::pl::socks { ::pl::closepl $pl "rehash" }
+  }
   source config.tcl
   source tools.tcl
   source controller.tcl
-  #source pl.tcl
+  source pl.tcl
   if {$debug==1} { puts "List of modules to load : $::irc::modules" }
   foreach file $::irc::modules {
     append file ".tcl"
@@ -306,6 +308,9 @@ proc ::irc::user_quit { nick } {
 }
 
 proc ::irc::shutdown { nick } {
+  if {[info exists ::pl]} { if {$::pl==1} {
+    foreach s $::pl::socks { ::pl::closepl $s $nick }
+  } }
   ::irc::send ":$::irc::nick QUIT :[::msgcat::mc cont_shutdown $nick]"
   foreach bot $mysock(botlist) { ::irc::send ":$bot QUIT :[::msgcat::mc cont_shutdown $nick]" }
   ::irc::send ":$::irc::servername SQUIT $::irc::hub :[::msgcat::mc cont_shutdown $nick]"
