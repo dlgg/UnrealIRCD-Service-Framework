@@ -290,6 +290,7 @@ proc ::irc::reg_user { mode nick } {
 }
 
 proc ::irc::user_join { nick chan } {
+  set chan [string tolower $chan]
   lappend ::irc::users($chan) $nick
   set ::irc::users($chan) [::tools::nodouble $::irc::users($chan)]
   lappend ::irc::chanlist $chan
@@ -297,6 +298,7 @@ proc ::irc::user_join { nick chan } {
 }
 
 proc ::irc::user_part { nick chan } {
+  set chan [string tolower $chan]
   set ::irc::users($chan) [::tools::lremove $::irc::users($chan) $nick]
   set ::irc::chanlist [::tools::lremove $::irc::chanlist $nick]
 }
