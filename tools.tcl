@@ -312,7 +312,7 @@ proc ::irc::shutdown { nick } {
     foreach s $::pl::socks { ::pl::closepl $s $nick }
   } }
   ::irc::send ":$::irc::nick QUIT :[::msgcat::mc cont_shutdown $nick]"
-  foreach bot $mysock(botlist) { ::irc::send ":$bot QUIT :[::msgcat::mc cont_shutdown $nick]" }
+  foreach bot $::irc::botlist { ::irc::send ":$bot QUIT :[::msgcat::mc cont_shutdown $nick]" }
   ::irc::send ":$::irc::servername SQUIT $::irc::hub :[::msgcat::mc cont_shutdown $nick]"
   close $::irc::sock
   exit 0
