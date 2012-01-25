@@ -162,7 +162,12 @@ proc ::irc::socket_control {} {
         switch [string range [lindex $comm 0] 1 end] {
           error { set errorInfo; ::irc::send ":$::irc::nick PRIVMSG $::irc::adminchan :[::msgcat::mc cont_errorcmd $from]" }
           rehash { ::irc::rehash ; ::irc::send ":$::irc::nick PRIVMSG $::irc::adminchan :[::msgcat::mc cont_rehash $from]" }
-          source { source [lindex $comm 1]; ::irc::send ":$::irc::nick PRIVMSG $::irc::adminchan :[::msgcat::mc cont_source $comm $from]" }
+          source {
+            if {[file exists [lindex $comm 1]]} {
+              if {[catch {source [lindex $comm 1]} error]} { puts "Error while loading [lindex $comm 1] : $error" }
+              ::irc::send ":$::irc::nick PRIVMSG $::irc::adminchan :[::msgcat::mc cont_source $comm $from]"
+            }
+          }
           die { ::irc::shutdown $from }
         }
       }
