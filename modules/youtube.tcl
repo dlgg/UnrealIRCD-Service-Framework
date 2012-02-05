@@ -52,6 +52,8 @@ namespace eval youtube {
       set t [::http::geturl $link -timeout $::youtube::timeout]
       set data [::http::data $t]
       ::http::cleanup $t
+      # reset des variables
+      set title ""; set author ""; set favs 0; set view 0; set raters 0; set average 0; set comms 0; set dislike 0; set like 0; set duration 0
       regexp -all -- {<title>(.*?)</title>} $data "" title
       regexp -all -- {<name>(.*?)</name>} $data "" author
       regexp -all -- {favoriteCount='(.*?)'} $data "" favs
