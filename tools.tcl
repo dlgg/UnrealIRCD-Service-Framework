@@ -311,10 +311,10 @@ proc ::irc::user_quit { nick } {
     set ::irc::users($arr) [::tools::lremove $::irc::users($arr) $nick]
     if {[llength $::irc::users($arr)==0]} {
       if {[::irc::is_chan $arr]} {
-        if {$::debug==1} { puts "Removing $chan from ::irc::chanlist" }
-        set ::irc::chanlist [::tools::lremove $::irc::chanlist $chan]
+        if {$::debug==1} { puts "Removing $arr from ::irc::chanlist" }
+        set ::irc::chanlist [::tools::lremove $::irc::chanlist $arr]
       }
-      unset ::irc::users($chan)
+      unset ::irc::users($arr)
     }
   }
 }
