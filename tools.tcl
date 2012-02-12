@@ -139,6 +139,11 @@ proc ::irc::socket_connect {} {
   return
 }
 
+# Proc to init hook
+proc ::irc::hook_init {} {
+  foreach h $::irc::hooklist { if {![info exists ::irc::hook($h)]} { set ::irc::hook($h) "" } }
+}
+
 # Proc to register a hook
 proc ::irc::hook_register { hook callpoint } {
   if {$::debug==1} { puts "Registering hook : $hook => $callpoint" }
@@ -177,6 +182,7 @@ proc ::irc::rehash {} {
       puts [::msgcat::mc filenotexist $file]
     }
   }
+  ::irc::hook_init
   ::irc::send ":$::irc::nick PRIVMSG $::irc::adminchan :\00304[::msgcat::mc rehashdone]"
   return
 }
@@ -200,8 +206,8 @@ proc ::pl::send {sock data} {
 }
 
 proc ::irc::bot_init { nick user host gecos } {
-  ::irc::send "TKL + Q * $nick $::irc::servername 0 [::tools::unixtime] :Reserved for $::irc::svcname"
-  ::irc::send "NICK $nick 0 [::tools::unixtime] $user $host $::irc::servername 0 +oSqB * * :$gecos"
+  ::irc::send "BD + Q * $nick $::irc::servername 0 [::tools::unixtime] :Reserved for $::irc::svcname"
+  ::irc::send "& $nick 0 [::tools::unixtime] $user $host $::irc::servername 0 +oSqB * * :$gecos"
   if {$nick==$::irc::nick} {
     join_chan $::irc::nick $::irc::adminchan
     foreach chan $::irc::chanlist {
@@ -220,14 +226,14 @@ proc ::irc::bot_init { nick user host gecos } {
 
 proc ::irc::join_chan {bot chan} {
   if {$chan=="0"} {
-    ::irc::send ":$::irc::nick PRIVMSG $::irc::adminchan :[::msgcat::mc botjoin0 $bot]"
+    ::irc::send ":$::irc::nick ! $::irc::adminchan :[::msgcat::mc botjoin0 $bot]"
   } else {
     if {$bot==$::irc::nick} {
-      ::irc::send ":$bot JOIN $chan"
-      ::irc::send ":$bot MODE $chan +qo $bot $bot"
+      ::irc::send ":$bot C $chan"
+      ::irc::send ":$bot G $chan +qo $bot $bot"
     } else {
-      ::irc::send ":$bot JOIN $chan"
-      ::irc::send ":$::irc::nick MODE $chan +ao $bot $bot"
+      ::irc::send ":$bot C $chan"
+      ::irc::send ":$::irc::nick G $chan +ao $bot $bot"
     }
     lappend ::irc::mychans [join $chan]
     set ::irc::mychans [::tools::nodouble $::irc::mychans]
@@ -323,9 +329,9 @@ proc ::irc::shutdown { nick } {
   if {[info exists ::pl]} { if {$::pl==1} {
     foreach s $::pl::socks { ::pl::closepl $s $nick }
   } }
-  ::irc::send ":$::irc::nick QUIT :[::msgcat::mc cont_shutdown $nick]"
+  ::irc::send ":$::irc::nick , :[::msgcat::mc cont_shutdown $nick]"
   foreach bot $::irc::botlist { ::irc::send ":$bot QUIT :[::msgcat::mc cont_shutdown $nick]" }
-  ::irc::send ":$::irc::servername SQUIT $::irc::hub :[::msgcat::mc cont_shutdown $nick]"
+  ::irc::send ":$::irc::servername - $::irc::hub :[::msgcat::mc cont_shutdown $nick]"
   close $::irc::sock
   exit 0
 }

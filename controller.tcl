@@ -51,9 +51,9 @@ proc ::irc::socket_control {} {
   }
 
   switch [lindex $arg 0] {
-    PING {
+    "8" {
     #<<< PING :irc1.hebeo.fr
-      ::irc::send "PONG $::irc::servername [lindex $arg 1]"; return
+      ::irc::send "9 $::irc::servername [lindex $arg 1]"; return
     }
     PASS {
     #<<< PASS :tclpur
@@ -132,6 +132,7 @@ proc ::irc::socket_control {} {
         ::irc::user_quit $user
       }
       unset ::irc::users([string tolower $servername])
+#      unset ::irc::srvname2num($numeric)
       return
     }
   }
@@ -259,7 +260,7 @@ proc ::irc::socket_control {} {
       # not in use
       return
     }
-    WHOIS {
+    "#" {
     #<<< :Yume WHOIS Uno :uno
       set source [string range [lindex $arg 0] 1 end]
       set target [string range [lindex $arg 3] 1 end]
@@ -270,7 +271,7 @@ proc ::irc::socket_control {} {
       #::irc::send ":$target 318 :End of /WHOIS list."
       return
     }
-    SWHOIS {
+    "BA" {
     #<<< @1 SWHOIS Yume :a trouve le passe de la oline magique
       # not in use
       return
@@ -292,7 +293,7 @@ proc ::irc::socket_control {} {
       # not in use
       return
     }
-    STATS {
+    "2" {
       # not in use
       return
     }
