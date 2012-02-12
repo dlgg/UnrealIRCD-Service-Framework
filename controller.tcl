@@ -41,13 +41,12 @@ proc ::irc::socket_control {} {
   }
 
   if {[lrange $arg 1 end]=="NOTICE AUTH :*** Looking up your hostname..."} {
-    #::irc::send "PROTOCTL NOQUIT NICKv2 UMODE2 VL SJ3 NS TKLEXT CLK"
-    ::irc::send "PROTOCTL NOQUIT NICKv2 UMODE2 VL NS TKLEXT CLK"
+    ::irc::send "PROTOCTL NOQUIT NICKv2 UMODE2 VL NS TKLEXT CLK SJ3 TOKEN"
     ::irc::send "PASS $::irc::password"
-    ::irc::send "SERVER $::irc::servername 1 :U2310-Fh6XiOoEe-$::irc::numeric UnrealIRCD Service Framework V.$::irc::version"
+    ::irc::send "SERVER $::irc::servername 1 :U2309-Fh6XiOoEe-$::irc::numeric UnrealIRCD Service Framework V.$::irc::version"
     ::irc::bot_init $::irc::nick $::irc::username $::irc::hostname $::irc::realname
-    ::irc::send "NETINFO 0 [::tools::unixtime] 2310 * 0 0 0 :$::irc::netname"
-    ::irc::send "EOS"
+    ::irc::send "AO 0 [::tools::unixtime] 2309 * 0 0 0 :$::irc::netname"
+    ::irc::send "ES"
     return 0
   }
 
@@ -71,10 +70,10 @@ proc ::irc::socket_control {} {
     SERVER {
     #<<< SERVER irc1.hebeo.fr 1 :U2310-Fhin6XeOoE-1 Hebeo irc1 server
       set hubname [lindex $arg 1]
-      set numeric [lindex $arg 2]
+      set numeric [lindex [split [lindex $arg 3] '-'] 2]
       set description [lrange $arg 4 end]
       if {[::tools::testcs $hubname $::irc::hub]} {
-        if {$::debug==1} { puts "Received hubname is OK !" }
+        if {$::debug==1} { puts "Received hubname is OK ! Numeric : $numeric" }
         set ::irc::srvname2num($numeric) $hubname
         return
       } else {
@@ -83,7 +82,7 @@ proc ::irc::socket_control {} {
         exit 0
       }
     }
-    NETINFO {
+    "AO" {
     #<<< NETINFO 5 1326465580 2310 MD5:4609f507a584411d7327af344c3ef61c 0 0 0 :Hebeo
       #set maxglobal [lindex $arg 1]
       set hubtime [lindex $arg 2]
@@ -103,7 +102,7 @@ proc ::irc::socket_control {} {
         return
       }
     }
-    NICK {
+    "&" {
     #<<< NICK Yume       1 1326268587 chaton 192.168.42.1 1 0 +iowghaAxNz * 851AC590.11BF4B94.149A40B0.IP :Structure of Body
     #<<< NICK GameServer 1 1326702996 tclsh  tcl.hebeo.fr g 0 +oSqB       * heb1-EAB106C8.hebeo.fr        :TCL GameServer Controller
       set nickname [lindex $arg 1]
@@ -124,7 +123,7 @@ proc ::irc::socket_control {} {
       ::irc::parse_umodes $nickname $umodes
       return
     }
-    SQUIT {
+    "-" {
     #<<< SQUIT irc2.hebeo.fr :Yume
     # TODO : remove srvname2num($numeric) corresponding to server
       set servername [lindex $arg 1]
@@ -143,7 +142,7 @@ proc ::irc::socket_control {} {
 ###
 
   switch [lindex $arg 1] {
-    PRIVMSG {
+    "!" {
     # PRIVMSG
       set from [string range [lindex $arg 0] 1 end]
       set to [lindex $arg 2]
@@ -163,12 +162,12 @@ proc ::irc::socket_control {} {
       # Some admins commands to manage the service
       if {[::irc::is_admin $from] && [::tools::test [string index [lindex $comm 0] 0] $::irc::cmdchar]} {
         switch [string range [lindex $comm 0] 1 end] {
-          error { set errorInfo; ::irc::send ":$::irc::nick PRIVMSG $::irc::adminchan :[::msgcat::mc cont_errorcmd $from]" }
-          rehash { ::irc::rehash ; ::irc::send ":$::irc::nick PRIVMSG $::irc::adminchan :[::msgcat::mc cont_rehash $from]" }
+          error { set errorInfo; ::irc::send ":$::irc::nick ! $::irc::adminchan :[::msgcat::mc cont_errorcmd $from]" }
+          rehash { ::irc::rehash ; ::irc::send ":$::irc::nick ! $::irc::adminchan :[::msgcat::mc cont_rehash $from]" }
           source {
             if {[file exists [lindex $comm 1]]} {
               if {[catch {source [lindex $comm 1]} error]} { puts "Error while loading [lindex $comm 1] : $error" }
-              ::irc::send ":$::irc::nick PRIVMSG $::irc::adminchan :[::msgcat::mc cont_source $comm $from]"
+              ::irc::send ":$::irc::nick ! $::irc::adminchan :[::msgcat::mc cont_source $comm $from]"
             }
           }
           die { ::irc::shutdown $from }
@@ -176,7 +175,7 @@ proc ::irc::socket_control {} {
       }
       return
     }
-    NICK {
+    "&" {
     #<<< :Yume NICK Yuki 1326485191
       set oldnick [string range [lindex $arg 0] 1 end]
       set newnick [lindex $arg 2]
@@ -186,7 +185,7 @@ proc ::irc::socket_control {} {
       foreach arr [array names ::irc::users *] { set ::irc::users($arr) [::tools::llreplace $::irc::users($arr) $oldnick $newnick] }
       return
     }
-    MODE {
+    "G" {
     # :user MODE user +/-xxxx
       #set nick [lindex $arg 2]
       #set modes [lindex $arg 3]
@@ -196,7 +195,7 @@ proc ::irc::socket_control {} {
       [is_chan $target] { return } { ::irc::parse_umodes $nick $modes }
       return
     }
-    UMODE2 {
+    "|" {
     #<<< :Yume UMODE2 +oghaAN
     #<<< :Yume UMODE2 +owghaANqHp
       set nick [string range [lindex $arg 0] 1 end]
@@ -204,7 +203,7 @@ proc ::irc::socket_control {} {
       ::irc::parse_umodes $nick $modes
       return
     }
-    SVS2MODE {
+    "v" {
     #<<< @10 SVS2MODE Poker-egg +d 1
     #<<< @10 SVS2MODE Yuki -r+d 1
     #<<< @10 SVS2MODE Yume +rd 1327415440
@@ -214,7 +213,7 @@ proc ::irc::socket_control {} {
       ::irc::parse_umodes $nick $modes
       return
     }
-    QUIT {
+    "," {
     #<<< :s220nov8kjwu9p9 QUIT :Client exited
     #<<< :Poker-egg QUIT :\[irc1.hebeo.fr\] Local kill by Yume (calin :D)
       set nickname [string range [lindex $arg 0] 1 end]
@@ -224,7 +223,7 @@ proc ::irc::socket_control {} {
       ::irc::user_quit $nickname
       return
     }
-    KILL {
+    "." {
     #<<< :Yume KILL Poker-egg :851AC590.11BF4B94.149A40B0.IP!Yume (salope)
       #set killer [string range [lindex $arg 0] 1 end]
       set nickname [lindex $arg 2]
@@ -236,27 +235,27 @@ proc ::irc::socket_control {} {
       if {[lindex $arg 2]==$::irc::nick} { bot_init $::irc::nick $::irc::username $::irc::hostname $::irc::realname }
       return
     }
-    SETHOST {
+    "AA" {
       # not in use
       return
     }
-    CHGHOST {
+    "AL" {
       # not in use
       return
     }
-    SETIDENT {
+    "AD" {
       # not in use
       return
     }
-    CHGIDENT {
+    "AZ" {
       # not in use
       return
     }
-    SETNAME {
+    "AE" {
       # not in use
       return
     }
-    CHGNAME {
+    "BK" {
       # not in use
       return
     }
@@ -265,8 +264,8 @@ proc ::irc::socket_control {} {
       set source [string range [lindex $arg 0] 1 end]
       set target [string range [lindex $arg 3] 1 end]
       if {[lsearch [string tolower $::irc::botlist] [string tolower $target]]<0} { return }
-      ::irc::send ":$::irc::nick PRIVMSG $::irc::adminchan :[::msgcat::mc cont_whois0 $source $target]"
-      ::irc::send ":$::irc::nick NOTICE $source :[::msgcat::mc cont_whois1 $target]"
+      ::irc::send ":$::irc::nick ! $::irc::adminchan :[::msgcat::mc cont_whois0 $source $target]"
+      ::irc::send ":$::irc::nick B $source :[::msgcat::mc cont_whois1 $target]"
       #::irc::send ":$target 320 whois is not implemented."
       #::irc::send ":$target 318 :End of /WHOIS list."
       return
@@ -289,7 +288,7 @@ proc ::irc::socket_control {} {
       if {$::debug==1} { puts "Adding server numeric $numeric for server $servername." }
       return
     }
-    SDESC {
+    "AG" {
       # not in use
       return
     }
@@ -297,7 +296,7 @@ proc ::irc::socket_control {} {
       # not in use
       return
     }
-    SJOIN {
+    "~" {
     #<<< @1 SJOIN 1325144112 #Poker :Yume 
     #<<< @1 SJOIN 1327468838 #UNO   :@Yume 
       #set numeric [string range [lindex $arg 0] 1 end]
@@ -318,7 +317,7 @@ proc ::irc::socket_control {} {
         set ::irc::chanlist [::tools::nodouble $::irc::chanlist]
       }
     }
-    JOIN {
+    "C" {
     #<<< :Yume JOIN #blabla,#opers
       set nick [string range [lindex $arg 0] 1 end]
       set chans [join [split [lindex $arg 2] ,]]
@@ -332,7 +331,7 @@ proc ::irc::socket_control {} {
       }
       return
     }
-    PART {
+    "D" {
     #<<< :Yume PART #Poker
     #<<< :Yume PART #test :bla bla ?
       set nick [string range [lindex $arg 0] 1 end]
@@ -346,7 +345,7 @@ proc ::irc::socket_control {} {
       ::irc::user_part $nick $chan
       return
     }
-    KICK {
+    "H" {
     # <<< :Yume KICK # Yuki2 :<3 je t\'aime
       set kicker [string range [lindex $arg 0] 1 end]
       set chan [lindex $arg 2]
