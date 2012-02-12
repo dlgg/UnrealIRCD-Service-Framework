@@ -71,7 +71,9 @@ proc ::irc::socket_control {} {
     SERVER {
     #<<< SERVER irc1.hebeo.fr 1 :U2310-Fhin6XeOoE-1 Hebeo irc1 server
       set hubname [lindex $arg 1]
-      set numeric [lindex $arg 2]
+      #set hop [lindex $arg 2]
+      set unrealversion [string range [lindex $arg 3] 2 5]
+      set numeric [lindex [split [lindex $arg 3] '-'] 2]
       set description [lrange $arg 4 end]
       if {[::tools::testcs $hubname $::irc::hub]} {
         if {$::debug==1} { puts "Received hubname is OK !" }
