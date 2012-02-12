@@ -140,6 +140,10 @@ proc ::irc::socket_connect {} {
 }
 
 # Proc to register a hook
+proc ::irc::hook_init {} {
+  foreach h $hooklist { if {![info exists ::irc::hook($h)]} { set ::irc::hook($h) } }
+}
+
 proc ::irc::hook_register { hook callpoint } {
   if {$::debug==1} { puts "Registering hook : $hook => $callpoint" }
   set valid 0
@@ -177,6 +181,7 @@ proc ::irc::rehash {} {
       puts [::msgcat::mc filenotexist $file]
     }
   }
+  ::irc::hook_init
   ::irc::send ":$::irc::nick PRIVMSG $::irc::adminchan :\00304[::msgcat::mc rehashdone]"
   return
 }
