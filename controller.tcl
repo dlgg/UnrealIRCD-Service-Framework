@@ -101,7 +101,9 @@ proc ::irc::socket_control {} {
         ::tools::write_pid $::irc::pid
         set ::service 1
         # Call to hooks init
-        foreach hooki $::irc::hook(init) { if {$::debug==1} { puts "Hook init call : $hooki" }; $hooki }
+        if ([info exists ::irc::hook(init)]) {
+          foreach hooki $::irc::hook(init) { if {$::debug==1} { puts "Hook init call : $hooki" }; $hooki }
+        }
         return
       }
     }
