@@ -141,7 +141,7 @@ proc ::irc::socket_connect {} {
 
 # Proc to register a hook
 proc ::irc::hook_init {} {
-  foreach h $hooklist { if {![info exists ::irc::hook($h)]} { set ::irc::hook($h) } }
+  foreach h $::irc::hooklist { if {![info exists ::irc::hook($h)]} { set ::irc::hook($h) } }
 }
 
 proc ::irc::hook_register { hook callpoint } {
