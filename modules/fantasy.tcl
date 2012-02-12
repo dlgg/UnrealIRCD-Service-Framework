@@ -39,14 +39,7 @@ proc ::fantasy::control { nick chan text } {
     # Commands for admins
     if {[::irc::is_admin $nick]} {
       switch $cmd {
-        owner { 
-          if {[lrange [join $textnc] 1 end]==""} { 
-            ::irc::send ":$::irc::nick G $chan +q $nick" 
-          } else { 
-            ::irc::send ":$::irc::nick G $chan +[string repeat q [llength $paramsnc]] $paramsnc" 
-          } 
-          if {$::debug==1} { puts "Fantasy : !owner" }
-        }
+        owner { if {[lrange [join $textnc] 1 end]==""} { ::irc::send ":$::irc::nick G $chan +q $nick" } else { ::irc::send ":$::irc::nick G $chan +[string repeat q [llength $paramsnc]] $paramsnc" } }
         deowner   { if {[lrange [join $textnc] 1 end]==""} { ::irc::send ":$::irc::nick G $chan -q $nick" } else { ::irc::send ":$::irc::nick G $chan -[string repeat q [llength $paramsnc]] $paramsnc" } }
         protect   { if {[lrange [join $textnc] 1 end]==""} { ::irc::send ":$::irc::nick G $chan +a $nick" } else { ::irc::send ":$::irc::nick G $chan +[string repeat a [llength $paramsnc]] $paramsnc" } }
         deprotect { if {[lrange [join $textnc] 1 end]==""} { ::irc::send ":$::irc::nick G $chan -a $nick" } else { ::irc::send ":$::irc::nick G $chan -[string repeat a [llength $paramsnc]] $paramsnc" } }
