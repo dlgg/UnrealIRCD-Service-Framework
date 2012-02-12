@@ -20,6 +20,11 @@
 # Author(s): COUTURIER-GUILLAUME Eric
 #
 ##############################################################################
+# TODO
+#
+# - Timer for show the current song
+##############################################################################
+
 puts [::msgcat::mc loadaddon "ShoutCast"]
 
 namespace eval shoutcast {
