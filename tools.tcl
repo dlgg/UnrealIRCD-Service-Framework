@@ -127,6 +127,8 @@ namespace eval tools {
   }
   # unset $array; set array [readDB $file]
   proc readDB { file } { source $file } 
+  
+  proc pluralize { number } { if { $number > 1} { return "s" } }
 }
 
 # Link to IRC Network
