@@ -59,8 +59,7 @@ proc ::irc::socket_control {} {
     8 -
     PING {
     #<<< PING :irc1.hebeo.fr
-      ::irc::send "PONG $::irc::servername [lindex $arg 1]"; return
-      ::irc::reset_timeout
+      ::irc::send "PONG $::irc::servername [lindex $arg 1]"; ::irc::reset_timeout; return
     }
     PASS {
     #<<< PASS :tclpur
