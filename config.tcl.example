@@ -46,6 +46,7 @@ namespace eval irc {
   variable netname    "Network Name"
   variable hub        "hub.domain.tld"
   variable svcname    "TCL Framework"
+  variable uversion   "2310"
 
   # Master Bot Controller
   variable nick       "FrameWork"

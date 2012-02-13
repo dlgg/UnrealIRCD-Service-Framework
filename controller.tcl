@@ -44,7 +44,7 @@ proc ::irc::socket_control {} {
     #::irc::send "PROTOCTL NOQUIT NICKv2 UMODE2 VL SJ3 NS TKLEXT CLK"
     ::irc::send "PROTOCTL NOQUIT NICKv2 UMODE2 VL NS TKLEXT CLK"
     ::irc::send "PASS $::irc::password"
-    ::irc::send "SERVER $::irc::servername 1 :U2310-Fh6XiOoEe-$::irc::numeric UnrealIRCD Service Framework V.$::irc::version"
+    ::irc::send "SERVER $::irc::servername 1 :U$::irc::uversion-Fh6XiOoEe-$::irc::numeric UnrealIRCD Service Framework V.$::irc::version"
     ::irc::bot_init $::irc::nick $::irc::username $::irc::hostname $::irc::realname
     ::irc::send "NETINFO 0 [::tools::unixtime] 2310 * 0 0 0 :$::irc::netname"
     ::irc::send "EOS"
@@ -62,7 +62,7 @@ proc ::irc::socket_control {} {
       if {[::tools::testcs $::irc::password $recv_pass]} {
         if {$::debug==1} { puts "Received password is OK !" }
       } else {
-        puts "Received password is not OK ! Link abort ! I have received $recv_pass but i am waiting for $::irc::password"
+        puts "Received password is not OK ! Link abort ! I have received $recv_pass but I am waiting for $::irc::password"
         close $::irc::sock
         exit 0
       }
@@ -80,7 +80,12 @@ proc ::irc::socket_control {} {
         set ::irc::srvname2num($numeric) $hubname
         return
       } else {
-        puts "Received hubname is not OK ! Link abort !"
+        puts "Received hubname is not OK ! Link abort ! I have received $hubname but I am waiting for $::irc::hub"
+        close $::irc::sock
+        exit 0
+      }
+      if {![::tools::test $unrealversion $::irc::uversion]} {
+        puts "Received Unreal Version is not OK ! Link abort ! I have received $unrealversion but I am waiting ofr $::irc::uversion"
         close $::irc::sock
         exit 0
       }

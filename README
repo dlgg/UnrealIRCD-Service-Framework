@@ -75,6 +75,18 @@ debug             0 for no debug / 1 (default) for debug informations
                   UnrealIRCD Framework Service.
 ::irc::svcname    Name to use for the UnrealIRCD Framework. Tipically
                   the name of your project.
+::irc::uversion   Version of unreal protocol to use.
+                  2310 : Unreal 3.2.9
+                  2309 : Unreal 3.2.6 3.2.7 3.2.8
+                  2308 : Unreal 3.2.5
+                  2307 : Unreal 3.2.4
+                  2306 : Unreal 3.2.3
+                  2305 : Unreal 3.2.2
+                  2304 : Unreal 3.2.1
+                  2303 : Unreal 3.2beta 3.2
+                  2302 : Unreal 3.1.1 to 3.1.4
+                  2301 : Unreal 3.1
+                  2300 : Unreal 3.0 
 
     d. Master Bot Controller
     ------------------------
