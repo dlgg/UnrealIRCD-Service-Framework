@@ -177,7 +177,6 @@ proc ::irc::socket_control {} {
       # Some admins commands to manage the service
       if {[::irc::is_admin $from] && [::tools::test [string index [lindex $comm 0] 0] $::irc::cmdchar]} {
         switch [string range [lindex $comm 0] 1 end] {
-          error { set errorInfo; ::irc::send ":$::irc::nick PRIVMSG $::irc::adminchan :[::msgcat::mc cont_errorcmd $from]" }
           rehash { ::irc::rehash ; ::irc::send ":$::irc::nick PRIVMSG $::irc::adminchan :[::msgcat::mc cont_rehash $from]" }
           source {
             if {[file exists [lindex $comm 1]]} {
