@@ -78,7 +78,7 @@ namespace eval irc {
   variable users
   variable regusers
   # List of existing hooks
-  variable hooklist   "init join join-#* part part-#* quit kill privmsgchan privmsg-*"
+  variable hooklist   "sync init join join-#* part part-#* quit kill privmsgchan privmsg-*"
 }
 
 namespace eval pl {

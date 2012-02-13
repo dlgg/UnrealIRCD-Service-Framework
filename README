@@ -238,6 +238,13 @@ signal you want to hook and the full name of your proc.
 Hooks are done in front of events so before updating variables. Thinks
 of this when you use ::irc:: variables.
 
+sync
+    List of procs to call during netsync. This is the best place to use
+    for making your module bot to connect and join the chans
+
+init
+    List of procs to call after netsync completion.
+
 join $nick $chan
     List of procs to call when $nick join a chan. This is a global hook
     who match on all chans of network
