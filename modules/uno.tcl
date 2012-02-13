@@ -143,11 +143,12 @@ namespace eval uno {
   # Don't modify this
   ::irc::hook_register privmsg-[string tolower $chan] "::uno::controlpub"
   ::irc::hook_register privmsg-[string tolower $nick] "::uno::controlpriv"
-  ::irc::hook_register join-[string tolower $chan]    "::uno::controljoin"
-  ::irc::hook_register init                           "::uno::controlinit"
+  #::irc::hook_register join-[string tolower $chan]    "::uno::controljoin"
+  ::irc::hook_register sync                           "::uno::controlsync"
 }
 
-proc ::uno::controlinit { } { ::irc::bot_init $::uno::nick $::uno::username $::uno::hostname $::uno::realname ; ::irc::join_chan $::uno::nick $::uno::chan }
+proc ::uno::controlsync {} { ::irc::bot_init $::uno::nick $::uno::username $::uno::hostname $::uno::realname ; ::irc::join_chan $::uno::nick $::uno::chan }
+proc ::uno::controlinit {} { ::irc::hook_register join-[string tolower $chan] "::uno::controljoin" }
 proc ::uno::controljoin { nick } { ::irc::send ":$::uno::nick NOTICE $nick :[::msgcat::mc uno_welcome [::uno::ad]]" }
 proc ::uno::controlpriv { nick text } { if {$::debug==1} { ::irc::send ":$::uno::nick PRIVMSG $::uno::chan :\002PRIV\002 $nick > [join $text]" } }
 
