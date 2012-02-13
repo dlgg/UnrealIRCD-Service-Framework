@@ -53,6 +53,7 @@ proc ::irc::socket_control {} {
   }
 
   switch [lindex $arg 0] {
+    8 -
     PING {
     #<<< PING :irc1.hebeo.fr
       ::irc::send "PONG $::irc::servername [lindex $arg 1]"; return
@@ -92,6 +93,7 @@ proc ::irc::socket_control {} {
         exit 0
       }
     }
+    AO -
     NETINFO {
     #<<< NETINFO 5 1326465580 2310 MD5:4609f507a584411d7327af344c3ef61c 0 0 0 :Hebeo
       #set maxglobal [lindex $arg 1]
@@ -114,6 +116,7 @@ proc ::irc::socket_control {} {
         return
       }
     }
+    "&" -
     NICK {
     #<<< NICK Yume       1        1326268587 chaton   192.168.42.1 1      0            +iowghaAxNz *           851AC590.11BF4B94.149A40B0.IP :Structure of Body
     #<<< NICK GameServer 1        1326702996 tclsh    tcl.hebeo.fr g      0            +oSqB       *           heb1-EAB106C8.hebeo.fr        :TCL GameServer Controller
@@ -159,6 +162,7 @@ proc ::irc::socket_control {} {
 ###
 
   switch [lindex $arg 1] {
+    "!" -
     PRIVMSG {
     # PRIVMSG
       set from [string range [lindex $arg 0] 1 end]
@@ -193,6 +197,7 @@ proc ::irc::socket_control {} {
       }
       return
     }
+    "&" -
     NICK {
     #<<< :Yume NICK Yuki 1326485191
       set oldnick [string range [lindex $arg 0] 1 end]
@@ -203,6 +208,7 @@ proc ::irc::socket_control {} {
       foreach arr [array names ::irc::users *] { set ::irc::users($arr) [::tools::llreplace $::irc::users($arr) $oldnick $newnick] }
       return
     }
+    G -
     MODE {
     # :user MODE user +/-xxxx
       #set nick [lindex $arg 2]
@@ -213,6 +219,7 @@ proc ::irc::socket_control {} {
       [is_chan $target] { return } { ::irc::parse_umodes $nick $modes }
       return
     }
+    "|" -
     UMODE2 {
     #<<< :Yume UMODE2 +oghaAN
     #<<< :Yume UMODE2 +owghaANqHp
@@ -221,6 +228,8 @@ proc ::irc::socket_control {} {
       ::irc::parse_umodes $nick $modes
       return
     }
+    n -
+    v -
     SVS2MODE {
     #<<< @10 SVS2MODE Poker-egg +d 1
     #<<< @10 SVS2MODE Yuki -r+d 1
@@ -231,6 +240,7 @@ proc ::irc::socket_control {} {
       ::irc::parse_umodes $nick $modes
       return
     }
+    "," -
     QUIT {
     #<<< :s220nov8kjwu9p9 QUIT :Client exited
     #<<< :Poker-egg QUIT :\[irc1.hebeo.fr\] Local kill by Yume (calin :D)
@@ -241,6 +251,7 @@ proc ::irc::socket_control {} {
       ::irc::user_quit $nickname
       return
     }
+    "." -
     KILL {
     #<<< :Yume KILL Poker-egg :851AC590.11BF4B94.149A40B0.IP!Yume (salope)
     #<<< :irc1.hebeo.fr KILL UNO :irc1.hebeo.fr (Nick Collision)
@@ -261,30 +272,37 @@ proc ::irc::socket_control {} {
       }
       return
     }
+    AA -
     SETHOST {
       # not in use
       return
     }
+    AL -
     CHGHOST {
       # not in use
       return
     }
+    AD -
     SETIDENT {
       # not in use
       return
     }
+    AZ -
     CHGIDENT {
       # not in use
       return
     }
+    AE -
     SETNAME {
       # not in use
       return
     }
+    BK -
     CHGNAME {
       # not in use
       return
     }
+    "#" -
     WHOIS {
     #<<< :Yume WHOIS Uno :uno
       set source [string range [lindex $arg 0] 1 end]
@@ -296,11 +314,13 @@ proc ::irc::socket_control {} {
       #::irc::send ":$target 318 :End of /WHOIS list."
       return
     }
+    BA -
     SWHOIS {
     #<<< @1 SWHOIS Yume :a trouve le passe de la oline magique
       # not in use
       return
     }
+    "'" -
     SERVER {
     #<<< @1 SERVER irc2.hebeo.fr 2 2   :Hebeo irc1 server
     #<<< @1 SERVER irc2.hebeo.fr 2 131 :Hebeo irc2 server
@@ -316,14 +336,17 @@ proc ::irc::socket_control {} {
       if {$::debug==1} { puts "Adding server numeric $numeric for server $servername." }
       return
     }
+    AG -
     SDESC {
       # not in use
       return
     }
+    2 -
     STATS {
       # not in use
       return
     }
+    "~" -
     SJOIN {
     #<<< @1 SJOIN 1325144112 #Poker :Yume 
     #<<< @1 SJOIN 1327468838 #UNO   :@Yume 
@@ -345,6 +368,7 @@ proc ::irc::socket_control {} {
         set ::irc::chanlist [::tools::nodouble $::irc::chanlist]
       }
     }
+    C -
     JOIN {
     #<<< :Yume JOIN #blabla,#opers
       set nick [string range [lindex $arg 0] 1 end]
@@ -359,6 +383,7 @@ proc ::irc::socket_control {} {
       }
       return
     }
+    D -
     PART {
     #<<< :Yume PART #Poker
     #<<< :Yume PART #test :bla bla ?
@@ -373,6 +398,7 @@ proc ::irc::socket_control {} {
       ::irc::user_part $nick $chan
       return
     }
+    H -
     KICK {
     # <<< :Yume KICK # Yuki2 :<3 je t\'aime
       set kicker [string range [lindex $arg 0] 1 end]
