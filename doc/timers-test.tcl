@@ -11,7 +11,9 @@ proc timer { time call } {
   set stime [expr {$time * 1000 * 60}]
   set id [after $stime $call]
   set timers($name) $id
-  return
+  set timers($id) $name
+  set timers(list) $id
+  return $id
 }
 proc utimer { time call } {
   #utimer <secondes> <proc_a_lancer>
@@ -19,7 +21,9 @@ proc utimer { time call } {
   set stime [expr {$time * 1000 }]
   set id [after $stime $call]
   set utimers($name) $id
-  return
+  set utimers($id) $name
+  set utimers(list) $id
+  return $id
 }
 
 # Kill timer/utimer based on his ID
