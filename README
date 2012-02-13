@@ -52,57 +52,65 @@ the developpers ask you to do it.
 
     a. General options
     ------------------
-mysock(debug)       0 for no debug / 1 (default) for debug informations
-                    in log.
-mysock(lang)        Available for the moment : en fr.
-mysock(toload)      Lists of modules to load. This is the name of files
-                    under the games directory whitout the extension.
+debug             0 for no debug / 1 (default) for debug informations
+                  in log.
 
-    b. Service configuration
-    ------------------------
-mysock(ip)          IP address of your IRC hub for the connection of the
-                    UnrealIRCD Framework Service.
-mysock(port)        Port of your irchub. This need to be a serverport.
-mysock(password)    Password specified un unrealircd.conf for the link.
-mysock(numeric)     Unique identifier on the network of the service.
-mysock(servername)  Full DNS address of the service on the network.
-mysock(networkname) Name of your IRC Network. Please be careful, this is
-                    case-sensitive and need to be the same on all the
-                    IRC servers.
-mysock(hub)         Full DNS address of the hub where you connect the
-                    TCL Game Service.
+    b. General options
+    ------------------
+::irc::lang       Available for the moment : en fr.
+::irc::pid        File where the pid should be wrote.
 
-    c. Master Bot Controller
+    c. Service configuration
     ------------------------
-mysock(nick)        Nickname of the main bot
-mysock(username)    Username of the main bot
-mysock(hostname)    Hostname of the main bot
-mysock(realname)    GECOS of the main bot
-mysock(adminchan)   Logchan for the services
-mysock(chanlist)    Lists of all chans where the main bot needs to be.
-                    Don't add the games chans. The bot will join it
+::irc::ip         IP address of your IRC hub for the connection of the
+                  UnrealIRCD Framework Service.
+::irc::port       Port of your irchub. This need to be a serverport.
+::irc::password   Password specified un unrealircd.conf for the link.
+::irc::numeric    Unique identifier on the network of the service.
+::irc::servername Full DNS address of the service on the network.
+::irc::netname    Name of your IRC Network. Please be careful, this is
+                  case-sensitive and need to be the same on all the IRC
+                  servers.
+::irc::hub        Full DNS address of the hub where you connect the
+                  UnrealIRCD Framework Service.
+::irc::svcname    Name to use for the UnrealIRCD Framework. Tipically
+                  the name of your project.
+
+    d. Master Bot Controller
+    ------------------------
+::irc::nick         Nickname of the main bot
+::irc::username     Username of the main bot
+::irc::hostname     Hostname of the main bot
+::irc::realname     GECOS of the main bot
+::irc::adminchan    Logchan for the services
+::irc::chanlist     Lists of all chans where the main bot needs to be.
+                    Don't add the modules chans. The bot will join it
                     automatically.
                     The masters bots addons will be active on all chans
                     by default unless they are coded for filtering the
                     chans.
-mysock(root)        Name of the main adminsitrator of the service. For
+::irc::root         Name of the main adminsitrator of the service. For
                     the moment this is the only one person who can use
                     the admin commands. Administrators of the service
                     will be add soon.
-mysock(cmdchar)     Character to use for prefixing the command. For not
+::irc::cmdchar      Character to use for prefixing the command. For not
                     confusing with other bots or hiding the commands.
 
+    e. Modules
+    ----------
+::irc::toload       Lists of modules to load. This is the name of files
+                    under the games directory whitout the extension.
 
-    d. Partyline configuration
+    f. Partyline configuration
     --------------------------
-mysock(plip)        IP to listen for the partyline. By default listen
-                    on all IP of the system (bind on 0.0.0.0)
-mysock(plport)      Port to listen for the partyline. By default 45000
-mysock(plpass)      Port to use for authentification on partyline. It is
+::pl::ip            IP to listen for the partyline. By default listen on
+                    all IP of the system (bind on 0.0.0.0)
+::pl::port          Port to listen for the partyline. By default 45000
+::pl::pass          Port to use for authentification on partyline. It is
                     the same for all admins for the moment until admins
                     code is done.
 
-    e. Unreal link block
+    g. Unreal link block
     --------------------
 link tcl.hebeo.fr
 {
