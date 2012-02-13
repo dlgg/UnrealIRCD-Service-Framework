@@ -242,7 +242,8 @@ proc ::irc::socket_control {} {
     }
     KILL {
     #<<< :Yume KILL Poker-egg :851AC590.11BF4B94.149A40B0.IP!Yume (salope)
-      #set killer [string range [lindex $arg 0] 1 end]
+    #<<< :irc1.hebeo.fr KILL UNO :irc1.hebeo.fr (Nick Collision)
+      set killer [string range [lindex $arg 0] 1 end]
       set nickname [lindex $arg 2]
       #set path [string range [lindex $arg 3] 1 end]
       set reason [string range [lrange $arg 4 end] 1 end-1]
@@ -250,6 +251,13 @@ proc ::irc::socket_control {} {
       if {[info exists ::irc::hook(kill)]} { foreach hookj $::irc::hook(kill) { $hookj $nickname $reason } }
       ::irc::user_quit $nickname
       if {[lindex $arg 2]==$::irc::nick} { bot_init $::irc::nick $::irc::username $::irc::hostname $::irc::realname }
+      foreach n $::irc::botlist {
+        if {[::tools::test $nickname $n]} {
+          ::irc::send "QUIT $n :Kill by $killer : $reason"
+          after 1000
+          bot_init $n recup recup.tcl.hebeo.fr "Saved bot"
+        }
+      }
       return
     }
     SETHOST {
