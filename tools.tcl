@@ -202,7 +202,7 @@ proc ::irc::reset_timeout {} {
     catch { after cancel $::irc::timeout }
     unset $::irc::timeout
   }
-  if {$::debug==1} { puts "Starting timeout timer for 3 minutes : $::irc::timeout" }
+  if {$::debug==1} { puts "Starting timeout timer for 3 minutes." }
   set ::irc::timeout [after 180000 ::irc::timeout]
 }
 
