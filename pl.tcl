@@ -129,3 +129,4 @@ proc ::pl::control { sockpl } {
 puts [::msgcat::mc pl_loaded]
 if {$::pl==0} { puts [::msgcat::mc pl_activation $::pl::ip $::pl::port]; ::pl::server }
 
+# vim: set fenc=utf-8 sw=2 sts=2 ts=2 et filetype=tcl

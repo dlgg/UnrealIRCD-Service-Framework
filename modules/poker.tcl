@@ -46,3 +46,5 @@ proc ::poker::control_pub { nick text } {
 proc ::poker::control_priv { nick text } {
   [is_admin $nick] { ::irc::send ":$::poker::nick PRIVMSG $::poker::chan :\002PRIV\002 $nick > [join $text]" } { puts "$nick not admin" }
 }
+
+# vim: set fenc=utf-8 sw=2 sts=2 ts=2 et filetype=tcl

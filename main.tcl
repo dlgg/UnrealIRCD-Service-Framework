@@ -50,3 +50,5 @@ foreach file $::irc::modules {
 ::irc::hook_init
 
 if {$service=="0"} { puts [::msgcat::mc cont_netconn]; ::irc::socket_connect }
+
+# vim: set fenc=utf-8 sw=2 sts=2 ts=2 et filetype=tcl

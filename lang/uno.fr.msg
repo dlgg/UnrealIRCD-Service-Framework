@@ -108,3 +108,5 @@
 ::msgcat::mcset fr uno_hasuno "%s \002\00309d\00312i\00313t \00309U\00312n\00313o\00308 ! \017"
 ::msgcat::mcset fr uno_plhasleft "%s\017 a quitté le salon, et est retiré de la partie."
 ::msgcat::mcset fr uno_idleplayer "%s\017 a un idle de \00313%d\017 minutes : son tour est sauté."
+
+# vim: set fenc=utf-8 sw=2 sts=2 ts=2 et filetype=tcl

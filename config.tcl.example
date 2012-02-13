@@ -93,3 +93,4 @@ proc ::irc::set_lang {lang} { if {$lang != ""} { ::msgcat::mclocale $lang } }
 # Logging message
 puts [::msgcat::mc loadmodule "Configuration"]
 
+# vim: set fenc=utf-8 sw=2 sts=2 ts=2 et filetype=tcl

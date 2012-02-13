@@ -74,3 +74,5 @@ proc ::fantasy::control { nick chan text } {
     }
   }
 }
+
+# vim: set fenc=utf-8 sw=2 sts=2 ts=2 et filetype=tcl

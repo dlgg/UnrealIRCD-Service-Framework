@@ -338,3 +338,5 @@ proc ::irc::shutdown { nick } {
 }
 
 namespace import ::tools::0 ::tools::1
+
+# vim: set fenc=utf-8 sw=2 sts=2 ts=2 et filetype=tcl

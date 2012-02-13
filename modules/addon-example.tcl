@@ -33,3 +33,5 @@ namespace eval addon {
 proc ::addon::control { nick chan text } {
   # Body goes here
 }
+
+# vim: set fenc=utf-8 sw=2 sts=2 ts=2 et filetype=tcl

@@ -77,3 +77,5 @@
 ::msgcat::mcset en pl_nouth "You are not authentified. Please use .pass <password> to authentify yourself."
 ::msgcat::mcset en pl_loaded "PartyLine server loaded."
 ::msgcat::mcset en pl_alreadyload "PartyLine is already loaded !"
+
+# vim: set fenc=utf-8 sw=2 sts=2 ts=2 et filetype=tcl

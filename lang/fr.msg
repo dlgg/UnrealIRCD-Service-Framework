@@ -77,3 +77,5 @@
 ::msgcat::mcset fr pl_notauth "Vous n'êtes pas authentifié. Merci d'utiliser la commande .pass <password> pour vous authentifier."
 ::msgcat::mcset fr pl_loaded "Serveur de PartyLine chargé."
 ::msgcat::mcset fr pl_alreadyload "La PL est déjà chargée !"
+
+# vim: set fenc=utf-8 sw=2 sts=2 ts=2 et filetype=tcl
