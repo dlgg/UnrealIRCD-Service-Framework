@@ -114,8 +114,9 @@ proc ::irc::socket_control {} {
       }
     }
     NICK {
-    #<<< NICK Yume       1 1326268587 chaton 192.168.42.1 1 0 +iowghaAxNz * 851AC590.11BF4B94.149A40B0.IP :Structure of Body
-    #<<< NICK GameServer 1 1326702996 tclsh  tcl.hebeo.fr g 0 +oSqB       * heb1-EAB106C8.hebeo.fr        :TCL GameServer Controller
+    #<<< NICK Yume       1        1326268587 chaton   192.168.42.1 1      0            +iowghaAxNz *           851AC590.11BF4B94.149A40B0.IP :Structure of Body
+    #<<< NICK GameServer 1        1326702996 tclsh    tcl.hebeo.fr g      0            +oSqB       *           heb1-EAB106C8.hebeo.fr        :TCL GameServer Controller
+    #    NICK nick       hopcount timestamp  username hostname     server servicestamp +usermodes  virtualhost cloakhost                     :realname
       set nickname [lindex $arg 1]
       #set hopcount [lindex $arg 2]
       #set timestamp [lindex $arg 3]
