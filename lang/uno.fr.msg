@@ -1,4 +1,4 @@
-#!/usr/bin/tclsh
+#!/usr/bin/env tclsh
 
 # Messages UNO
 ::msgcat::mcset fr uno_welcome "Bienvenue ! Tapez \002!uno\002 pour lancer une partie de %s\017 :) (Liste de mes commandes : \002!unocmds\002)"
