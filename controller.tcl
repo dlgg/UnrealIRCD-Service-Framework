@@ -121,6 +121,7 @@ proc ::irc::socket_control {} {
       #set ident [lindex $arg 4]
       #set realhost [lindex $arg 5]
       set numeric [lindex $arg 6]
+      set numericdec [::tools::base2dec $numeric $::tools::ub64chars]
       #set servicestamp [lindex $arg 7]
       set umodes [lindex $arg 8]
       #set cloakhost [lindex $arg 9]
@@ -128,8 +129,8 @@ proc ::irc::socket_control {} {
       #set gecos [string range [lrange $arg 11 end] 1 end]
       lappend ::irc::userlist $nickname
       set ::irc::userlist [::tools::nodouble $::irc::userlist]
-      lappend ::irc::users($::irc::srvname2num([::tools::base2dec $numeric $::tools::ub64chars])) $nickname
-      set ::irc::users($::irc::srvname2num([::tools::base2dec $numeric $::tools::ub64chars])) [::tools::nodouble $::irc::users($::irc::srvname2num([::tools::base2dec $numeric $::tools::ub64chars]))]
+      lappend ::irc::users($::irc::srvname2num($numericdec)) $nickname
+      set ::irc::users($::irc::srvname2num($numericdec)) [::tools::nodouble $::irc::users($::irc::srvname2num($numericdec))]
       ::irc::parse_umodes $nickname $umodes
       return
     }
