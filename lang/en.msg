@@ -43,7 +43,6 @@
 ::msgcat::mcset en cont_shutdown "Shutdown of services asked by %s."
 ::msgcat::mcset en cont_sockclose "Closing socket"
 ::msgcat::mcset en cont_rehash "\00310Rehash by %s"
-::msgcat::mcset en cont_errorcmd "\00310Print error by %s"
 ::msgcat::mcset en cont_send "\00310IRC send by %s"
 ::msgcat::mcset en cont_source "\00310Source of %s by %s"
 ::msgcat::mcset en cont_tcl "\00310TCL\017 Execution by %s of %s"
