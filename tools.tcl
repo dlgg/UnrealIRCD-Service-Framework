@@ -131,17 +131,17 @@ namespace eval tools {
   proc pluralize { number } { if { $number > 1} { return "s" } }
 
   # Manage timers
-  if {![info exists  timers(list)]} { array set  timers { list "" } }
-  if {![info exists utimers(list)]} { array set utimers { list "" } }
+  if {![info exists  ::tools::timers(list)]} { array set  ::tools::timers { list "" } }
+  if {![info exists ::tools::utimers(list)]} { array set ::tools::utimers { list "" } }
   
   proc timer { time call } {
     #timer <minutes> <proc_a_lancer>
     set stime [expr {$time * 1000 * 60}]
     set id [after $stime $call]
-    lappend timers(list) $id
-    set timers(start-$id) [clock seconds]
-    set timers(time-$id) [expr {$time * 60}]
-    set timers(call-$id) $call
+    lappend ::tools::timers(list) $id
+    set ::tools::timers(start-$id) [clock seconds]
+    set ::tools::timers(time-$id) [expr {$time * 60}]
+    set ::tools::timers(call-$id) $call
     puts "Start timer $id : $call"
     return $id
   }
@@ -149,10 +149,10 @@ namespace eval tools {
     #utimer <secondes> <proc_a_lancer>
     set stime [expr {$time * 1000 }]
     set id [after $stime $call]
-    lappend utimers(list) $id
-    set utimers(start-$id) [clock seconds]
-    set utimers(time-$id) [expr {$time * 60}]
-    set utimers(call-$id) $call
+    lappend ::tools::utimers(list) $id
+    set ::tools::utimers(start-$id) [clock seconds]
+    set ::tools::utimers(time-$id) [expr {$time * 60}]
+    set ::tools::utimers(call-$id) $call
     puts "Start utimer $id : $call"
     return $id
   }
