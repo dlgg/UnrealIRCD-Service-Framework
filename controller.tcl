@@ -312,6 +312,7 @@ proc ::irc::socket_control {} {
       #set description [string range [lrange $arg 5 end] 1 end]
       set ::irc::srvname2num($numeric) $servername
       set ::irc::srvname2num($servername) $numeric
+      set ::irc::users($servername) ""
       if {$::debug==1} { puts "Adding server numeric $numeric for server $servername." }
       return
     }
