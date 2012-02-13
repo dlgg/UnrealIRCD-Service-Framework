@@ -282,7 +282,7 @@ privmsg-$bot $nick $text
 
     e. Specific IRC TCL proc
     ------------------------
-All procs are in namespace ::pl so you need to prefix each of
+All procs below are in namespace ::pl so you need to prefix each of
 followings procs by ::pl:: or export it in your namespace.
 
 send $sock $raw
