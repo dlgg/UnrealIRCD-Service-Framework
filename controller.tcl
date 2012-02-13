@@ -49,6 +49,9 @@ proc ::irc::socket_control {} {
     if ([info exists ::irc::hook(sync)]) { foreach hooks $::irc::hook(sync) { if {$::debug==1} { puts "Hook sync call : $hooks" }; $hooks } }
     ::irc::send "NETINFO 0 [::tools::unixtime] 2310 * 0 0 0 :$::irc::netname"
     ::irc::send "EOS"
+    # Start timeout detection and cancel timer for reconnection loop
+    ::irc::reset_timeout
+    if {[info exists ::irc::connectout]} { after cancel $::irc::connectout }
     return 0
   }
 
@@ -57,6 +60,7 @@ proc ::irc::socket_control {} {
     PING {
     #<<< PING :irc1.hebeo.fr
       ::irc::send "PONG $::irc::servername [lindex $arg 1]"; return
+      ::irc::reset_timeout
     }
     PASS {
     #<<< PASS :tclpur

@@ -188,6 +188,21 @@ proc ::irc::socket_connect {} {
   return
 }
 
+proc ::irc::timeout {} {
+  catch {close $::irc::sock}
+  foreach t [after info] { after cancel $t }
+  set ::irc::connectout [after 60000  ::irc::timeout]
+  ::irc::socket_connect
+}
+proc ::irc::reset_timeout {} {
+  if {[info exists ::irc::timeout]} {
+    if {$::debug==1} { puts "Stoping timeout timer : $::irc::timeout" }
+    after cancel $::irc::timeout
+    unset $::irc::timeout
+  }
+  set ::irc::timeout [after 180000 timeout]
+}
+
 # Proc to register a hook
 proc ::irc::hook_init {} {
   foreach h $::irc::hooklist { if {![info exists ::irc::hook($h)]} { set ::irc::hook($h) "" } }
