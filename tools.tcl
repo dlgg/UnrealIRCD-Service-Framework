@@ -208,7 +208,7 @@ proc ::pl::send {sock data} {
 
 proc ::irc::bot_init { nick user host gecos } {
   ::irc::send "TKL + Q * $nick $::irc::servername 0 [::tools::unixtime] :Reserved for $::irc::svcname"
-  ::irc::send "NICK $nick 0 [::tools::unixtime] $user $host $::irc::servername 0 +oSqB * * :$gecos"
+  ::irc::send "NICK $nick 0 [::tools::unixtime] $user $host [::tools::dec2base $::irc::numeric $::tools::ub64chars] 0 +oSqB * * :$gecos"
   if {$nick==$::irc::nick} {
     join_chan $::irc::nick $::irc::adminchan
     foreach chan $::irc::chanlist { join_chan $::irc::nick $chan }
