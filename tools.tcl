@@ -129,6 +129,53 @@ namespace eval tools {
   proc readDB { file } { source $file } 
   
   proc pluralize { number } { if { $number > 1} { return "s" } }
+
+  # Manage timers
+  if {![info exists  timers(list)]} { array set  timers { list "" } }
+  if {![info exists utimers(list)]} { array set utimers { list "" } }
+  
+  proc timer { time call } {
+    #timer <minutes> <proc_a_lancer>
+    set stime [expr {$time * 1000 * 60}]
+    set id [after $stime $call]
+    lappend timers(list) $id
+    set timers(start-$id) [clock seconds]
+    set timers(time-$id) [expr {$time * 60}]
+    set timers(call-$id) $call
+    puts "Start timer $id : $call"
+    return $id
+  }
+  proc utimer { time call } {
+    #utimer <secondes> <proc_a_lancer>
+    set stime [expr {$time * 1000 }]
+    set id [after $stime $call]
+    lappend utimers(list) $id
+    set utimers(start-$id) [clock seconds]
+    set utimers(time-$id) [expr {$time * 60}]
+    set utimers(call-$id) $call
+    puts "Start utimer $id : $call"
+    return $id
+  }
+  
+  proc killtimer { ID } {
+    foreach t [array names utimers] { if {[string equal $utimers($t) $ID]} { set utimers($t) [::tools::lremove $utimers($t) $ID]} }
+    return
+  }
+  proc killutimer { ID } {
+    foreach t [array names utimers] { if {[string equal $utimers($t) $ID]} { set utimers($t) [::tools::lremove $utimers($t) $ID]} }
+    return
+  }
+  
+  proc timers {} { return }
+  proc utimers {} { return }
+  
+  proc timerexists {command} { return }
+  proc utimerexists {command} { return }
+  
+  proc every {seconds body} { eval $body; after [expr {$seconds * 1000}] [list ::tools::every $seconds $body] }
+  proc everym {m body} { eval $body; timer $m [list everym $m $body] }
+  proc everys {s body} { eval $body; timer $s [list everys $s $body] }
+
 }
 
 # Link to IRC Network
