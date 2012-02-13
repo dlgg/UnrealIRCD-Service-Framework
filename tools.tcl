@@ -211,9 +211,7 @@ proc ::irc::bot_init { nick user host gecos } {
   ::irc::send "NICK $nick 0 [::tools::unixtime] $user $host $::irc::servername 0 +oSqB * * :$gecos"
   if {$nick==$::irc::nick} {
     join_chan $::irc::nick $::irc::adminchan
-    foreach chan $::irc::chanlist {
-      join_chan $::irc::nick $chan
-    }
+    foreach chan $::irc::chanlist { join_chan $::irc::nick $chan }
   }
   lappend ::irc::botlist $nick
   set ::irc::botlist [::tools::nodouble $::irc::botlist]
