@@ -44,6 +44,7 @@
 ::msgcat::mcset fr cont_sockclose "Fermeture du socket"
 ::msgcat::mcset fr cont_rehash "\00310Rehash par %s"
 ::msgcat::mcset fr cont_errorcmd "\00310Affichage des erreurs par %s"
+::msgcat::mcset fr cont_send "\00310Envoi d'un raw IRC par %s"
 ::msgcat::mcset fr cont_source "\00310Source de %s par %s"
 ::msgcat::mcset fr cont_tcl "\00310TCL\017 Execution par %s de %s"
 ::msgcat::mcset fr cont_botjoin0 "\002%s\002 a tenté de me faire partir de tous les chans via un join 0."
