@@ -78,6 +78,7 @@ proc ::irc::socket_control {} {
       if {[::tools::testcs $hubname $::irc::hub]} {
         if {$::debug==1} { puts "Received hubname is OK !" }
         set ::irc::srvname2num($numeric) $hubname
+        set ::irc::srvname2num($hubname) $numeric
         return
       } else {
         puts "Received hubname is not OK ! Link abort ! I have received $hubname but I am waiting for $::irc::hub"
@@ -138,11 +139,14 @@ proc ::irc::socket_control {} {
     #<<< SQUIT irc2.hebeo.fr :Yume
     # TODO : remove srvname2num($numeric) corresponding to server
       set servername [lindex $arg 1]
+      set numeric $::irc::srvname2num($servername)
       #set reason [string range [lrange $arg 2 end] 1 end]
       foreach user $::irc::users([string tolower $servername]) {
         ::irc::user_quit $user
       }
       unset ::irc::users([string tolower $servername])
+      array unset srvname2num $numeric
+      array unset srvname2num $servername
       return
     }
   }
@@ -296,6 +300,7 @@ proc ::irc::socket_control {} {
       set numeric [lindex $arg 4]
       #set description [string range [lrange $arg 5 end] 1 end]
       set ::irc::srvname2num($numeric) $servername
+      set ::irc::srvname2num($servername) $numeric
       if {$::debug==1} { puts "Adding server numeric $numeric for server $servername." }
       return
     }

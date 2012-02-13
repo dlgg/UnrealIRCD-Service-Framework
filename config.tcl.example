@@ -70,6 +70,7 @@ namespace eval irc {
   # Variables for network
   variable srvname2num
   set srvname2num($numeric) $servername
+  set srvname2num($servername) $numeric
   variable mychans
   variable botlist
   variable userlist
