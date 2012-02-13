@@ -51,7 +51,7 @@ proc ::irc::socket_control {} {
     ::irc::send "EOS"
     # Start timeout detection and cancel timer for reconnection loop
     ::irc::reset_timeout
-    if {[info exists ::irc::connectout]} { after cancel $::irc::connectout }
+    if {[info exists ::irc::connectout]} { catch { after cancel $::irc::connectout } }
     return 0
   }
 

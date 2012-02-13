@@ -189,18 +189,21 @@ proc ::irc::socket_connect {} {
 }
 
 proc ::irc::timeout {} {
+  if {$::debug==1} { puts "Timeout detected. Closing all sockets and cancelling all timers." }
   catch {close $::irc::sock}
   foreach t [after info] { after cancel $t }
+  if {$::debug==1} { puts "Timeout detected. Relink service." }
   set ::irc::connectout [after 60000  ::irc::timeout]
   ::irc::socket_connect
 }
 proc ::irc::reset_timeout {} {
   if {[info exists ::irc::timeout]} {
     if {$::debug==1} { puts "Stoping timeout timer : $::irc::timeout" }
-    after cancel $::irc::timeout
+    catch { after cancel $::irc::timeout }
     unset $::irc::timeout
   }
-  set ::irc::timeout [after 180000 timeout]
+  if {$::debug==1} { puts "Starting timeout timer for 3 minutes : $::irc::timeout" }
+  set ::irc::timeout [after 180000 ::irc::timeout]
 }
 
 # Proc to register a hook
