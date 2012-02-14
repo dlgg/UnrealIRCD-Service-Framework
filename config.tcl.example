@@ -84,8 +84,6 @@ namespace eval irc {
   # List of existing hooks
   variable hooklist   "sync init join join-#* part part-#* quit kill privmsgchan privmsg-*"
 
-  # Import of useful tools
-  namespace import ::tools::tok
 }
 
 namespace eval pl {
