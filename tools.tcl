@@ -206,9 +206,6 @@ proc ::irc::netsync {} {
   if ([info exists ::irc::hook(sync)]) { foreach hooks $::irc::hook(sync) { if {$::debug==1} { puts "Hook sync call : $hooks" }; $hooks } }
   ::irc::send "NETINFO 0 [::tools::unixtime] 2310 * 0 0 0 :$::irc::netname"
   ::irc::send "EOS"
-  # Start timeout detection and cancel timer for reconnection loop
-  ::irc::reset_timeout
-  if {[info exists ::irc::connectout]} { catch { after cancel $::irc::connectout } }
   return 0
 }
 
