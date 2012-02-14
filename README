@@ -90,6 +90,9 @@ debug             0 for no debug / 1 (default) for debug informations
 ::irc::ssl        Use SSL (1) or not (0). Please be sure to add ssl
                   option in Unreal link block and connect to a SSL
                   enabled port.
+::irc::token      Use TOKEN for raw to send and receive from network.
+                  Useless if service is on the same physical host of
+                  the hub where it is connected.
 
     d. Master Bot Controller
     ------------------------
