@@ -40,7 +40,7 @@ proc ::irc::socket_control {} {
     } }
     puts "<<< IRC <<< $ncarg"
   }
-  if {[lrange $arg 1 end]=="NOTICE AUTH :*** Looking up your hostname..."} { ::irc::netsync; return }
+  #if {[lrange $arg 1 end]=="NOTICE AUTH :*** Looking up your hostname..."} { ::irc::netsync; return }
 
   switch [lindex $arg 0] {
     8 -
