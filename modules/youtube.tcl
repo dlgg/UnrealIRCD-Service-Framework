@@ -39,6 +39,7 @@ namespace eval youtube {
   set api "https://gdata.youtube.com/feeds/api/videos/"
   set agent "Mozilla/5.0 (Windows; U; Windows NT 5.1; ru; rv:1.9.0.1) Gecko/2008070208 Firefox/3.0.1"
   set timeout 30000
+  set mode "full"
  
   proc control { nick chan text } {
     if {$::debug==1} { puts "YouTube : " }
@@ -78,8 +79,14 @@ namespace eval youtube {
         puts "Likes    : $like"
         puts "Dislikes : $dislike"
       }
-      ::irc::send ":$::irc::nick [tok PRIVMSG] [join [list $chan $::irc::adminchan] ,]  :$::youtube::logo \002$author\002 $title | \002Durée\002 :[::tools::duration $duration] | \002Vues\002 : $view | \002Favoris\002 : $favs"
-      ::irc::send ":$::irc::nick [tok PRIVMSG] [join [list $chan $::irc::adminchan] ,]  :$::youtube::logo \002Note moyenne\002 : $average/5 \002par\002 $raters personnes | \002Commentaires\002 : $comms | \002J'aime\002 : $like | \002Je n'aime pas\002 : $dislike"
+      switch $::youtube::mode {
+        full {
+          ::irc::send ":$::irc::nick PRIVMSG [join [list $chan $::irc::admin] ,]  :$::youtube::logo \002$author\002 : $title | \002Dur?e\002 :[::tools::duration $duration] | \002Vues\002 : $view | \002Favoris\002 : $favs"
+          ::irc::send ":$::irc::nick PRIVMSG [join [list $chan $::irc::admin] ,]  :$::youtube::logo \002Note moyenne\002 : $average/5 \002par\002 $raters personnes | \002Commentaires\002 : $comms | \002J'aime\002 : $like | \002Je n'aime pas\002 : $dislike"
+        }
+        light { ::irc::send ":$::irc::nick PRIVMSG [join [list $chan $::irc::admin] ,]  :$::youtube::logo \002$author\002 : $title | \002Dur?e\002 :[::tools::duration $duration] | \002Vues\002 : $view | \002Favoris\002 : $favs | \002Note moyenne\002 : $average/5 \002par\002 $raters personnes" }
+        default { ::irc::send ":$::irc::nick PRIVMSG $::irc::admin :$::youtube::logo Bad mode for output : $::youtube::mode" }
+      }
     }
   }
 }
