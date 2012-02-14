@@ -182,10 +182,17 @@ proc ::irc::socket_control {} {
           }
           ssl {
             if {$::irc::ssl} {
-              puts [::tls::status $::irc::sock]
-              ::irc::send "$::irc::nick PRIVMSG $::irc::adminchan :SSL Status : [::tls::status $::irc::sock]"
+              array set sslstatus [::tls::status $::irc::sock]
+              ::irc::send ":$::irc::nick PRIVMSG $::irc::adminchan :SSL Status : Cipher       : $sslstatus(cipher)"
+              ::irc::send ":$::irc::nick PRIVMSG $::irc::adminchan :SSL Status : Sbits        : $sslstatus(sbits)"
+              ::irc::send ":$::irc::nick PRIVMSG $::irc::adminchan :SSL Status : Cert subject : $sslstatus(subject)"
+              ::irc::send ":$::irc::nick PRIVMSG $::irc::adminchan :SSL Status : Cert issuer  : $sslstatus(issuer)"
+              ::irc::send ":$::irc::nick PRIVMSG $::irc::adminchan :SSL Status : Cert hash    : $sslstatus(sha1_hash)"
+              ::irc::send ":$::irc::nick PRIVMSG $::irc::adminchan :SSL Status : Cert begin   : $sslstatus(notBefore)"
+              ::irc::send ":$::irc::nick PRIVMSG $::irc::adminchan :SSL Status : Cert end     : $sslstatus(notAfter)"
+              ::irc::send ":$::irc::nick PRIVMSG $::irc::adminchan :SSL Status : Cert serial  : $sslstatus(serial)"
             } else {
-              ::irc::send "$::irc::nick PRIVMSG $::irc::adminchan :[::msgcat::mc cont_nossl]"
+              ::irc::send ":$::irc::nick PRIVMSG $::irc::adminchan :[::msgcat::mc cont_nossl]"
             }
           }
           die { ::irc::shutdown $from }
