@@ -81,21 +81,20 @@ proc ::irc::socket_control {} {
       set unrealversion [string range [lindex $arg 3] 2 5]
       set numeric [lindex [split [lindex $arg 3] '-'] 2]
       set description [lrange $arg 4 end]
-      if {[::tools::testcs $hubname $::irc::hub]} {
-        if {$::debug==1} { puts "Received hubname is OK !" }
-        set ::irc::srvname2num($numeric) $hubname
-        set ::irc::srvname2num($hubname) $numeric
-        return
-      } else {
-        puts "Received hubname is not OK ! Link abort ! I have received $hubname but I am waiting for $::irc::hub"
-        close $::irc::sock
-        exit 0
-      }
       if {![::tools::test $unrealversion $::irc::uversion]} {
         puts "Received Unreal Version is not OK ! Link abort ! I have received $unrealversion but I am waiting ofr $::irc::uversion"
         close $::irc::sock
         exit 0
       }
+      if {![::tools::testcs $hubname $::irc::hub]} {
+        puts "Received hubname is not OK ! Link abort ! I have received $hubname but I am waiting for $::irc::hub"
+        close $::irc::sock
+        exit 0
+      }
+      if {$::debug==1} { puts "Received hubname and unreal version is OK !" }
+      set ::irc::srvname2num($numeric) $hubname
+      set ::irc::srvname2num($hubname) $numeric
+      return
     }
     AO -
     NETINFO {
