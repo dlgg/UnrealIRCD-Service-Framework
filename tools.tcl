@@ -124,6 +124,7 @@ namespace eval tools {
     set fp [open $file w]
     puts $fp [list array set db [array get db]]
     close $fp
+    return
   }
   # unset $array; set array [readDB $file]
   proc readDB { file } { source $file } 
@@ -172,9 +173,9 @@ namespace eval tools {
   proc timerexists {command} { return }
   proc utimerexists {command} { return }
   
-  proc every {seconds body} { eval $body; after [expr {$seconds * 1000}] [list ::tools::every $seconds $body] }
-  proc everym {m body} { eval $body; timer $m [list everym $m $body] }
-  proc everys {s body} { eval $body; timer $s [list everys $s $body] }
+  proc every {seconds body} { eval $body; after [expr {$seconds * 1000}] [list ::tools::every $seconds $body]; return }
+  proc everym {m body} { eval $body; timer $m [list everym $m $body]; return }
+  proc everys {s body} { eval $body; timer $s [list everys $s $body]; return }
 
 }
 
@@ -218,6 +219,7 @@ proc ::irc::timeout {} {
   if {$::debug==1} { puts "Timeout detected. Relink service." }
   set ::irc::connectout [after 60000  ::irc::timeout]
   ::irc::socket_connect
+  return
 }
 proc ::irc::reset_timeout {} {
   if {[info exists ::irc::timeout]} {
@@ -227,12 +229,11 @@ proc ::irc::reset_timeout {} {
   }
   if {$::debug==1} { puts "Starting timeout timer for 3 minutes." }
   set ::irc::timeout [after 180000 ::irc::timeout]
+  return
 }
 
 # Proc to register a hook
-proc ::irc::hook_init {} {
-  foreach h $::irc::hooklist { if {![info exists ::irc::hook($h)]} { set ::irc::hook($h) "" } }
-}
+proc ::irc::hook_init {} { foreach h $::irc::hooklist { if {![info exists ::irc::hook($h)]} { set ::irc::hook($h) "" } }; return }
 
 proc ::irc::hook_register { hook callpoint } {
   if {$::debug==1} { puts "Registering hook : $hook => $callpoint" }
@@ -246,6 +247,7 @@ proc ::irc::hook_register { hook callpoint } {
   } else {
     puts "Trying to register a non existing hook"
   }
+  return
 }
 
 # Proc gestion du service
