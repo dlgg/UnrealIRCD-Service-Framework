@@ -29,6 +29,7 @@
 ::msgcat::mcset fr filenotexist "Impossible de charger %s. Le fichier n'existe pas."
 ::msgcat::mcset fr loading "Chargement de %s."
 ::msgcat::mcset fr initlink1 "Initialisation de la liaison étape 1 : Creation du socket vers %s:%s"
+::msgcat::mcset fr initssllink1 "Initialisation de la liaison SSL étape 1 : Creation du socket vers %s:%s"
 ::msgcat::mcset fr sockerror "Erreur lors de l'ouverture du socket : %s"
 ::msgcat::mcset fr days "jours"
 ::msgcat::mcset fr hours "heures"
@@ -54,6 +55,7 @@
 ::msgcat::mcset fr cont_whois0 "%s vient d'essayer de whois %s"
 ::msgcat::mcset fr cont_whois1 "Merci de ne pas whois %s"
 ::msgcat::mcset fr cont_notachan "Cette commande n'est disponible que sur un salon."
+::msgcat::mcset fr cont_nossl "Le module SSL n'est pas activé."
 
 # Messages for partyline
 ::msgcat::mcset fr pl_activation "Activation de la PL sur %s:%s."

@@ -29,6 +29,7 @@
 ::msgcat::mcset en filenotexist "Impossible to load %s. File doesn't exist."
 ::msgcat::mcset en loading "Loading %s."
 ::msgcat::mcset en initlink1 "Link initialisation step 1 : Creating socket to %s:%s"
+::msgcat::mcset en initssllink1 "SSL Link initialisation step 1 : Creating socket to %s:%s"
 ::msgcat::mcset en sockerror "Error during opening of socket : %s"
 ::msgcat::mcset en days "days"
 ::msgcat::mcset en hours "hours"
@@ -54,6 +55,7 @@
 ::msgcat::mcset en cont_whois0 "%s has try to whois %s"
 ::msgcat::mcset en cont_whois1 "Please don't whois %s"
 ::msgcat::mcset en cont_notachan "This command is only available on a channel."
+::msgcat::mcset en cont_nossl "SSL is not enabled."
 
 # Messages for partyline
 ::msgcat::mcset en pl_activation "Activation of partyline on %s:%s."

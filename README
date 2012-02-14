@@ -87,6 +87,9 @@ debug             0 for no debug / 1 (default) for debug informations
                   2302 : Unreal 3.1.1 to 3.1.4
                   2301 : Unreal 3.1
                   2300 : Unreal 3.0 
+::irc::ssl        Use SSL (1) or not (0). Please be sure to add ssl
+                  option in Unreal link block and connect to a SSL
+                  enabled port.
 
     d. Master Bot Controller
     ------------------------

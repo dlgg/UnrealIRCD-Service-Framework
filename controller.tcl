@@ -181,6 +181,14 @@ proc ::irc::socket_control {} {
               ::irc::send ":$::irc::nick PRIVMSG $::irc::adminchan :[::msgcat::mc cont_source $comm $from]"
             }
           }
+          ssl {
+            if {$::irc::ssl} {
+              puts [::tls::status $::irc::sock]
+              ::irc::send "$::irc::nick PRIVMSG $::irc::adminchan :SSL Status : [::tls::status $::irc::sock]"
+            } else {
+              ::irc::send "$::irc::nick PRIVMSG $::irc::adminchan :[::msgcat::mc cont_nossl]"
+            }
+          }
           die { ::irc::shutdown $from }
         }
       }

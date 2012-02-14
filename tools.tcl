@@ -180,8 +180,16 @@ namespace eval tools {
 
 # Link to IRC Network
 proc ::irc::socket_connect {} {
-  if {$::debug==1} { puts [::msgcat::mc initlink1 $::irc::ip $::irc::port] }
-  if {[catch {set ::irc::sock [socket $::irc::ip $::irc::port]} error]} { puts [::msgcat::mc sockerror $error]); ::irc::socket_connect; return 0 }
+  if {$::irc::ssl} {
+    package require tls
+    ::tls::init -require false -ssl3 true
+    if {$::debug==1} { puts [::msgcat::mc initssllink1 $::irc::ip $::irc::port] }
+    if {[catch {set ::irc::sock [::tls::socket $::irc::ip $::irc::port]} error]} { puts [::msgcat::mc sockerror $error]); after $::irc::reconnect; ::irc::socket_connect; return 0 }
+    if {![::tls::handshake $::irc::sock]} { puts "Error during TLS Handshake. Shutdown of service."; exit 1 }
+  } else {
+    if {$::debug==1} { puts [::msgcat::mc initlink1 $::irc::ip $::irc::port] }
+    if {[catch {set ::irc::sock [socket $::irc::ip $::irc::port]} error]} { puts [::msgcat::mc sockerror $error]); after $::irc::reconnect; ::irc::socket_connect; return 0 }
+  }
   fileevent $::irc::sock readable ::irc::socket_control
   fconfigure $::irc::sock -buffering line
   ::irc::netsync
