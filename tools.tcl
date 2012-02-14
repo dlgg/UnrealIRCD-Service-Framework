@@ -298,7 +298,7 @@ proc ::pl::send {sock data} {
 
 proc ::irc::tok { cmd } {
   if {$::irc::token} {
-    switch -nocase -- $cmd {a
+    switch -nocase -- $cmd {
       EOS        { set out "ES" }
       NETINFO    { set out "AO" }
       NICK       { set out "&" }
