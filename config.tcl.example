@@ -63,6 +63,7 @@ namespace eval irc {
 
   # Internal variables
   variable version    "0.2"
+  variable reconnect  30000
   variable wait
   variable sock
   variable hook

@@ -25,11 +25,12 @@ puts [::msgcat::mc loadmodule "Master Bot Controller"]
 [info exists service] { } { set service 0 }
 
 proc ::irc::socket_control {} {
-  set argv [gets $::irc::sock rawarg]
+  if {[catch {set argv [gets $::irc::sock rawarg]} error]} { puts [::msgcat::mc sockerror $error]); after $::irc::reconnect; ::irc::socket_connect; return 0 }
   if {$argv=="-1"} {
     puts [::msgcat::mc cont_sockclose]
     close $::irc::sock
-    exit 0
+    after $::irc::reconnect
+    ::irc::socket_connect
   }
   set arg [::tools::charfilter $rawarg]
   if {$::debug==1} {
