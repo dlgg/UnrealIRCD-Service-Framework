@@ -127,6 +127,8 @@ debug             0 for no debug / 1 (default) for debug informations
 ::pl::pass          Port to use for authentification on partyline. It is
                     the same for all admins for the moment until admins
                     code is done.
+::pl::myip          Primary IP of the partyline. It is used to permit
+                    partyline access via a dcc
 
     g. Unreal link block
     --------------------

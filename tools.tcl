@@ -177,6 +177,22 @@ namespace eval tools {
   proc everym {m body} { eval $body; timer $m [list everym $m $body]; return }
   proc everys {s body} { eval $body; timer $s [list everys $s $body]; return }
 
+  # IP Management
+  proc intip { ip } {
+    binary scan [::tools::normalize4 $ip] I out
+    return $out
+  }
+  proc normalize4 {ip} {
+    set octets [split $ip .]
+    if {[llength $octets] > 4} {
+      return -code error "invalid ip address \"$ip\""
+    } elseif {[llength $octets] < 4} {
+      set octets [lrange [concat $octets 0 0 0] 0 3]
+    }
+    foreach oct $octets { if {$oct < 0 || $oct > 255} { return -code error "invalid ip address" } }
+    return [binary format c4 $octets]
+  }
+
 }
 
 # Link to IRC Network

@@ -193,6 +193,10 @@ proc ::irc::socket_control {} {
             }
           }
           tok { if {[catch {::irc::send ":$::irc::nick [tok PRIVMSG] $::irc::adminchan :PRIVMSG Token test"} error]} { puts "Error token : $error" } }
+          dcc {
+            ::irc::send ":$::irc::nick [tok PRIVMSG] $from :\001DCC CHAT chat [::tools::intip $::pl::myip] $::pl::port\001"
+            ::irc::send ":$::irc::nick [tok PRIVMSG] $::irc::adminchan :[::msgcat::mc cont_dcc $from]"
+          }
           die { ::irc::shutdown $from }
         }
       }

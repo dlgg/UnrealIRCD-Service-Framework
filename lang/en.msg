@@ -56,6 +56,7 @@
 ::msgcat::mcset en cont_whois1 "Please don't whois %s"
 ::msgcat::mcset en cont_notachan "This command is only available on a channel."
 ::msgcat::mcset en cont_nossl "SSL is not enabled."
+::msgcat::mcset en cont_dcc "\00310DCC Partyline access requested by %s"
 
 # Messages for partyline
 ::msgcat::mcset en pl_activation "Activation of partyline on %s:%s."

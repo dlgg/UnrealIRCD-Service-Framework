@@ -56,6 +56,7 @@
 ::msgcat::mcset fr cont_whois1 "Merci de ne pas whois %s"
 ::msgcat::mcset fr cont_notachan "Cette commande n'est disponible que sur un salon."
 ::msgcat::mcset fr cont_nossl "Le module SSL n'est pas activé."
+::msgcat::mcset fr cont_dcc "\00310DCC Accès à la partyline demandé par %s"
 
 # Messages for partyline
 ::msgcat::mcset fr pl_activation "Activation de la PL sur %s:%s."
