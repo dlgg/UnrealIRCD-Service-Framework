@@ -296,7 +296,7 @@ proc ::pl::send {sock data} {
   return
 }
 
-proc ::irc::tok { cmd } {
+proc ::tools::tok { cmd } {
   if {$::irc::token} {
     switch -nocase -- $cmd {
       EOS        { set out "ES" }
