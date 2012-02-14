@@ -46,7 +46,7 @@ proc ::irc::socket_control {} {
     8 -
     PING {
     #<<< PING :irc1.hebeo.fr
-      ::irc::send "PONG $::irc::servername [lindex $arg 1]"; ::irc::reset_timeout; return
+      ::irc::send "[tok PONG] $::irc::servername [lindex $arg 1]"; ::irc::reset_timeout; return
     }
     PASS {
     #<<< PASS :tclpur
@@ -92,7 +92,7 @@ proc ::irc::socket_control {} {
       if {$hubtime != $currtime} { puts "Cloak are not sync. Difference is [expr $currtime - $hubtime] seconds." }
       if {![::tools::testcs $netname $::irc::netname]} {
         puts "Received network name doesn't correspond to given network name in configuration. I have received $netname but I am waiting for $::irc::netname. Abort link."
-        ::irc::send ":$::irc::servername SQUIT $::irc::hub :Configuration error."
+        ::irc::send ":$::irc::servername [tok SQUIT] $::irc::hub :Configuration error."
         close $::irc::sock
         exit 0
       } else {
@@ -173,26 +173,26 @@ proc ::irc::socket_control {} {
       if {[::irc::is_admin $from] && [::tools::test [string index [lindex $comm 0] 0] $::irc::cmdchar]} {
         switch [string range [lindex $comm 0] 1 end] {
           raw { set sraw [lrange [join $comm] 1 end]; ::irc::send $sraw; ::irc::send ":$::irc::nick PRIVMSG $::irc::adminchan :[::msgcat::mc cont_send $from $sraw]" }
-          rehash { ::irc::rehash ; ::irc::send ":$::irc::nick PRIVMSG $::irc::adminchan :[::msgcat::mc cont_rehash $from]" }
+          rehash { ::irc::rehash ; ::irc::send ":$::irc::nick [tok PRIVMSG] $::irc::adminchan :[::msgcat::mc cont_rehash $from]" }
           source {
             if {[file exists [lindex $comm 1]]} {
               if {[catch {source [lindex $comm 1]} error]} { puts "Error while loading [lindex $comm 1] : $error" }
-              ::irc::send ":$::irc::nick PRIVMSG $::irc::adminchan :[::msgcat::mc cont_source $comm $from]"
+              ::irc::send ":$::irc::nick [tok PRIVMSG] $::irc::adminchan :[::msgcat::mc cont_source $comm $from]"
             }
           }
           ssl {
             if {$::irc::ssl} {
               array set sslstatus [::tls::status $::irc::sock]
-              ::irc::send ":$::irc::nick PRIVMSG $::irc::adminchan :SSL Status : Cipher       : $sslstatus(cipher)"
-              ::irc::send ":$::irc::nick PRIVMSG $::irc::adminchan :SSL Status : Sbits        : $sslstatus(sbits)"
-              ::irc::send ":$::irc::nick PRIVMSG $::irc::adminchan :SSL Status : Cert subject : $sslstatus(subject)"
-              ::irc::send ":$::irc::nick PRIVMSG $::irc::adminchan :SSL Status : Cert issuer  : $sslstatus(issuer)"
-              ::irc::send ":$::irc::nick PRIVMSG $::irc::adminchan :SSL Status : Cert hash    : $sslstatus(sha1_hash)"
-              ::irc::send ":$::irc::nick PRIVMSG $::irc::adminchan :SSL Status : Cert begin   : $sslstatus(notBefore)"
-              ::irc::send ":$::irc::nick PRIVMSG $::irc::adminchan :SSL Status : Cert end     : $sslstatus(notAfter)"
-              ::irc::send ":$::irc::nick PRIVMSG $::irc::adminchan :SSL Status : Cert serial  : $sslstatus(serial)"
+              ::irc::send ":$::irc::nick [tok PRIVMSG] $::irc::adminchan :SSL Status : Cipher       : $sslstatus(cipher)"
+              ::irc::send ":$::irc::nick [tok PRIVMSG] $::irc::adminchan :SSL Status : Sbits        : $sslstatus(sbits)"
+              ::irc::send ":$::irc::nick [tok PRIVMSG] $::irc::adminchan :SSL Status : Cert subject : $sslstatus(subject)"
+              ::irc::send ":$::irc::nick [tok PRIVMSG] $::irc::adminchan :SSL Status : Cert issuer  : $sslstatus(issuer)"
+              ::irc::send ":$::irc::nick [tok PRIVMSG] $::irc::adminchan :SSL Status : Cert hash    : $sslstatus(sha1_hash)"
+              ::irc::send ":$::irc::nick [tok PRIVMSG] $::irc::adminchan :SSL Status : Cert begin   : $sslstatus(notBefore)"
+              ::irc::send ":$::irc::nick [tok PRIVMSG] $::irc::adminchan :SSL Status : Cert end     : $sslstatus(notAfter)"
+              ::irc::send ":$::irc::nick [tok PRIVMSG] $::irc::adminchan :SSL Status : Cert serial  : $sslstatus(serial)"
             } else {
-              ::irc::send ":$::irc::nick PRIVMSG $::irc::adminchan :[::msgcat::mc cont_nossl]"
+              ::irc::send ":$::irc::nick [tok PRIVMSG] $::irc::adminchan :[::msgcat::mc cont_nossl]"
             }
           }
           tok { if {[catch {::irc::send ":$::irc::nick [tok PRIVMSG] $::irc::adminchan :Test de token PRIVMSG"} error]} { puts "Error token : $error" } }
@@ -286,7 +286,7 @@ proc ::irc::socket_control {} {
       if {[lindex $arg 2]==$::irc::nick} { bot_init $::irc::nick $::irc::username $::irc::hostname $::irc::realname }
       foreach n $::irc::botlist {
         if {[::tools::test $nickname $n]} {
-          ::irc::send "QUIT $n :Kill by $killer : $reason"
+          ::irc::send "[tok QUIT] $n :Kill by $killer : $reason"
           after 1000
           bot_init $n recup recup.tcl.hebeo.fr "Saved bot"
         }
@@ -329,8 +329,8 @@ proc ::irc::socket_control {} {
       set source [string range [lindex $arg 0] 1 end]
       set target [string range [lindex $arg 3] 1 end]
       if {[lsearch [string tolower $::irc::botlist] [string tolower $target]]<0} { return }
-      ::irc::send ":$::irc::nick PRIVMSG $::irc::adminchan :[::msgcat::mc cont_whois0 $source $target]"
-      ::irc::send ":$::irc::nick NOTICE $source :[::msgcat::mc cont_whois1 $target]"
+      ::irc::send ":$::irc::nick [tok PRIVMSG] $::irc::adminchan :[::msgcat::mc cont_whois0 $source $target]"
+      ::irc::send ":$::irc::nick [tok NOTICE] $source :[::msgcat::mc cont_whois1 $target]"
       #::irc::send ":$target 320 whois is not implemented."
       #::irc::send ":$target 318 :End of /WHOIS list."
       return
