@@ -62,7 +62,7 @@ namespace eval irc {
   variable modules    ""
 
   # Internal variables
-  variable version    "0.1"
+  variable version    "0.2"
   variable wait
   variable sock
   variable hook
