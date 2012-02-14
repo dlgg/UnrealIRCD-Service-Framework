@@ -9,8 +9,9 @@
 2. Download
 3. Installation
 4. Configuration
-5. Modules
-6. Credits
+5. Commands
+6. Modules
+7. Credits
 
 # 1. Description
 ########################################################################
@@ -154,7 +155,34 @@ ulines
 };
 
 
-# 5. Modules
+# 5. Commands
+########################################################################
+    a. IRC Commands
+    ---------------
+These commands needs to be preceded by the cmdchar defined in the config
+
+dcc           Make the service send a DCC CHAT invitation
+tok           Test command for the tokens
+ssl           Print SSL Information if SSL is enabled
+raw           Send a RAW to IRC network
+source        Source a file if it exist
+rehash        Reload the service
+die           Kill the service
+
+
+    b. Partylines Commands
+    ----------------------
+.pass         Authentify to the service
+.who          Print list of users on partyline
+.ssl          Print SSL Information if SSL is enabled
+.close        Close your partyline or a given partyline
+.raw          Send a RAW to IRC network
+.source       Source a file if it exist
+.rehash       Reload the service
+.die          Kill the service
+
+
+# 6. Modules
 ########################################################################
     a. Variables to use
     -------------------
@@ -305,7 +333,7 @@ send $sock $raw
     Send a raw message to a pl sock
 
 
-# 6. Credits
+# 7. Credits
 ########################################################################
 TODO
 
