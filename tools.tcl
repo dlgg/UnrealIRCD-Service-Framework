@@ -177,6 +177,122 @@ namespace eval tools {
   proc everym {m body} { eval $body; timer $m [list everym $m $body]; return }
   proc everys {s body} { eval $body; timer $s [list everys $s $body]; return }
 
+  proc tok { cmd } {
+    if {$::irc::token} {
+      switch -nocase -- $cmd {
+        EOS        { set out "ES" }
+        NETINFO    { set out "AO" }
+        NICK       { set out "&" }
+        MODE       { set out "G" }
+        UMODE2     { set out "|" }
+        QUIT       { set out "," }
+        KILL       { set out "." }
+        SETHOST    { set out "AA" }
+        CHGHOST    { set out "AL" }
+        SETIDENT   { set out "AD" }
+        CHGIDENT   { set out "AZ" }
+        SETNAME    { set out "AE" }
+        CHGNAME    { set out "BK" }
+        WHOIS      { set out "#" }
+        SQUIT      { set out "-" }
+        SDESC      { set out "AG" }
+        PING       { set out "8" }
+        PONG       { set out "9" }
+        STATS      { set out "2" }
+        SJOIN      { set out "~" }
+        JOIN       { set out "C" }
+        PART       { set out "D" }
+        KICK       { set out "H" }
+        MODE       { set out "G" }
+        INVITE     { set out "*" }
+        SAJOIN     { set out "AX" }
+        SAPART     { set out "AY" }
+        SAMODE     { set out "o" }
+        TOPIC      { set out ")" }
+        SVSKILL    { set out "h" }
+        SVSMODE    { set out "n" }
+        SVS2MODE   { set out "v" }
+        SVSSNO     { set out "BV" }
+        SVS2SNO    { set out "BW" }
+        SVSNICK    { set out "e" }
+        SVSJOIN    { set out "BX" }
+        SVSPART    { set out "BT" }
+        SVSO       { set out "BB" }
+        SVSNOOP    { set out "f" }
+        SVSNLINE   { set out "BR" }
+        SVSFLINE   { set out "BC" }
+        PRIVMSG    { set out "!" }
+        NOTICE     { set out "B" }
+        SENDUMODE  { set out "AP" }
+        SMO        { set out "AU" }
+        SENDSNO    { set out "Ss" }
+        CHATOPS    { set out "p" }
+        WALLOPS    { set out "=" }
+        GLOBOPS    { set out "]" }
+        ADMINCHAT  -
+        ADCHAT     { set out "x" }
+        NACHAT     { set out "AC" }
+        TKL        { set out "BD" }
+        SQLINE     { set out "c" }
+        UNSQLINE   { set out "d" }
+        VERSION    { set out "+" }
+        INFO       { set out "/" }
+        LINKS      { set out "0" }
+        HELP       { set out "4" }
+        ERROR      { set out "5" }
+        AWAY       { set out "6" }
+        CONNECT    { set out "7" }
+        PASS       { set out "<" }
+        TIME       { set out ">" }
+        ADMIN      { set out "&" }
+        LAG        { set out "AF" }
+        KNOCK      { set out "AI" }
+        CREDITS    { set out "AJ" }
+        LICENSE    { set out "AK" }
+        RPING      { set out "AM" }
+        RPONG      { set out "AN" }
+        ADDMOTD    { set out "AQ" }
+        ADDOMOTD   { set out "AR" }
+        SVSMOTD    { set out "AS" }
+        OPERMOTD   { set out "AV" }
+        TSCTL      { set out "AW" }
+        SWHOIS     { set out "BA" }
+        VHOST      { set out "BE" }
+        BOTMOTD    { set out "BF" }
+        HTM        { set out "BH" }
+        DCCDENY    { set out "BI" }
+        UNDCCDENY  { set out "BJ" }
+        SHUN       { set out "BL" }
+        CYCLE      { set out "BP" }
+        MODULE     { set out "BQ" }
+        SVSLUSERS  { set out "BU" }
+        SVSSILENCE { set out "Bs" }
+        SVSWATCH   { set out "Bw" }
+        LUSERS     { set out "E" }
+        MOTD       { set out "F" }
+        REHASH     { set out "O" }
+        RESTART    { set out "P" }
+        CLOSE      { set out "Q" }
+        DNS        { set out "T" }
+        TEMPSHUN   { set out "Tz" }
+        SILENCE    { set out "U" }
+        AKILL      { set out "V" }
+        UNKLINE    { set out "X" }
+        RAKILL     { set out "Y" }
+        LOCOPS     { set out "^" }
+        PROTOCTL   { set out "_" }
+        WATCH      { set out "`" }
+        TRACE      { set out "b" }
+        UNZLINE    { set out "r" }
+        RULES      { set out "t" }
+        MAP        { set out "u" }
+        DALINFO    { set out "w" }
+        default    { set out $cmd}
+      }
+    } else { set out $cmd }
+    return $out
+  }
+
   # IP Management
   proc intip { ip } {
     binary scan [::tools::normalize4 $ip] I out
@@ -310,122 +426,6 @@ proc ::pl::send {sock data} {
   }
   puts $sock $data
   return
-}
-
-proc ::tools::tok { cmd } {
-  if {$::irc::token} {
-    switch -nocase -- $cmd {
-      EOS        { set out "ES" }
-      NETINFO    { set out "AO" }
-      NICK       { set out "&" }
-      MODE       { set out "G" }
-      UMODE2     { set out "|" }
-      QUIT       { set out "," }
-      KILL       { set out "." }
-      SETHOST    { set out "AA" }
-      CHGHOST    { set out "AL" }
-      SETIDENT   { set out "AD" }
-      CHGIDENT   { set out "AZ" }
-      SETNAME    { set out "AE" }
-      CHGNAME    { set out "BK" }
-      WHOIS      { set out "#" }
-      SQUIT      { set out "-" }
-      SDESC      { set out "AG" }
-      PING       { set out "8" }
-      PONG       { set out "9" }
-      STATS      { set out "2" }
-      SJOIN      { set out "~" }
-      JOIN       { set out "C" }
-      PART       { set out "D" }
-      KICK       { set out "H" }
-      MODE       { set out "G" }
-      INVITE     { set out "*" }
-      SAJOIN     { set out "AX" }
-      SAPART     { set out "AY" }
-      SAMODE     { set out "o" }
-      TOPIC      { set out ")" }
-      SVSKILL    { set out "h" }
-      SVSMODE    { set out "n" }
-      SVS2MODE   { set out "v" }
-      SVSSNO     { set out "BV" }
-      SVS2SNO    { set out "BW" }
-      SVSNICK    { set out "e" }
-      SVSJOIN    { set out "BX" }
-      SVSPART    { set out "BT" }
-      SVSO       { set out "BB" }
-      SVSNOOP    { set out "f" }
-      SVSNLINE   { set out "BR" }
-      SVSFLINE   { set out "BC" }
-      PRIVMSG    { set out "!" }
-      NOTICE     { set out "B" }
-      SENDUMODE  { set out "AP" }
-      SMO        { set out "AU" }
-      SENDSNO    { set out "Ss" }
-      CHATOPS    { set out "p" }
-      WALLOPS    { set out "=" }
-      GLOBOPS    { set out "]" }
-      ADMINCHAT  -
-      ADCHAT     { set out "x" }
-      NACHAT     { set out "AC" }
-      TKL        { set out "BD" }
-      SQLINE     { set out "c" }
-      UNSQLINE   { set out "d" }
-      VERSION    { set out "+" }
-      INFO       { set out "/" }
-      LINKS      { set out "0" }
-      HELP       { set out "4" }
-      ERROR      { set out "5" }
-      AWAY       { set out "6" }
-      CONNECT    { set out "7" }
-      PASS       { set out "<" }
-      TIME       { set out ">" }
-      ADMIN      { set out "&" }
-      LAG        { set out "AF" }
-      KNOCK      { set out "AI" }
-      CREDITS    { set out "AJ" }
-      LICENSE    { set out "AK" }
-      RPING      { set out "AM" }
-      RPONG      { set out "AN" }
-      ADDMOTD    { set out "AQ" }
-      ADDOMOTD   { set out "AR" }
-      SVSMOTD    { set out "AS" }
-      OPERMOTD   { set out "AV" }
-      TSCTL      { set out "AW" }
-      SWHOIS     { set out "BA" }
-      VHOST      { set out "BE" }
-      BOTMOTD    { set out "BF" }
-      HTM        { set out "BH" }
-      DCCDENY    { set out "BI" }
-      UNDCCDENY  { set out "BJ" }
-      SHUN       { set out "BL" }
-      CYCLE      { set out "BP" }
-      MODULE     { set out "BQ" }
-      SVSLUSERS  { set out "BU" }
-      SVSSILENCE { set out "Bs" }
-      SVSWATCH   { set out "Bw" }
-      LUSERS     { set out "E" }
-      MOTD       { set out "F" }
-      REHASH     { set out "O" }
-      RESTART    { set out "P" }
-      CLOSE      { set out "Q" }
-      DNS        { set out "T" }
-      TEMPSHUN   { set out "Tz" }
-      SILENCE    { set out "U" }
-      AKILL      { set out "V" }
-      UNKLINE    { set out "X" }
-      RAKILL     { set out "Y" }
-      LOCOPS     { set out "^" }
-      PROTOCTL   { set out "_" }
-      WATCH      { set out "`" }
-      TRACE      { set out "b" }
-      UNZLINE    { set out "r" }
-      RULES      { set out "t" }
-      MAP        { set out "u" }
-      DALINFO    { set out "w" }
-      default    { set out $cmd}
-    }
-  } else { set out $cmd }
-  return $out
 }
 
 proc ::irc::bot_init { nick user host gecos } {
