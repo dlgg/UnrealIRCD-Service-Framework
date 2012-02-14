@@ -209,6 +209,7 @@ proc ::irc::netsync {} {
   return 0
 }
 
+# Timeout management
 proc ::irc::timeout {} {
   if {$::debug==1} { puts "Timeout detected. Closing all sockets and cancelling all timers." }
   catch {close $::irc::sock}
@@ -228,6 +229,7 @@ proc ::irc::reset_timeout {} {
   set ::irc::timeout [after 180000 ::irc::timeout]
   return
 }
+proc ::irc::pinghub {} { ::irc::send "[::irc::tok PING] $::irc::servername" }
 
 # Proc to register a hook
 proc ::irc::hook_init {} { foreach h $::irc::hooklist { if {![info exists ::irc::hook($h)]} { set ::irc::hook($h) "" } }; return }
@@ -271,6 +273,7 @@ proc ::irc::rehash {} {
     }
   }
   ::irc::hook_init
+  ::irc::reset_timeout
   ::irc::send ":$::irc::nick PRIVMSG $::irc::adminchan :\00304[::msgcat::mc rehashdone]"
   return
 }

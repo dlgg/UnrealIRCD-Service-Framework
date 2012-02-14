@@ -200,6 +200,23 @@ proc ::irc::socket_control {} {
       }
       return
     }
+    ES -
+    EOS {
+    # <<< :irc1.hebeo.fr ES
+    # <<< :irc1.hebeo.fr EOS
+      set server [string range [lindex $arg 0] 1 end]
+      if {[::tools::test $server $::irc::hub]} {
+        # Start timeout detection and cancel timer for reconnection loop
+        ::irc::reset_timeout
+        if {[info exists ::irc::connectout]} { catch { after cancel $::irc::connectout } }
+        # Start my own ping to server
+        ::tools::every 60 ::irc::pinghub
+      }
+    }
+    9 -
+    PONG {
+      ::irc::reset_timeout
+    }
     "&" -
     NICK {
     #<<< :Yume NICK Yuki 1326485191
