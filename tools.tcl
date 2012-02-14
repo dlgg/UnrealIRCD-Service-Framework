@@ -331,7 +331,7 @@ proc ::irc::socket_connect {} {
 }
 
 proc ::irc::netsync {} {
-  if {$::irc::token} { ::irc::send "PROTOCTL NOQUIT NICKv2 UMODE2 VL NS TKLEXT CLK TOKEN" } else { ::irc::send "PROTOCTL NOQUIT NICKv2 UMODE2 VL NS TKLEXT CLK" }
+  if {$::irc::token} { ::irc::send "PROTOCTL NOQUIT NICKv2 UMODE2 VL NS TKLEXT CLK SJOIN SJOIN2 SJ3 TOKEN" } else { ::irc::send "PROTOCTL NOQUIT NICKv2 UMODE2 VL NS TKLEXT CLK SJOIN SJOIN2 SJ3" }
   ::irc::send "PASS $::irc::password"
   ::irc::send "SERVER $::irc::servername 1 :U$::irc::uversion-Fh6XiOoEe-$::irc::numeric UnrealIRCD Service Framework V.$::irc::version"
   ::irc::bot_init $::irc::nick $::irc::username $::irc::hostname $::irc::realname
