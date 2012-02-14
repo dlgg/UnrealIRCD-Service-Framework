@@ -44,7 +44,7 @@
 ::msgcat::mcset fr cont_shutdown "Coupure des services démandée par %s."
 ::msgcat::mcset fr cont_sockclose "Fermeture du socket"
 ::msgcat::mcset fr cont_rehash "\00310Rehash par %s"
-::msgcat::mcset fr cont_send "\00310Envoi d'un raw par %s : %s"
+::msgcat::mcset fr cont_send "\00310\002RAW\003 Envoi d'un raw par %s :\017 %s"
 ::msgcat::mcset fr cont_source "\00310Source de %s par %s"
 ::msgcat::mcset fr cont_tcl "\00310TCL\017 Execution par %s de %s"
 ::msgcat::mcset fr cont_botjoin0 "\002%s\002 a tenté de me faire partir de tous les chans via un join 0."
@@ -56,7 +56,7 @@
 ::msgcat::mcset fr cont_whois1 "Merci de ne pas whois %s"
 ::msgcat::mcset fr cont_notachan "Cette commande n'est disponible que sur un salon."
 ::msgcat::mcset fr cont_nossl "Le module SSL n'est pas activé."
-::msgcat::mcset fr cont_dcc "\00310DCC Accès à la partyline demandé par %s"
+::msgcat::mcset fr cont_dcc "\00310DCC\017 Accès à la partyline demandé par %s"
 
 # Messages for partyline
 ::msgcat::mcset fr pl_activation "Activation de la PL sur %s:%s."

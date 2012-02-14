@@ -44,7 +44,7 @@
 ::msgcat::mcset en cont_shutdown "Shutdown of services asked by %s."
 ::msgcat::mcset en cont_sockclose "Closing socket"
 ::msgcat::mcset en cont_rehash "\00310Rehash by %s"
-::msgcat::mcset en cont_send "\00310RAW by %s : %s"
+::msgcat::mcset en cont_send "\00310\002RAW\003 sent by %s :\017 %s"
 ::msgcat::mcset en cont_source "\00310Source of %s by %s"
 ::msgcat::mcset en cont_tcl "\00310TCL\017 Execution by %s of %s"
 ::msgcat::mcset en cont_botjoin0 "\002%s\002 try to make me leave all channels via a /join 0."
@@ -56,7 +56,7 @@
 ::msgcat::mcset en cont_whois1 "Please don't whois %s"
 ::msgcat::mcset en cont_notachan "This command is only available on a channel."
 ::msgcat::mcset en cont_nossl "SSL is not enabled."
-::msgcat::mcset en cont_dcc "\00310DCC Partyline access requested by %s"
+::msgcat::mcset en cont_dcc "\00310DCC\017 Partyline access requested by %s"
 
 # Messages for partyline
 ::msgcat::mcset en pl_activation "Activation of partyline on %s:%s."
