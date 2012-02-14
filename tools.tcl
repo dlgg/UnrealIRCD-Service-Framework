@@ -184,8 +184,23 @@ proc ::irc::socket_connect {} {
   if {[catch {set ::irc::sock [socket $::irc::ip $::irc::port]} error]} { puts [::msgcat::mc sockerror $error]); ::irc::socket_connect; return 0 }
   fileevent $::irc::sock readable ::irc::socket_control
   fconfigure $::irc::sock -buffering line
+  ::irc::netsync
   vwait ::irc::wait
   return
+}
+
+proc ::irc::netsync {} {
+  ::irc::send "PROTOCTL NOQUIT NICKv2 UMODE2 VL NS TKLEXT CLK"
+  ::irc::send "PASS $::irc::password"
+  ::irc::send "SERVER $::irc::servername 1 :U$::irc::uversion-Fh6XiOoEe-$::irc::numeric UnrealIRCD Service Framework V.$::irc::version"
+  ::irc::bot_init $::irc::nick $::irc::username $::irc::hostname $::irc::realname
+  if ([info exists ::irc::hook(sync)]) { foreach hooks $::irc::hook(sync) { if {$::debug==1} { puts "Hook sync call : $hooks" }; $hooks } }
+  ::irc::send "NETINFO 0 [::tools::unixtime] 2310 * 0 0 0 :$::irc::netname"
+  ::irc::send "EOS"
+  # Start timeout detection and cancel timer for reconnection loop
+  ::irc::reset_timeout
+  if {[info exists ::irc::connectout]} { catch { after cancel $::irc::connectout } }
+  return 0
 }
 
 proc ::irc::timeout {} {

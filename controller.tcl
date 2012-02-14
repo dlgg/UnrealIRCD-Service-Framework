@@ -40,21 +40,7 @@ proc ::irc::socket_control {} {
     } }
     puts "<<< IRC <<< $ncarg"
   }
-
-  if {[lrange $arg 1 end]=="NOTICE AUTH :*** Looking up your hostname..."} {
-    #::irc::send "PROTOCTL NOQUIT NICKv2 UMODE2 VL SJ3 NS TKLEXT CLK"
-    ::irc::send "PROTOCTL NOQUIT NICKv2 UMODE2 VL NS TKLEXT CLK"
-    ::irc::send "PASS $::irc::password"
-    ::irc::send "SERVER $::irc::servername 1 :U$::irc::uversion-Fh6XiOoEe-$::irc::numeric UnrealIRCD Service Framework V.$::irc::version"
-    ::irc::bot_init $::irc::nick $::irc::username $::irc::hostname $::irc::realname
-    if ([info exists ::irc::hook(sync)]) { foreach hooks $::irc::hook(sync) { if {$::debug==1} { puts "Hook sync call : $hooks" }; $hooks } }
-    ::irc::send "NETINFO 0 [::tools::unixtime] 2310 * 0 0 0 :$::irc::netname"
-    ::irc::send "EOS"
-    # Start timeout detection and cancel timer for reconnection loop
-    ::irc::reset_timeout
-    if {[info exists ::irc::connectout]} { catch { after cancel $::irc::connectout } }
-    return 0
-  }
+  if {[lrange $arg 1 end]=="NOTICE AUTH :*** Looking up your hostname..."} { ::irc::netsync; return }
 
   switch [lindex $arg 0] {
     8 -
