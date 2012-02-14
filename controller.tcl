@@ -35,9 +35,6 @@ proc ::irc::socket_control {} {
   set arg [::tools::charfilter $rawarg]
   if {$::debug==1} {
     set ncarg [::tools::stripmirc $arg]
-    if {[info exists ::pl]} { if {$::pl==1} {
-      foreach s $::pl::authed { ::pl::send "<<< IRC <<< $ncarg" }
-    } }
     puts "<<< IRC <<< $ncarg"
   }
   #if {[lrange $arg 1 end]=="NOTICE AUTH :*** Looking up your hostname..."} { ::irc::netsync; return }
