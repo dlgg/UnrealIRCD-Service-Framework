@@ -563,6 +563,7 @@ proc ::irc::shutdown { nick } {
 
 # Import of useful tools
 namespace eval ::irc { namespace import ::tools::tok }
+namespace eval ::pl  { namespace import ::tools::tok }
 namespace import ::tools::0 ::tools::1
 
 # vim: set fenc=utf-8 sw=2 sts=2 ts=2 et filetype=tcl
