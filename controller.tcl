@@ -370,24 +370,76 @@ proc ::irc::socket_control {} {
     }
     "~" -
     SJOIN {
+    # During netsync
+    #<<< :irc1.hebeo.fr SJOIN 1329117460 #Services +ntr :YumeNoYuki @~Hebeo @+*Yume
+    #<<< :irc1.hebeo.fr SJOIN 1329117449 # :Yuki2 YumeNoYuki @Yume &yuki!*@* \"Yume!*@* \'yume!*@*
+    #<<< :irc1.hebeo.fr SJOIN 1329117447 #opers +sntrO :Yuki2 YumeNoYuki @~Hebeo @*Yume 
+    # After netsync
     #<<< @1 SJOIN 1325144112 #Poker :Yume 
     #<<< @1 SJOIN 1327468838 #UNO   :@Yume 
+    # *owner ~protect @op %halfop +voice
+    # &bans "banex 'invex
       #set numeric [string range [lindex $arg 0] 1 end]
       #set timestamp [lindex $arg 2]
       set chan [lindex $arg 3]
-      set nicks [lindex [split $arg :] 1]
-      #set nick [string range [lindex $arg 4] 1 end]
-      foreach nick [string tolower $nicks] {
-        # Hooks for global join
-        if {[info exists ::irc::hook(join)]} { foreach hookj $::irc::hook(join) { $hookj $nick $chan } }
-        # Hooks for specific join on a chan
-        if {[info exists ::irc::hook(join-[string tolower $chan])]} { $::irc::hook(join-[string tolower $chan]) $nick }
-        if {![string is alnum [string index $nick 0]]} { continue }
-        # Updating global variables
-        lappend ::irc::users($chan) $nick
-        set ::irc::users($chan) [::tools::nodouble $::irc::users($chan)]
-        lappend ::irc::chanlist $chan
-        set ::irc::chanlist [::tools::nodouble $::irc::chanlist]
+      set part0  [lindex [split [string range $arg 1 end] :] 0]
+      set params [lindex [split [string range $arg 1 end] :] 1]
+      set chmodes "[lindex $part0 4]"
+      
+      #puts "parsing : $params"
+      foreach p $params {
+        #puts "analyzing $p"
+        regexp -all -- {([\&\"\']*)([*~@%+]*)([\w!*@~]+$)} $p "" chmodes chrights param
+        #puts "chmodes : $chmodes | chrights : $chrights | param : $param"
+        set isnick true
+        foreach chmode [::tools::charfilter $chmodes] {
+          switch $chmode {
+            &  {
+              # bans
+              set isnick false
+            }
+            \" {
+              # ban exceptions
+              set isnick false
+            }
+            \' {
+              # invite exceptions
+              set isnick false
+            }
+          }
+        }
+        # We parse chrights only if there is no chmodes
+        if {$isnick} {
+          foreach chright $chrights {
+            switch $chright {
+              * {
+                #puts "$param is an owner"
+              }
+              ~ {
+                #puts "$param is a protect"
+              }
+              @ {
+                #puts "$param is an op"
+              }
+              % {
+                #puts "$param is an halfop"
+              }
+              + {
+                #puts "$param is a voice"
+              }
+            }
+          }
+          # Hooks for global join
+          if {[info exists ::irc::hook(join)]} { foreach hookj $::irc::hook(join) { $hookj $param $chan } }
+          # Hooks for specific join on a chan
+          if {[info exists ::irc::hook(join-[string tolower $chan])]} { $::irc::hook(join-[string tolower $chan]) $param }
+          if {![string is alnum [string index $param 0]]} { continue }
+          # Updating global variables
+          lappend ::irc::users($chan) $param
+          set ::irc::users($chan) [::tools::nodouble $::irc::users($chan)]
+          lappend ::irc::chanlist $chan
+          set ::irc::chanlist [::tools::nodouble $::irc::chanlist]
+        }
       }
     }
     C -
