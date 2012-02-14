@@ -77,7 +77,7 @@
 ::msgcat::mcset en pl_auth0 "You are authentified !!!"
 ::msgcat::mcset en pl_auth1 "\00303\002PL Auth :\017 Password accepted on %s"
 ::msgcat::mcset en pl_auth2 "\00304\002PL Auth :\017 Password refused on %s"
-::msgcat::mcset en pl_nouth "You are not authentified. Please use .pass <password> to authentify yourself."
+::msgcat::mcset en pl_notauth "You are not authentified. Please use .pass <password> to authentify yourself."
 ::msgcat::mcset en pl_loaded "PartyLine server loaded."
 ::msgcat::mcset en pl_alreadyload "PartyLine is already loaded !"
 
