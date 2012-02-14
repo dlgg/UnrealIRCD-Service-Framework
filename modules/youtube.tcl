@@ -30,6 +30,9 @@ namespace eval youtube {
 # Register Master Bot Addon
   ::irc::hook_register privmsgchan "::youtube::control"
 
+# Import useful procs
+  namespace import ::tools::tok
+
 # Vars for addon
   set logo "\002\00301,00You\00300,04Tube\002\017"
   set base "http://www.youtube.com"
@@ -47,7 +50,7 @@ namespace eval youtube {
       set youtubeid "/watch?v=$youtubeidd"
       set link "$::youtube::api$youtubeidd?v=2"
       if {$::debug==1} { puts "YouTube : Calling ::http::data with URI $link" }
-      ::irc::send ":$::irc::nick PRIVMSG $::irc::adminchan :$::youtube::logo \002$nick\002 on \002$chan\002 : $::youtube::base$youtubeid"
+      ::irc::send ":$::irc::nick [tok PRIVMSG] $::irc::adminchan :$::youtube::logo \002$nick\002 on \002$chan\002 : $::youtube::base$youtubeid"
       set t [::http::config -useragent $::youtube::agent]
       set t [::http::geturl $link -timeout $::youtube::timeout]
       set data [::http::data $t]
@@ -75,8 +78,8 @@ namespace eval youtube {
         puts "Likes    : $like"
         puts "Dislikes : $dislike"
       }
-      ::irc::send ":$::irc::nick PRIVMSG [join [list $chan $::irc::adminchan] ,]  :$::youtube::logo \002$author\002 $title | \002Durée\002 :[::tools::duration $duration] | \002Vues\002 : $view | \002Favoris\002 : $favs"
-      ::irc::send ":$::irc::nick PRIVMSG [join [list $chan $::irc::adminchan] ,]  :$::youtube::logo \002Note moyenne\002 : $average/5 \002par\002 $raters personnes | \002Commentaires\002 : $comms | \002J'aime\002 : $like | \002Je n'aime pas\002 : $dislike"
+      ::irc::send ":$::irc::nick [tok PRIVMSG] [join [list $chan $::irc::adminchan] ,]  :$::youtube::logo \002$author\002 $title | \002Durée\002 :[::tools::duration $duration] | \002Vues\002 : $view | \002Favoris\002 : $favs"
+      ::irc::send ":$::irc::nick [tok PRIVMSG] [join [list $chan $::irc::adminchan] ,]  :$::youtube::logo \002Note moyenne\002 : $average/5 \002par\002 $raters personnes | \002Commentaires\002 : $comms | \002J'aime\002 : $like | \002Je n'aime pas\002 : $dislike"
     }
   }
 }

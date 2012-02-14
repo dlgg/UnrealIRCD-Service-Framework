@@ -36,15 +36,15 @@ namespace eval poker {
   ::irc::join_chan $::poker::nick $::poker::chan
   ::irc::hook_register privmsg-[string tolower $::poker::chan] "::poker::control_pub"
   ::irc::hook_register privmsg-[string tolower $::poker::nick] "::poker::control_priv"
-  
+  namespace import ::tools::tok
 }
 
 proc ::poker::control_pub { nick text } {
-  [is_admin $nick] { ::irc::send ":$::poker::nick PRIVMSG $::poker::chan :\002PUB \002 $nick > [join $text]" } { puts "$nick not admin" }
+  [is_admin $nick] { ::irc::send ":$::poker::nick [tok PRIVMSG] $::poker::chan :\002PUB \002 $nick > [join $text]" } { puts "$nick not admin" }
 }
 
 proc ::poker::control_priv { nick text } {
-  [is_admin $nick] { ::irc::send ":$::poker::nick PRIVMSG $::poker::chan :\002PRIV\002 $nick > [join $text]" } { puts "$nick not admin" }
+  [is_admin $nick] { ::irc::send ":$::poker::nick [tok PRIVMSG] $::poker::chan :\002PRIV\002 $nick > [join $text]" } { puts "$nick not admin" }
 }
 
 # vim: set fenc=utf-8 sw=2 sts=2 ts=2 et filetype=tcl
