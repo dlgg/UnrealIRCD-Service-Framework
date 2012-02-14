@@ -195,6 +195,7 @@ proc ::irc::socket_control {} {
               ::irc::send ":$::irc::nick PRIVMSG $::irc::adminchan :[::msgcat::mc cont_nossl]"
             }
           }
+          tok { if {[catch {::irc::send ":$::irc::nick [tok PRIVMSG] $::irc::adminchan :Test de token PRIVMSG"} error]} { puts "Error token : $error" } }
           die { ::irc::shutdown $from }
         }
       }
