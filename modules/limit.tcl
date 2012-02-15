@@ -81,13 +81,11 @@ proc ::limit::command { nick args } {
   if {$::debug} { puts "LIMIT : command used by $nick : [lindex $args 1] : [lrange $args 2 end]" }
   switch [lindex $args 1] {
     help {
-      puts "limit help"
       if {$::limit::log} { ::irc::send ":$::irc::nick [tok PRIVMSG] $::irc::adminchan :\002LIMIT\002 $nick : help" }
       ::limit::print_help $nick
       return
     }
     add {
-      puts "limit add"
       set chan [string tolower [lindex $args 2]]
       if {$::limit::log} { ::irc::send ":$::irc::nick [tok PRIVMSG] $::irc::adminchan :\002LIMIT\002 $nick : add $chan" }
       if {![::irc::is_chan $chan]} { ::irc::send ":$::irc::nick [tok NOTICE] $nick :You need to provide a chan in parameters."; return }
@@ -101,7 +99,6 @@ proc ::limit::command { nick args } {
       return
     }
     del {
-      puts "limit del"
       set chan [string tolower [lindex $args 2]]
       if {$::limit::log} { ::irc::send ":$::irc::nick [tok PRIVMSG] $::irc::adminchan :\002LIMIT\002 $nick : del $chan" }
       if {![::irc::is_chan $chan]} { ::irc::send ":$::irc::nick [tok NOTICE] $nick :You need to provide a chan in parameters."; return }
@@ -115,7 +112,6 @@ proc ::limit::command { nick args } {
       return
     }
     show {
-      puts "limit show"
       if {$::limit::log} { ::irc::send ":$::irc::nick [tok PRIVMSG] $::irc::adminchan :\002LIMIT\002 $nick : show" }
       if {![::irc::is_admin $nick]} { ::irc::send ":$::irc::nick [tok NOTICE] $nick :You are not admin."; return }
       ::irc::send ":$::irc::nick [tok NOTICE] $nick :This is the list of chans where limit module is active :"
@@ -123,9 +119,7 @@ proc ::limit::command { nick args } {
       ::irc::send ":$::irc::nick [tok NOTICE] $nick :[join $::limit::chans]"
       return
     }
-    reset -
     force {
-      puts "limit force"
       set chan [string tolower [lindex $args 2]]
       if {$::limit::log} { ::irc::send ":$::irc::nick [tok PRIVMSG] $::irc::adminchan :\002LIMIT\002 $nick : force $chan" }
       if {![::irc::is_chan $chan]} { ::irc::send ":$::irc::nick [tok NOTICE] $nick :You need to provide a chan in parameters."; return }
@@ -135,7 +129,6 @@ proc ::limit::command { nick args } {
       return
     }
     default {
-      puts "limit default"
       ::limit::print_help $nick
       return
     }
