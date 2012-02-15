@@ -310,6 +310,9 @@ quit $nick $reason
 kill $nick $reason
     List of procs to call when $nick is kill with the reason $reason.
 
+command-$name $nick $text
+    Bind a "/msg $masterbot $name" command.
+
 privmsgchan $nick $chan $text
     List of procs to call when a PRIVMSG is send to a $chan where a bot
     is.

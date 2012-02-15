@@ -372,11 +372,16 @@ proc ::irc::hook_register { hook callpoint } {
   foreach el $::irc::hooklist {
     if {[string match -nocase $el $hook]} { set valid 1 }
   }
+  if {[string match -nocase command-* $hook]} {
+    set cmd [lindex [split $hook -] 1]
+    puts "Check registering hook command : $cmd"
+    foreach prot "raw rehash source ssl tok dcc die" { if {[::tools::test $prot $cmd]} { puts "Trying to register a protected command : $cmd"; return } }
+  }
   if {$valid==1} {
     lappend ::irc::hook($hook) $callpoint
     set ::irc::hook($hook) [::tools::nodouble $::irc::hook($hook)]
   } else {
-    puts "Trying to register a non existing hook"
+    puts "Trying to register a non existing hook : $hook"
   }
   return
 }
