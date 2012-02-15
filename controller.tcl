@@ -268,9 +268,10 @@ proc ::irc::socket_control {} {
     #<<< :Poker-egg QUIT :\[irc1.hebeo.fr\] Local kill by Yume (calin :D)
       set nickname [string range [lindex $arg 0] 1 end]
       set reason [string range [lrange $arg 2 end] 1 end]
+      # Updating global variables
+      ::irc::user_quit $nickname
       # Hooks for quit
       if {[info exists ::irc::hook(quit)]} { foreach hookj $::irc::hook(quit) { $hookj $nickname $reason } }
-      ::irc::user_quit $nickname
       return
     }
     "." -
@@ -281,9 +282,10 @@ proc ::irc::socket_control {} {
       set nickname [lindex $arg 2]
       #set path [string range [lindex $arg 3] 1 end]
       set reason [string range [lrange $arg 4 end] 1 end-1]
+      # Updating global variables
+      ::irc::user_quit $nickname
       # Hooks for kill
       if {[info exists ::irc::hook(kill)]} { foreach hookj $::irc::hook(kill) { $hookj $nickname $reason } }
-      ::irc::user_quit $nickname
       if {[lindex $arg 2]==$::irc::nick} { bot_init $::irc::nick $::irc::username $::irc::hostname $::irc::realname }
       foreach n $::irc::botlist {
         if {[::tools::test $nickname $n]} {
@@ -440,7 +442,7 @@ proc ::irc::socket_control {} {
       set nick [string range [lindex $arg 0] 1 end]
       set chans [join [split [lindex $arg 2] ,]]
       foreach chan [string tolower $chans] {
-        # Updating global variables
+        # Updating global variables and calling hooks
         ::irc::user_join $nick $chan
       }
       return
@@ -452,12 +454,12 @@ proc ::irc::socket_control {} {
       set nick [string range [lindex $arg 0] 1 end]
       set chan [join [lindex $arg 2]]
       set reason "[string range [lindex $arg 3 end] 1 end]"
+      # Updating global variables
+      ::irc::user_part $nick $chan
       # Hooks for global part
       if {[info exists ::irc::hook(part)]} { foreach hookj $::irc::hook(part) { $hookj $nick $chan $reason } }
       # Hooks for specific part on a chan
       if {[info exists ::irc::hook(part-[string tolower $chan])]} { $::irc::hook(part-[string tolower $chan]) $nick $reason }
-      # Updating global variables
-      ::irc::user_part $nick $chan
       return
     }
     H -
@@ -467,12 +469,12 @@ proc ::irc::socket_control {} {
       set chan [lindex $arg 2]
       set nick [lindex $arg 3]
       set reason [string range [lrange $arg 4 end] 1 end]
+      # Updating global variables
+      ::irc::user_part $nick $chan
       # Hooks for global kick
       if {[info exists ::irc::hook(kick)]} { foreach hookj $::irc::hook(kick) { $hookj $kicker $chan $nick $reason } }
       # Hooks for specific kick on a chan
       if {[info exists ::irc::hook(kick-[string tolower $chan])]} { $::irc::hook(kick-[string tolower $chan]) $kicker $nick $reason }
-      # Updating global variables
-      ::irc::user_part $nick $chan
       if {$nick==$::irc::nick} { join_chan $::irc::nick $chan }
       return
     }
