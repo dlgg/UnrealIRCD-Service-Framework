@@ -51,7 +51,6 @@ proc ::limit::part { nick chan reason } {
   foreach c [string tolower $::limit::chans] { if {[::tools::test $chan $c]} { setlimit $chan } }
   return
 }
-proc ::limit::kick { kicker chan nick reason { ::limit::part $nick $chan $reason }
 proc ::limit::kick { kicker chan nick reason } { ::limit::part $nick $chan $reason; return }
 
 proc ::limit::init {} {
