@@ -384,11 +384,8 @@ proc ::irc::socket_control {} {
       set params [lindex [split [string range $arg 1 end] :] 1]
       set chmodes "[lindex $part0 4]"
       
-      #puts "parsing : $params"
       foreach p $params {
-        #puts "analyzing $p"
         regexp -all -- {([\&\"\']*)([*~@%+]*)([\w!*@~]+$)} $p "" chmodes chrights param
-        #puts "chmodes : $chmodes | chrights : $chrights | param : $param"
         set isnick true
         foreach chmode [::tools::charfilter $chmodes] {
           switch $chmode {
