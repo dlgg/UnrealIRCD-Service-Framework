@@ -429,16 +429,12 @@ proc ::irc::socket_control {} {
               }
             }
           }
+          # Updating global variables
+          ::irc::user_join $param $chan
           # Hooks for global join
           if {[info exists ::irc::hook(join)]} { foreach hookj $::irc::hook(join) { $hookj $param $chan } }
           # Hooks for specific join on a chan
           if {[info exists ::irc::hook(join-[string tolower $chan])]} { $::irc::hook(join-[string tolower $chan]) $param }
-          if {![string is alnum [string index $param 0]]} { continue }
-          # Updating global variables
-          lappend ::irc::users($chan) $param
-          set ::irc::users($chan) [::tools::nodouble $::irc::users($chan)]
-          lappend ::irc::chanlist $chan
-          set ::irc::chanlist [::tools::nodouble $::irc::chanlist]
         }
       }
     }
