@@ -20,19 +20,55 @@
 # Author(s): Damien Lesgourgues
 #
 ##############################################################################
-puts [::msgcat::mc loadlimit "Limit"]
+puts [::msgcat::mc loadaddon "Limit"]
 
 namespace eval limit {
 # Register Master Bot Addon
-  ::irc::hook_register privmsgchan "::limit::control"
+  #::irc::hook_register privmsgchan "::limit::control"
+  ::irc::hook_register part "::limit::part"
+  ::irc::hook_register kick "::limit::kick"
+  ::irc::hook_register init "::limit::init"
 
 # Vars for limit
-  set chans "#UNO #1000Bornes #Poker"
-  set limit 5
+  variable chans "#UNO #1000Bornes #Poker #"
+  variable limit 5
+  variable refresh 15
+
+### Don't modify below this
+  variable ::limit::currl
+# Importing tok proc
+  namespace import ::tools::tok
 }
 
 proc ::limit::control { nick chan text } {
   # Body goes here
 }
+
+proc ::limit::part { nick chan reason } {
+  set chan [string tolower $chan]
+  if {$::debug} { puts "There is now [llength $::irc::users($chan)] users on channel $chan : $::irc::users($chan)" }
+  foreach c [string tolower $::limit::chans] { if {[::tools::test $chan $c]} { setlimit $chan } }
+}
+proc ::limit::kick { kicker chan nick reason { ::limit::part $nick $chan $reason }
+
+proc ::limit::init {} {
+  if {$::service=="0"} { return }
+  foreach chan [string tolower $::limit::chans] { setlimit $chan }
+}
+
+proc ::limit::setlimit { chan } {
+  set limitset [expr {[llength $::irc::users($chan)] + $::limit::limit }]
+  if { $limitset != $::limit::currl($chan) } {
+    if {$::debug} { puts "Setting limit of $chan to $limitset" }
+    ::irc::send ":$::irc::nick [tok MODE] $chan +l $limitset"
+    set ::limit::currl($chan) $limitset
+  }
+}
+
+# initialize current limit array
+foreach c [string tolower $::limit::chans] { if {![info exists ::limit::currl($c)]} { set ::limit::currl($c) 0 } }
+
+if {$::debug} { puts "Starting limit timer : ::tools::every $::limit::refresh ::limit::init" }
+::tools::every $::limit::refresh ::limit::init
 
 # vim: set fenc=utf-8 sw=2 sts=2 ts=2 et filetype=tcl
