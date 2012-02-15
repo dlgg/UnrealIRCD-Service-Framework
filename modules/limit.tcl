@@ -42,18 +42,22 @@ namespace eval limit {
 
 proc ::limit::control { nick chan text } {
   # Body goes here
+  return
 }
 
 proc ::limit::part { nick chan reason } {
   set chan [string tolower $chan]
   if {$::debug} { puts "There is now [llength $::irc::users($chan)] users on channel $chan : $::irc::users($chan)" }
   foreach c [string tolower $::limit::chans] { if {[::tools::test $chan $c]} { setlimit $chan } }
+  return
 }
 proc ::limit::kick { kicker chan nick reason { ::limit::part $nick $chan $reason }
+proc ::limit::kick { kicker chan nick reason } { ::limit::part $nick $chan $reason; return }
 
 proc ::limit::init {} {
   if {$::service=="0"} { return }
   foreach chan [string tolower $::limit::chans] { setlimit $chan }
+  return
 }
 
 proc ::limit::setlimit { chan } {
@@ -63,6 +67,7 @@ proc ::limit::setlimit { chan } {
     ::irc::send ":$::irc::nick [tok MODE] $chan +l $limitset"
     set ::limit::currl($chan) $limitset
   }
+  return
 }
 
 # initialize current limit array
