@@ -310,6 +310,10 @@ quit $nick $reason
 kill $nick $reason
     List of procs to call when $nick is kill with the reason $reason.
 
+nick $oldnick $nick
+    List of procs to call when an user change nick from $oldnick to
+    $nick
+
 command-$name $nick $text
     Bind a "/msg $masterbot $name" command.
 
