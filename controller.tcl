@@ -167,7 +167,7 @@ proc ::irc::socket_control {} {
       # Hook for PRIVMSG to specific chan or user
       if {[info exists ::irc::hook(privmsg-[string tolower $to])]} { foreach hookp $::irc::hook(privmsg-[string tolower $to]) { $hookp $from "$commc" } }
       # Hook for COMMAND on Master Bot
-      if {[info exists ::irc::hook(command-[string tolower [string range [lindex $comm 0] 1 end]])] && [::tools::test $to $::irc::nick]} { foreach hookp $::irc::hook(command-[string tolower [string range [lindex $comm 0] 1 end]]) { $hookp $from "$commc" } }
+      if {[info exists ::irc::hook(command-[string tolower [lindex $comm 0]])] && [::tools::test $to $::irc::nick]} { foreach hookp $::irc::hook(command-[string tolower [lindex $comm 0]]) { $hookp $from "$commc" } }
       # Some admins commands to manage the service
       if {[::irc::is_admin $from] && [::tools::test [string index [lindex $comm 0] 0] $::irc::cmdchar]} {
         switch [string range [lindex $comm 0] 1 end] {
