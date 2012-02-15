@@ -286,14 +286,10 @@ proc ::irc::socket_control {} {
       ::irc::user_quit $nickname
       # Hooks for kill
       if {[info exists ::irc::hook(kill)]} { foreach hookj $::irc::hook(kill) { $hookj $nickname $reason } }
+      # reconnecting our bot
       if {[lindex $arg 2]==$::irc::nick} { bot_init $::irc::nick $::irc::username $::irc::hostname $::irc::realname }
-      foreach n $::irc::botlist {
-        if {[::tools::test $nickname $n]} {
-          ::irc::send "[tok QUIT] $n :Kill by $killer : $reason"
-          after 1000
-          bot_init $n recup recup.tcl.hebeo.fr "Saved bot"
-        }
-      }
+      # Effectively killing our bots
+      foreach n $::irc::botlist { if {[::tools::test $nickname $n]} { ::irc::send "[tok QUIT] $n :Kill by $killer : $reason" } }
       return
     }
     AA -
