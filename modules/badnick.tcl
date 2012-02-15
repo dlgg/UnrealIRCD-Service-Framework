@@ -31,7 +31,7 @@ namespace eval badnick {
 # Vars for badnick
   variable chandb "files/badnick.chans"
   variable listdb "files/badnick.list"
-  variable kickreason ""
+  variable kickreason "Merci de changer votre pseudo via /nick Un_Pseudo - Consultez http//www.site.fr/netiquette.php - En cas de kickban abusif rejoignez #Aide et contactez un opérateur."
   # ban time in seconds : 3600 = 1 hours / 0 for no auto unban
   variable bantime 3600
   variable log 1
