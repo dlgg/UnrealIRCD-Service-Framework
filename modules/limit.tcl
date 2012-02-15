@@ -37,7 +37,7 @@ namespace eval limit {
   variable log 1
 
 ### Don't modify below this
-  variable ::limit::currl
+  variable currl
 # Importing tok proc
   namespace import ::tools::tok
 }
