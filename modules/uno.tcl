@@ -70,7 +70,7 @@ namespace eval uno {
   variable ScoreFile    "files/UnoScores"
   variable MaxNickLen   32
   variable MaxPlayers   8
-  variable NTC          "[tok NOTICE]"
+  variable NTC          "[::tools::tok NOTICE]"
 
   # Global Variables
   variable On             0
