@@ -431,10 +431,6 @@ proc ::irc::socket_control {} {
           }
           # Updating global variables
           ::irc::user_join $param $chan
-          # Hooks for global join
-          if {[info exists ::irc::hook(join)]} { foreach hookj $::irc::hook(join) { $hookj $param $chan } }
-          # Hooks for specific join on a chan
-          if {[info exists ::irc::hook(join-[string tolower $chan])]} { $::irc::hook(join-[string tolower $chan]) $param }
         }
       }
     }
@@ -446,10 +442,6 @@ proc ::irc::socket_control {} {
       foreach chan [string tolower $chans] {
         # Updating global variables
         ::irc::user_join $nick $chan
-        # Hooks for global join
-        if {[info exists ::irc::hook(join)]} { foreach hookj $::irc::hook(join) { $hookj $nick $chan } }
-        # Hooks for specific join on a chan
-        if {[info exists ::irc::hook(join-[string tolower $chan])]} { $::irc::hook(join-[string tolower $chan]) $nick }
       }
       return
     }
