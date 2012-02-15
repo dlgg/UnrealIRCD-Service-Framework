@@ -364,8 +364,6 @@ proc ::irc::reset_timeout {} {
 proc ::irc::pinghub {} { ::irc::send "[tok PING] $::irc::servername" }
 
 # Proc to register a hook
-proc ::irc::hook_init {} { foreach h $::irc::hooklist { if {![info exists ::irc::hook($h)]} { set ::irc::hook($h) "" } }; return }
-
 proc ::irc::hook_register { hook callpoint } {
   if {$::debug==1} { puts "Registering hook : $hook => $callpoint" }
   set valid 0
@@ -409,7 +407,6 @@ proc ::irc::rehash {} {
       puts [::msgcat::mc filenotexist $file]
     }
   }
-  ::irc::hook_init
   ::irc::reset_timeout
   ::irc::send ":$::irc::nick [tok PRIVMSG] $::irc::adminchan :\00304[::msgcat::mc rehashdone]"
   return
