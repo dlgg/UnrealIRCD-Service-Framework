@@ -470,7 +470,7 @@ proc ::irc::socket_control {} {
       # Hooks for global kick
       if {[info exists ::irc::hook(kick)]} { foreach hookj $::irc::hook(kick) { $hookj $kicker $chan $nick $reason } }
       # Hooks for specific kick on a chan
-      if {[info exists ::irc::hook(part-[string tolower $chan])]} { $::irc::hook(part-[string tolower $chan]) $kicker $nick $reason }
+      if {[info exists ::irc::hook(kick-[string tolower $chan])]} { $::irc::hook(kick-[string tolower $chan]) $kicker $nick $reason }
       # Updating global variables
       ::irc::user_part $nick $chan
       if {$nick==$::irc::nick} { join_chan $::irc::nick $chan }
