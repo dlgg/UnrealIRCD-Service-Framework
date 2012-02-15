@@ -146,6 +146,7 @@ proc ::badnick::print_help { nick } {
 
 proc ::badnick::loadDB {} {
 # load chans DB
+  if {![file writable $::badnick::chandb]} { if {[file exists $::badnick::chandb} { puts "$::badnick::chandb is not writable. Please correct this."; exit } else { set f [open $::badnick::chandb w]; close $f } }
   set f [open $::badnick::chandb r]
   set content [read -nonewline $f]
   close $f
@@ -153,6 +154,7 @@ proc ::badnick::loadDB {} {
   foreach line [split $content "\n"] { lappend ::badnick::chans [string tolower $line] }
   set ::badnick::chans [::tools::nodouble $::badnick::chans]
 # load bad nick DB
+  if {![file writable $::badnick::listdb]} { if {[file exists $::badnick::listdb} { puts "$::badnick::listdb is not writable. Please correct this."; exit } else { set f [open $::badnick::listdb w]; close $f } }
   set f [open $::badnick::listdb r]
   set content [read -nonewline $f]
   close $f
