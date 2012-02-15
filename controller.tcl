@@ -444,12 +444,12 @@ proc ::irc::socket_control {} {
       set nick [string range [lindex $arg 0] 1 end]
       set chans [join [split [lindex $arg 2] ,]]
       foreach chan [string tolower $chans] {
+        # Updating global variables
+        ::irc::user_join $nick $chan
         # Hooks for global join
         if {[info exists ::irc::hook(join)]} { foreach hookj $::irc::hook(join) { $hookj $nick $chan } }
         # Hooks for specific join on a chan
         if {[info exists ::irc::hook(join-[string tolower $chan])]} { $::irc::hook(join-[string tolower $chan]) $nick }
-        # Updating global variables
-        ::irc::user_join $nick $chan
       }
       return
     }
