@@ -523,9 +523,9 @@ proc ::irc::user_join { nick chan } {
   lappend ::irc::chanlist $chan
   set ::irc::chanlist [::tools::nodouble $::irc::chanlist]
   # Hooks for global join
-  if {[info exists ::irc::hook(join)]} { foreach hookj $::irc::hook(join) { $hookj $param $chan } }
+  if {[info exists ::irc::hook(join)]} { foreach hookj $::irc::hook(join) { $hookj $nick $chan } }
   # Hooks for specific join on a chan
-  if {[info exists ::irc::hook(join-[string tolower $chan])]} { $::irc::hook(join-[string tolower $chan]) $param }
+  if {[info exists ::irc::hook(join-[string tolower $chan])]} { $::irc::hook(join-[string tolower $chan]) $nick }
   return
 }
 
