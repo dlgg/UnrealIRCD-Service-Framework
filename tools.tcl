@@ -289,7 +289,7 @@ namespace eval tools {
         DALINFO    { set out "w" }
         default    { set out $cmd}
       }
-    } else { set out $cmd }
+    } else { set out [string toupper $cmd] }
     return $out
   }
 
