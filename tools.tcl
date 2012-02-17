@@ -183,7 +183,7 @@ namespace eval tools {
 
   proc tok { cmd } {
     if {$::irc::token} {
-      switch -nocase -- $cmd {
+      switch -- $cmd {
         EOS        { set out "ES" }
         NETINFO    { set out "AO" }
         NICK       { set out "&" }
