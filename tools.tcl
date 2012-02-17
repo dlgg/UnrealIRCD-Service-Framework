@@ -177,9 +177,21 @@ namespace eval tools {
   proc timerexists {command} { return }
   proc utimerexists {command} { return }
   
-  proc every {seconds body} { eval $body; after [expr {$seconds * 1000}] [list ::tools::every $seconds $body]; return }
-  proc everym {m body} { eval $body; timer $m [list everym $m $body]; return }
-  proc everys {s body} { eval $body; timer $s [list everys $s $body]; return }
+  proc every {seconds body} { 
+    eval $body
+    after [expr {$seconds * 1000}] [list ::tools::every $seconds $body]
+    return 
+  }
+
+  proc everym {m body} { 
+    eval $body; timer $m [list everym $m $body]
+    return 
+  }
+
+  proc everys {s body} { 
+    eval $body; timer $s [list everys $s $body]
+    return 
+  }
 
   proc tok { cmd } {
     if {$::irc::token} {
@@ -312,7 +324,32 @@ namespace eval tools {
     foreach oct $octets { if {$oct < 0 || $oct > 255} { return -code error "invalid ip address" } }
     return [binary format c4 $octets]
   }
+  
+  package provide extend 1.0
+  package require Tcl 8.5
 
+  proc extend {cmd body} {
+    if {![namespace exists ${cmd}]} {
+        set wrapper [string map [list %C $cmd %B $body] {
+            namespace eval %C {}
+            rename %C %C::%C
+            namespace eval %C {
+                proc _unknown {junk subc args} {
+                    return [list %C::%C $subc]
+                }
+                namespace ensemble create -unknown %C::_unknown
+            }
+        }]
+    }
+
+    append wrapper [string map [list %C $cmd %B $body] {
+        namespace eval %C {
+            %B
+            namespace export -clear *
+        }
+    }]
+    uplevel 1 $wrapper
+  }
 }
 
 # Link to IRC Network
