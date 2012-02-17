@@ -130,6 +130,10 @@ namespace eval tools {
   proc readDB { file } { source $file } 
   
   proc pluralize { number } { if { $number > 1} { return "s" } }
+  
+  proc getpreprocname { } {
+  	return "[lindex [split [info level [expr [info level] - 2]]] 0] >>> [lindex [split [info level [expr [info level] - 1]]] 0]"
+  }
 
   # Manage timers
   if {![info exists  ::tools::timers(list)]} { array set  ::tools::timers { list "" } }
@@ -143,7 +147,7 @@ namespace eval tools {
     set ::tools::timers(start-$id) [clock seconds]
     set ::tools::timers(time-$id) [expr {$time * 60}]
     set ::tools::timers(call-$id) $call
-    puts "Start timer $id : $call"
+    puts "Start timer $id : $call from [::tools::getpreprocname]"
     return $id
   }
   proc utimer { time call } {
@@ -154,7 +158,7 @@ namespace eval tools {
     set ::tools::utimers(start-$id) [clock seconds]
     set ::tools::utimers(time-$id) [expr {$time * 60}]
     set ::tools::utimers(call-$id) $call
-    puts "Start utimer $id : $call"
+    puts "Start utimer $id : $call from [::tools::getpreprocname]"
     return $id
   }
   
@@ -353,11 +357,11 @@ proc ::irc::timeout {} {
 }
 proc ::irc::reset_timeout {} {
   if {[info exists ::irc::timeout]} {
-    if {$::debug==1} { puts "Stoping timeout timer : $::irc::timeout" }
+    if {$::debug==1} { puts "Stoping timeout timer : $::irc::timeout from [::tools::getpreprocname]" }
     catch { after cancel $::irc::timeout }
     unset ::irc::timeout
   }
-  if {$::debug==1} { puts "Starting timeout timer for 3 minutes." }
+  if {$::debug==1} { puts "Starting timeout timer for 3 minutes from [::tools::getpreprocname]" }
   set ::irc::timeout [after 180000 ::irc::timeout]
   return
 }
