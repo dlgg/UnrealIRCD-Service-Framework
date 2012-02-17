@@ -1,4 +1,4 @@
-#!/usr/bin/tclsh
+#!/usr/bin/env tclsh
 ##############################################################################
 #
 # This program is free software; you can redistribute it and/or modify
@@ -29,6 +29,7 @@
 ::msgcat::mcset fr filenotexist "Impossible de charger %s. Le fichier n'existe pas."
 ::msgcat::mcset fr loading "Chargement de %s."
 ::msgcat::mcset fr initlink1 "Initialisation de la liaison étape 1 : Creation du socket vers %s:%s"
+::msgcat::mcset fr initssllink1 "Initialisation de la liaison SSL étape 1 : Creation du socket vers %s:%s"
 ::msgcat::mcset fr sockerror "Erreur lors de l'ouverture du socket : %s"
 ::msgcat::mcset fr days "jours"
 ::msgcat::mcset fr hours "heures"
@@ -43,7 +44,7 @@
 ::msgcat::mcset fr cont_shutdown "Coupure des services démandée par %s."
 ::msgcat::mcset fr cont_sockclose "Fermeture du socket"
 ::msgcat::mcset fr cont_rehash "\00310Rehash par %s"
-::msgcat::mcset fr cont_errorcmd "\00310Affichage des erreurs par %s"
+::msgcat::mcset fr cont_send "\00310\002RAW\003 Envoi d'un raw par %s :\017 %s"
 ::msgcat::mcset fr cont_source "\00310Source de %s par %s"
 ::msgcat::mcset fr cont_tcl "\00310TCL\017 Execution par %s de %s"
 ::msgcat::mcset fr cont_botjoin0 "\002%s\002 a tenté de me faire partir de tous les chans via un join 0."
@@ -54,6 +55,8 @@
 ::msgcat::mcset fr cont_whois0 "%s vient d'essayer de whois %s"
 ::msgcat::mcset fr cont_whois1 "Merci de ne pas whois %s"
 ::msgcat::mcset fr cont_notachan "Cette commande n'est disponible que sur un salon."
+::msgcat::mcset fr cont_nossl "Le module SSL n'est pas activé."
+::msgcat::mcset fr cont_dcc "\00310DCC\017 Accès à la partyline demandé par %s"
 
 # Messages for partyline
 ::msgcat::mcset fr pl_activation "Activation de la PL sur %s:%s."
@@ -67,9 +70,11 @@
 ::msgcat::mcset fr pl_help3 "Affiche la liste des personnes en PL"
 ::msgcat::mcset fr pl_help4 "Recharge le service"
 ::msgcat::mcset fr pl_help5 "Tue le service"
+::msgcat::mcset fr pl_help6 "Affiche les informations SSL si celui ci est activé"
+::msgcat::mcset fr pl_help7 "Envoie un RAW au réseau IRC"
+::msgcat::mcset fr pl_help8 "Source un fichier si il existe"
 ::msgcat::mcset fr pl_inpl "Présent en PL : %s"
 ::msgcat::mcset fr pl_inplauth "Présent en PL et authentifié : %s"
-::msgcat::mcset fr pl_rehash "Rehash par la PL : %s"
 ::msgcat::mcset fr pl_die "Die par la PL : %s"
 ::msgcat::mcset fr pl_auth0 "Vous êtes authentifié !!!"
 ::msgcat::mcset fr pl_auth1 "\00303\002PL Auth :\017 Mot de passe accepté sur %s"
@@ -77,3 +82,5 @@
 ::msgcat::mcset fr pl_notauth "Vous n'êtes pas authentifié. Merci d'utiliser la commande .pass <password> pour vous authentifier."
 ::msgcat::mcset fr pl_loaded "Serveur de PartyLine chargé."
 ::msgcat::mcset fr pl_alreadyload "La PL est déjà chargée !"
+
+# vim: set fenc=utf-8 sw=2 sts=2 ts=2 et filetype=tcl

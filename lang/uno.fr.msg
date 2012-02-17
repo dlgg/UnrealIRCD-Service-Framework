@@ -1,4 +1,25 @@
-#!/usr/bin/tclsh
+#!/usr/bin/env tclsh
+##############################################################################
+#
+# This program is free software; you can redistribute it and/or modify
+# it under the terms of the GNU General Public License as published by
+# the Free Software Foundation; either version 2 of the Licence, or
+# (at your option) any later version.
+# 
+# This program is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# GNU General Public License for more details.
+# 
+# You should have received a copy of the GNU General Public License
+# along with this program; if not, write to the Free Software
+# Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
+#
+# Product name : UNO module for UnrealIRCD Service Framework
+# Copyright (C) 2012 Damien Lesgourgues
+# Author(s): Damien Lesgourgues
+#
+##############################################################################
 
 # Messages UNO
 ::msgcat::mcset fr uno_welcome "Bienvenue ! Tapez \002!uno\002 pour lancer une partie de %s\017 :) (Liste de mes commandes : \002!unocmds\002)"
@@ -87,3 +108,5 @@
 ::msgcat::mcset fr uno_hasuno "%s \002\00309d\00312i\00313t \00309U\00312n\00313o\00308 ! \017"
 ::msgcat::mcset fr uno_plhasleft "%s\017 a quitté le salon, et est retiré de la partie."
 ::msgcat::mcset fr uno_idleplayer "%s\017 a un idle de \00313%d\017 minutes : son tour est sauté."
+
+# vim: set fenc=utf-8 sw=2 sts=2 ts=2 et filetype=tcl

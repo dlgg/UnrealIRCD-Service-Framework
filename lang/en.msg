@@ -1,4 +1,4 @@
-#!/usr/bin/tclsh
+#!/usr/bin/env tclsh
 ##############################################################################
 #
 # This program is free software; you can redistribute it and/or modify
@@ -29,6 +29,7 @@
 ::msgcat::mcset en filenotexist "Impossible to load %s. File doesn't exist."
 ::msgcat::mcset en loading "Loading %s."
 ::msgcat::mcset en initlink1 "Link initialisation step 1 : Creating socket to %s:%s"
+::msgcat::mcset en initssllink1 "SSL Link initialisation step 1 : Creating socket to %s:%s"
 ::msgcat::mcset en sockerror "Error during opening of socket : %s"
 ::msgcat::mcset en days "days"
 ::msgcat::mcset en hours "hours"
@@ -43,7 +44,7 @@
 ::msgcat::mcset en cont_shutdown "Shutdown of services asked by %s."
 ::msgcat::mcset en cont_sockclose "Closing socket"
 ::msgcat::mcset en cont_rehash "\00310Rehash by %s"
-::msgcat::mcset en cont_errorcmd "\00310Print error by %s"
+::msgcat::mcset en cont_send "\00310\002RAW\003 sent by %s :\017 %s"
 ::msgcat::mcset en cont_source "\00310Source of %s by %s"
 ::msgcat::mcset en cont_tcl "\00310TCL\017 Execution by %s of %s"
 ::msgcat::mcset en cont_botjoin0 "\002%s\002 try to make me leave all channels via a /join 0."
@@ -54,6 +55,8 @@
 ::msgcat::mcset en cont_whois0 "%s has try to whois %s"
 ::msgcat::mcset en cont_whois1 "Please don't whois %s"
 ::msgcat::mcset en cont_notachan "This command is only available on a channel."
+::msgcat::mcset en cont_nossl "SSL is not enabled."
+::msgcat::mcset en cont_dcc "\00310DCC\017 Partyline access requested by %s"
 
 # Messages for partyline
 ::msgcat::mcset en pl_activation "Activation of partyline on %s:%s."
@@ -67,13 +70,17 @@
 ::msgcat::mcset en pl_help3 "Print list of users on partyline"
 ::msgcat::mcset en pl_help4 "Reload the service"
 ::msgcat::mcset en pl_help5 "Kill the service"
+::msgcat::mcset en pl_help6 "Print SSL Information if SSL is enabled"
+::msgcat::mcset en pl_help7 "Send a RAW to IRC network"
+::msgcat::mcset en pl_help8 "Source a file if it exist"
 ::msgcat::mcset en pl_inpl "Connected on PL : %s"
 ::msgcat::mcset en pl_inplauth "Connected and authentified on PL : %s"
-::msgcat::mcset en pl_rehash "Rehash by partyline : %s"
 ::msgcat::mcset en pl_die "Die by partyline : %s"
 ::msgcat::mcset en pl_auth0 "You are authentified !!!"
 ::msgcat::mcset en pl_auth1 "\00303\002PL Auth :\017 Password accepted on %s"
 ::msgcat::mcset en pl_auth2 "\00304\002PL Auth :\017 Password refused on %s"
-::msgcat::mcset en pl_nouth "You are not authentified. Please use .pass <password> to authentify yourself."
+::msgcat::mcset en pl_notauth "You are not authentified. Please use .pass <password> to authentify yourself."
 ::msgcat::mcset en pl_loaded "PartyLine server loaded."
 ::msgcat::mcset en pl_alreadyload "PartyLine is already loaded !"
+
+# vim: set fenc=utf-8 sw=2 sts=2 ts=2 et filetype=tcl

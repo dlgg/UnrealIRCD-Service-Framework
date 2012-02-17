@@ -1,4 +1,4 @@
-#!/usr/bin/tclsh
+#!/usr/bin/env tclsh
 ##############################################################################
 #
 # This program is free software; you can redistribute it and/or modify
@@ -40,7 +40,7 @@ foreach file $::irc::modules {
   if {$debug==1} { puts "Checking if exist : $file" }
   if {[file exists $file]} {
     if {$debug==1} { puts "Trying to load : $file" }
-    if {[catch {source $file} err]} { puts "Error loading $file \n$err" }
+    if {[catch {source $file} err]} { puts "Error loading $file \n$::errorInfo"; exit }
   } else {
     if {$debug==1} { puts "File not exists : $file" }
     puts [::msgcat::mc filenotexist $file]
@@ -48,3 +48,5 @@ foreach file $::irc::modules {
 }
 
 if {$service=="0"} { puts [::msgcat::mc cont_netconn]; ::irc::socket_connect }
+
+# vim: set fenc=utf-8 sw=2 sts=2 ts=2 et filetype=tcl

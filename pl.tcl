@@ -1,4 +1,4 @@
-#!/usr/bin/tclsh
+#!/usr/bin/env tclsh
 ##############################################################################
 #
 # This program is free software; you can redistribute it and/or modify
@@ -85,15 +85,40 @@ proc ::pl::control { sockpl } {
         ::pl::send $sockpl [::msgcat::mc pl_help1]
         ::pl::send $sockpl "------------------------------"
         ::pl::send $sockpl " "
-        ::pl::send $sockpl ".close     [::msgcat::mc pl_help2]"
         ::pl::send $sockpl ".who       [::msgcat::mc pl_help3]"
+        ::pl::send $sockpl ".ssl       [::msgcat::mc pl_help6]"
+        ::pl::send $sockpl ".close     [::msgcat::mc pl_help2]"
+        ::pl::send $sockpl ".raw       [::msgcat::mc pl_help7]"
+        ::pl::send $sockpl ".source    [::msgcat::mc pl_help8]"
         ::pl::send $sockpl ".rehash    [::msgcat::mc pl_help4]"
         ::pl::send $sockpl ".die       [::msgcat::mc pl_help5]"
         return
       }
       .close { [expr {"[lindex $arg 1]" == ""}] { ::pl::closepl $sockpl $sockpl } { ::pl::closepl [lindex $arg 1] $sockpl }; return }
       .who { ::pl::send $sockpl [::msgcat::mc pl_inpl $::pl::socks]; ::pl::send $sockpl [::msgcat::mc pl_inplauth $::pl::authed]; return }
-      .rehash { ::irc::rehash ; ::irc::send ":$::irc::nick PRIVMSG $::irc::adminchan :\00304\002PL :\003\002 [::msgcat::mc pl_rehash $sockpl]"; return }
+      .ssl {
+        if {$::irc::ssl} {
+          array set sslstatus [::tls::status $::irc::sock]
+          ::pl::send $sockpl "SSL Status : Cipher       : $sslstatus(cipher)"
+          ::pl::send $sockpl "SSL Status : Sbits        : $sslstatus(sbits)"
+          ::pl::send $sockpl "SSL Status : Cert subject : $sslstatus(subject)"
+          ::pl::send $sockpl "SSL Status : Cert issuer  : $sslstatus(issuer)"
+          ::pl::send $sockpl "SSL Status : Cert hash    : $sslstatus(sha1_hash)"
+          ::pl::send $sockpl "SSL Status : Cert begin   : $sslstatus(notBefore)"
+          ::pl::send $sockpl "SSL Status : Cert end     : $sslstatus(notAfter)"
+          ::pl::send $sockpl "SSL Status : Cert serial  : $sslstatus(serial)"
+        } else {
+          ::pl::send $sockpl "[::msgcat::mc cont_nossl]"
+        }
+      }
+      .source {
+        if {[file exists [lindex $arg 1]]} {
+          if {[catch {source [lindex $arg 1]} error]} { puts "Error while loading [lindex $arg 1] : $error" }
+          ::irc::send ":$::irc::nick [tok PRIVMSG] $::irc::adminchan :[::msgcat::mc cont_source [lindex $arg 1] $sockpl]"
+        }
+      }
+      .raw { set sraw [lrange [join $arg] 1 end]; ::irc::send $sraw; ::irc::send ":$::irc::nick PRIVMSG $::irc::adminchan :[::msgcat::mc cont_send $sockpl $sraw]" }
+      .rehash { ::irc::rehash ; ::irc::send ":$::irc::nick PRIVMSG $::irc::adminchan :\00304\002PL :\003\002 [::msgcat::mc cont_rehash $sockpl]"; return }
       .die { ::irc::send ":$::irc::nick PRIVMSG $::irc::adminchan :\00304\002PL :\003\002 [::msgcat::mc pl_die $sockpl]"; ::irc::shutdown $sockpl; return }
     }
   } else {
@@ -129,3 +154,4 @@ proc ::pl::control { sockpl } {
 puts [::msgcat::mc pl_loaded]
 if {$::pl==0} { puts [::msgcat::mc pl_activation $::pl::ip $::pl::port]; ::pl::server }
 
+# vim: set fenc=utf-8 sw=2 sts=2 ts=2 et filetype=tcl

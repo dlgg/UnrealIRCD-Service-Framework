@@ -1,4 +1,4 @@
-#!/usr/bin/tclsh
+#!/usr/bin/env tclsh
 ##############################################################################
 #
 # This program is free software; you can redistribute it and/or modify
@@ -70,7 +70,7 @@ namespace eval uno {
   variable ScoreFile    "files/UnoScores"
   variable MaxNickLen   32
   variable MaxPlayers   8
-  variable NTC          "NOTICE"
+  variable NTC          "[::tools::tok NOTICE]"
 
   # Global Variables
   variable On             0
@@ -143,17 +143,20 @@ namespace eval uno {
   # Don't modify this
   ::irc::hook_register privmsg-[string tolower $chan] "::uno::controlpub"
   ::irc::hook_register privmsg-[string tolower $nick] "::uno::controlpriv"
-  ::irc::hook_register join-[string tolower $chan]    "::uno::controljoin"
-  ::irc::hook_register init                           "::uno::controlinit"
+  #::irc::hook_register join-[string tolower $chan]    "::uno::controljoin"
+  ::irc::hook_register sync                           "::uno::controlsync"
+
+  namespace import ::tools::tok
 }
 
-proc ::uno::controlinit { } { ::irc::bot_init $::uno::nick $::uno::username $::uno::hostname $::uno::realname ; ::irc::join_chan $::uno::nick $::uno::chan }
-proc ::uno::controljoin { nick } { ::irc::send ":$::uno::nick NOTICE $nick :[::msgcat::mc uno_welcome [::uno::ad]]" }
-proc ::uno::controlpriv { nick text } { if {$::debug==1} { ::irc::send ":$::uno::nick PRIVMSG $::uno::chan :\002PRIV\002 $nick > [join $text]" } }
+proc ::uno::controlsync {} { ::irc::bot_init $::uno::nick $::uno::username $::uno::hostname $::uno::realname ; ::irc::join_chan $::uno::nick $::uno::chan }
+proc ::uno::controlinit {} { ::irc::hook_register join-[string tolower $chan] "::uno::controljoin" }
+proc ::uno::controljoin { nick } { ::irc::send ":$::uno::nick [tok NOTICE] $nick :[::msgcat::mc uno_welcome [::uno::ad]]" }
+proc ::uno::controlpriv { nick text } { if {$::debug==1} { ::irc::send ":$::uno::nick [tok PRIVMSG] $::uno::chan :\002PRIV\002 $nick > [join $text]" } }
 
 proc ::uno::controlpub { nick text } {
   # nick uhost hand chan arg
-  #if {$::debug==1} { ::irc::send ":$::uno::nick PRIVMSG $::uno::chan :\002PUB \002 $nick > [join $text]" }
+  #if {$::debug==1} { ::irc::send ":$::uno::nick [tok PRIVMSG] $::uno::chan :\002PUB \002 $nick > [join $text]" }
   switch [lindex $text 0] {
     !uno-reset   { ::uno::Reset; set ::uno::On 0 }
     !uno         { ::uno::Init         $nick "none" "-" $::uno::chan "$text" }
@@ -219,8 +222,8 @@ proc ::uno::controlpub { nick text } {
 proc ::uno::Init {nick uhost hand chan arg} {
   if {$::debug==1} { puts [::msgcat::mc uno_unocmd $nick $chan] }
   if {$::uno::On > 0} {
-    if {$chan != $::uno::Chan} { ::irc::send ":$::uno::nick PRIVMSG $chan :[::msgcat::mc uno_startalready0 [::uno::ad]]" }
-    if {$chan == $::uno::Chan} { ::irc::send ":$::uno::nick PRIVMSG $chan :[::msgcat::mc uno_startalready1 [::uno::ad]]" }
+    if {$chan != $::uno::Chan} { ::irc::send ":$::uno::nick [tok PRIVMSG] $chan :[::msgcat::mc uno_startalready0 [::uno::ad]]" }
+    if {$chan == $::uno::Chan} { ::irc::send ":$::uno::nick [tok PRIVMSG] $chan :[::msgcat::mc uno_startalready1 [::uno::ad]]" }
     return
   }
   set ::uno::chan $chan
@@ -1478,7 +1481,7 @@ proc ::uno::LastMonthTop3 {nick uhost hand chan arg} {
 proc ::uno::Cmds {nick uhost hand chan arg} {
   if {$::debug==1} {
     puts "UNO : !unocmds par $nick."
-    ::irc::send ":$::irc::nick PRIVMSG $::irc::adminchan :\00304UNO :\017 !unocmds par \00302$nick\017."
+    ::irc::send ":$::irc::nick [tok PRIVMSG] $::irc::adminchan :\00304UNO :\017 !unocmds par \00302$nick\017."
   }
   ::uno::ntc $nick [::msgcat::mc uno_helpcmd]
   ::uno::ntc $nick [::msgcat::mc uno_helpstats]
@@ -1812,7 +1815,7 @@ proc ::uno::showwin {who crd} { ::uno::msg [::msgcat::mc uno_showwin [::uno::nik
 # Show Win by default
 proc ::uno::showwindefault {who} { ::uno::msg [::msgcat::mc uno_showwindefault [::uno::nikclr $who] [::uno::ad]] }
 # Player Has Uno
-proc ::uno::hasuno {who} { ::irc::send ":$::uno::nick PRIVMSG $::uno::Chan :\001ACTION [::msgcat::mc uno_hasuno [::uno::nikclr $who]]\001" }
+proc ::uno::hasuno {who} { ::irc::send ":$::uno::nick [tok PRIVMSG] $::uno::Chan :\001ACTION [::msgcat::mc uno_hasuno [::uno::nikclr $who]]\001" }
 
 
 #
@@ -1904,7 +1907,7 @@ proc ::uno::wildf {} { return " \00301,08 \002W\00300,03I\00300,04L\00300,12D \0
 # Channel And DCC Messages
 #
 proc ::uno::msg {what} {
-  ::irc::send ":$::uno::nick PRIVMSG $::uno::chan :$what"
+  ::irc::send ":$::uno::nick [tok PRIVMSG] $::uno::chan :$what"
 }
 proc ::uno::ntc {who what} {
   ::irc::send ":$::uno::nick $::uno::NTC $who :$what"
@@ -2024,3 +2027,4 @@ proc UnoAutoSkip {} {
   return
 }
 
+# vim: set fenc=utf-8 sw=2 sts=2 ts=2 et filetype=tcl

@@ -9,8 +9,9 @@
 2. Download
 3. Installation
 4. Configuration
-5. Modules
-6. Credits
+5. Commands
+6. Modules
+7. Credits
 
 # 1. Description
 ########################################################################
@@ -52,57 +53,85 @@ the developpers ask you to do it.
 
     a. General options
     ------------------
-mysock(debug)       0 for no debug / 1 (default) for debug informations
-                    in log.
-mysock(lang)        Available for the moment : en fr.
-mysock(toload)      Lists of modules to load. This is the name of files
-                    under the games directory whitout the extension.
+debug             0 for no debug / 1 (default) for debug informations
+                  in log.
 
-    b. Service configuration
-    ------------------------
-mysock(ip)          IP address of your IRC hub for the connection of the
-                    UnrealIRCD Framework Service.
-mysock(port)        Port of your irchub. This need to be a serverport.
-mysock(password)    Password specified un unrealircd.conf for the link.
-mysock(numeric)     Unique identifier on the network of the service.
-mysock(servername)  Full DNS address of the service on the network.
-mysock(networkname) Name of your IRC Network. Please be careful, this is
-                    case-sensitive and need to be the same on all the
-                    IRC servers.
-mysock(hub)         Full DNS address of the hub where you connect the
-                    TCL Game Service.
+    b. General options
+    ------------------
+::irc::lang       Available for the moment : en fr.
+::irc::pid        File where the pid should be wrote.
 
-    c. Master Bot Controller
+    c. Service configuration
     ------------------------
-mysock(nick)        Nickname of the main bot
-mysock(username)    Username of the main bot
-mysock(hostname)    Hostname of the main bot
-mysock(realname)    GECOS of the main bot
-mysock(adminchan)   Logchan for the services
-mysock(chanlist)    Lists of all chans where the main bot needs to be.
-                    Don't add the games chans. The bot will join it
+::irc::ip         IP address of your IRC hub for the connection of the
+                  UnrealIRCD Framework Service.
+::irc::port       Port of your irchub. This need to be a serverport.
+::irc::password   Password specified un unrealircd.conf for the link.
+::irc::numeric    Unique identifier on the network of the service.
+::irc::servername Full DNS address of the service on the network.
+::irc::netname    Name of your IRC Network. Please be careful, this is
+                  case-sensitive and need to be the same on all the IRC
+                  servers.
+::irc::hub        Full DNS address of the hub where you connect the
+                  UnrealIRCD Framework Service.
+::irc::svcname    Name to use for the UnrealIRCD Framework. Tipically
+                  the name of your project.
+::irc::uversion   Version of unreal protocol to use.
+                  2310 : Unreal 3.2.9
+                  2309 : Unreal 3.2.6 3.2.7 3.2.8
+                  2308 : Unreal 3.2.5
+                  2307 : Unreal 3.2.4
+                  2306 : Unreal 3.2.3
+                  2305 : Unreal 3.2.2
+                  2304 : Unreal 3.2.1
+                  2303 : Unreal 3.2beta 3.2
+                  2302 : Unreal 3.1.1 to 3.1.4
+                  2301 : Unreal 3.1
+                  2300 : Unreal 3.0 
+::irc::ssl        Use SSL (1) or not (0). Please be sure to add ssl
+                  option in Unreal link block and connect to a SSL
+                  enabled port.
+::irc::token      Use TOKEN for raw to send and receive from network.
+                  Useless if service is on the same physical host of
+                  the hub where it is connected.
+
+    d. Master Bot Controller
+    ------------------------
+::irc::nick         Nickname of the main bot
+::irc::username     Username of the main bot
+::irc::hostname     Hostname of the main bot
+::irc::realname     GECOS of the main bot
+::irc::adminchan    Logchan for the services
+::irc::chanlist     Lists of all chans where the main bot needs to be.
+                    Don't add the modules chans. The bot will join it
                     automatically.
                     The masters bots addons will be active on all chans
                     by default unless they are coded for filtering the
                     chans.
-mysock(root)        Name of the main adminsitrator of the service. For
+::irc::root         Name of the main adminsitrator of the service. For
                     the moment this is the only one person who can use
                     the admin commands. Administrators of the service
                     will be add soon.
-mysock(cmdchar)     Character to use for prefixing the command. For not
+::irc::cmdchar      Character to use for prefixing the command. For not
                     confusing with other bots or hiding the commands.
 
+    e. Modules
+    ----------
+::irc::toload       Lists of modules to load. This is the name of files
+                    under the games directory whitout the extension.
 
-    d. Partyline configuration
+    f. Partyline configuration
     --------------------------
-mysock(plip)        IP to listen for the partyline. By default listen
-                    on all IP of the system (bind on 0.0.0.0)
-mysock(plport)      Port to listen for the partyline. By default 45000
-mysock(plpass)      Port to use for authentification on partyline. It is
+::pl::ip            IP to listen for the partyline. By default listen on
+                    all IP of the system (bind on 0.0.0.0)
+::pl::port          Port to listen for the partyline. By default 45000
+::pl::pass          Port to use for authentification on partyline. It is
                     the same for all admins for the moment until admins
                     code is done.
+::pl::myip          Primary IP of the partyline. It is used to permit
+                    partyline access via a dcc
 
-    e. Unreal link block
+    g. Unreal link block
     --------------------
 link tcl.hebeo.fr
 {
@@ -126,7 +155,34 @@ ulines
 };
 
 
-# 5. Modules
+# 5. Commands
+########################################################################
+    a. IRC Commands
+    ---------------
+These commands needs to be preceded by the cmdchar defined in the config
+
+dcc           Make the service send a DCC CHAT invitation
+tok           Test command for the tokens
+ssl           Print SSL Information if SSL is enabled
+raw           Send a RAW to IRC network
+source        Source a file if it exist
+rehash        Reload the service
+die           Kill the service
+
+
+    b. Partylines Commands
+    ----------------------
+.pass         Authentify to the service
+.who          Print list of users on partyline
+.ssl          Print SSL Information if SSL is enabled
+.close        Close your partyline or a given partyline
+.raw          Send a RAW to IRC network
+.source       Source a file if it exist
+.rehash       Reload the service
+.die          Kill the service
+
+
+# 6. Modules
 ########################################################################
     a. Variables to use
     -------------------
@@ -141,6 +197,7 @@ You'll find below the variables that are not explain in the config part.
 ::irc::users($chan)       Keep list of users on a chan. 
 ::irc::users($servername) Keep list of users on a server.
 ::irc::regusers           Keep list of registered users.
+::irc::srvname2num($servername)
 ::irc::srvname2num($numeric) Keep a map betweenn servernames and numeric
                              in decimal format.
 ::tools::ub64chars        Base64 map for unreal numeric NICK and SJOIN
@@ -217,6 +274,13 @@ signal you want to hook and the full name of your proc.
 Hooks are done in front of events so before updating variables. Thinks
 of this when you use ::irc:: variables.
 
+sync
+    List of procs to call during netsync. This is the best place to use
+    for making your module bot to connect and join the chans
+
+init
+    List of procs to call after netsync completion.
+
 join $nick $chan
     List of procs to call when $nick join a chan. This is a global hook
     who match on all chans of network
@@ -246,6 +310,13 @@ quit $nick $reason
 kill $nick $reason
     List of procs to call when $nick is kill with the reason $reason.
 
+nick $oldnick $nick
+    List of procs to call when an user change nick from $oldnick to
+    $nick
+
+command-$name $nick $text
+    Bind a "/msg $masterbot $name" command.
+
 privmsgchan $nick $chan $text
     List of procs to call when a PRIVMSG is send to a $chan where a bot
     is.
@@ -262,14 +333,14 @@ privmsg-$bot $nick $text
 
     e. Specific IRC TCL proc
     ------------------------
-All procs are in namespace ::pl so you need to prefix each of
+All procs below are in namespace ::pl so you need to prefix each of
 followings procs by ::pl:: or export it in your namespace.
 
 send $sock $raw
     Send a raw message to a pl sock
 
 
-# 6. Credits
+# 7. Credits
 ########################################################################
 TODO
 

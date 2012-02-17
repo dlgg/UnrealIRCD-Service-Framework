@@ -1,4 +1,4 @@
-#!/usr/bin/tclsh
+#!/usr/bin/env tclsh
 ##############################################################################
 #
 # This program is free software; you can redistribute it and/or modify
@@ -46,6 +46,9 @@ namespace eval irc {
   variable netname    "Network Name"
   variable hub        "hub.domain.tld"
   variable svcname    "TCL Framework"
+  variable uversion   "2310"
+  variable ssl        "0"
+  variable token      "1"
 
   # Master Bot Controller
   variable nick       "FrameWork"
@@ -61,7 +64,8 @@ namespace eval irc {
   variable modules    ""
 
   # Internal variables
-  variable version    "0.1"
+  variable version    "0.2"
+  variable reconnect  30000
   variable wait
   variable sock
   variable hook
@@ -69,14 +73,17 @@ namespace eval irc {
   # Variables for network
   variable srvname2num
   set srvname2num($numeric) $servername
+  set srvname2num($servername) $numeric
   variable mychans
   variable botlist
   variable userlist
   variable chanlist
   variable users
   variable regusers
+
   # List of existing hooks
-  variable hooklist   "init join join-#* part part-#* quit kill privmsgchan privmsg-*"
+  variable hooklist   "sync init join join-# part part-# kick kick-* quit kill privmsgchan privmsg-* command-* nick"
+
 }
 
 namespace eval pl {
@@ -84,6 +91,7 @@ namespace eval pl {
   variable ip         0.0.0.0
   variable port       46000
   variable pass       "password"
+  variable myip       42.42.42.42
 }
 
 # Setting default lang
@@ -93,3 +101,4 @@ proc ::irc::set_lang {lang} { if {$lang != ""} { ::msgcat::mclocale $lang } }
 # Logging message
 puts [::msgcat::mc loadmodule "Configuration"]
 
+# vim: set fenc=utf-8 sw=2 sts=2 ts=2 et filetype=tcl
