@@ -130,8 +130,6 @@ namespace eval tools {
   proc readDB { file } { source $file } 
   
   proc pluralize { number } { if { $number > 1} { return "s" } }
-<<<<<<< HEAD
-=======
 
   # Manage timers
   if {![info exists  ::tools::timers(list)]} { array set  ::tools::timers { list "" } }
@@ -311,7 +309,6 @@ namespace eval tools {
     return [binary format c4 $octets]
   }
 
->>>>>>> dlgg/master
 }
 
 # Link to IRC Network
@@ -333,13 +330,6 @@ proc ::irc::socket_connect {} {
   return
 }
 
-<<<<<<< HEAD
-# Proc to init hook
-proc ::irc::hook_init {} {
-  foreach h $::irc::hooklist { if {![info exists ::irc::hook($h)]} { set ::irc::hook($h) "" } }
-}
-
-=======
 proc ::irc::netsync {} {
   if {$::irc::token} { ::irc::send "PROTOCTL NOQUIT NICKv2 UMODE2 VL NS TKLEXT CLK SJOIN SJOIN2 SJ3 TOKEN" } else { ::irc::send "PROTOCTL NOQUIT NICKv2 UMODE2 VL NS TKLEXT CLK SJOIN SJOIN2 SJ3" }
   ::irc::send "PASS $::irc::password"
@@ -373,7 +363,6 @@ proc ::irc::reset_timeout {} {
 }
 proc ::irc::pinghub {} { ::irc::send "[tok PING] $::irc::servername" }
 
->>>>>>> dlgg/master
 # Proc to register a hook
 proc ::irc::hook_register { hook callpoint } {
   if {$::debug==1} { puts "Registering hook : $hook => $callpoint" }
@@ -418,13 +407,8 @@ proc ::irc::rehash {} {
       puts [::msgcat::mc filenotexist $file]
     }
   }
-<<<<<<< HEAD
-  ::irc::hook_init
-  ::irc::send ":$::irc::nick PRIVMSG $::irc::adminchan :\00304[::msgcat::mc rehashdone]"
-=======
   ::irc::reset_timeout
   ::irc::send ":$::irc::nick [tok PRIVMSG] $::irc::adminchan :\00304[::msgcat::mc rehashdone]"
->>>>>>> dlgg/master
   return
 }
 
@@ -447,13 +431,8 @@ proc ::pl::send {sock data} {
 }
 
 proc ::irc::bot_init { nick user host gecos } {
-<<<<<<< HEAD
-  ::irc::send "BD + Q * $nick $::irc::servername 0 [::tools::unixtime] :Reserved for $::irc::svcname"
-  ::irc::send "& $nick 0 [::tools::unixtime] $user $host $::irc::servername 0 +oSqB * * :$gecos"
-=======
   ::irc::send "[tok TKL] + Q * $nick $::irc::servername 0 [::tools::unixtime] :Reserved for $::irc::svcname"
   ::irc::send "[tok NICK] $nick 0 [::tools::unixtime] $user $host [::tools::dec2base $::irc::numeric $::tools::ub64chars] 0 +oSqB * * :$gecos"
->>>>>>> dlgg/master
   if {$nick==$::irc::nick} {
     join_chan $::irc::nick $::irc::adminchan
     foreach chan $::irc::chanlist { join_chan $::irc::nick $chan }
@@ -470,16 +449,6 @@ proc ::irc::bot_init { nick user host gecos } {
 
 proc ::irc::join_chan {bot chan} {
   if {$chan=="0"} {
-<<<<<<< HEAD
-    ::irc::send ":$::irc::nick ! $::irc::adminchan :[::msgcat::mc botjoin0 $bot]"
-  } else {
-    if {$bot==$::irc::nick} {
-      ::irc::send ":$bot C $chan"
-      ::irc::send ":$bot G $chan +qo $bot $bot"
-    } else {
-      ::irc::send ":$bot C $chan"
-      ::irc::send ":$::irc::nick G $chan +ao $bot $bot"
-=======
     ::irc::send ":$::irc::nick [tok PRIVMSG] $::irc::adminchan :[::msgcat::mc botjoin0 $bot]"
   } else {
     if {$bot==$::irc::nick} {
@@ -488,7 +457,6 @@ proc ::irc::join_chan {bot chan} {
     } else {
       ::irc::send ":$bot [tok JOIN] $chan"
       ::irc::send ":$::irc::nick [tok MODE] $chan +ao $bot $bot"
->>>>>>> dlgg/master
     }
     lappend ::irc::mychans [join $chan]
     set ::irc::mychans [::tools::nodouble $::irc::mychans]
@@ -591,16 +559,10 @@ proc ::irc::shutdown { nick } {
   if {[info exists ::pl]} { if {$::pl==1} {
     foreach s $::pl::socks { ::pl::closepl $s $nick }
   } }
-<<<<<<< HEAD
-  ::irc::send ":$::irc::nick , :[::msgcat::mc cont_shutdown $nick]"
-  foreach bot $::irc::botlist { ::irc::send ":$bot QUIT :[::msgcat::mc cont_shutdown $nick]" }
-  ::irc::send ":$::irc::servername - $::irc::hub :[::msgcat::mc cont_shutdown $nick]"
-=======
   set quitmsg [::msgcat::mc cont_shutdown $nick]
   ::irc::send ":$::irc::nick [tok QUIT] :$quitmsg"
   foreach bot $::irc::botlist { ::irc::send ":$bot [tok QUIT] :$quitmsg" }
   ::irc::send ":$::irc::servername [tok SQUIT] $::irc::hub :$quitmsg"
->>>>>>> dlgg/master
   close $::irc::sock
   exit 0
 }

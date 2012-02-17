@@ -37,23 +37,6 @@ proc ::irc::socket_control {} {
     set ncarg [::tools::stripmirc $arg]
     puts "<<< IRC <<< $ncarg"
   }
-<<<<<<< HEAD
-
-  if {[lrange $arg 1 end]=="NOTICE AUTH :*** Looking up your hostname..."} {
-    ::irc::send "PROTOCTL NOQUIT NICKv2 UMODE2 VL NS TKLEXT CLK SJ3 TOKEN"
-    ::irc::send "PASS $::irc::password"
-    ::irc::send "SERVER $::irc::servername 1 :U2309-Fh6XiOoEe-$::irc::numeric UnrealIRCD Service Framework V.$::irc::version"
-    ::irc::bot_init $::irc::nick $::irc::username $::irc::hostname $::irc::realname
-    ::irc::send "AO 0 [::tools::unixtime] 2309 * 0 0 0 :$::irc::netname"
-    ::irc::send "ES"
-    return 0
-  }
-
-  switch [lindex $arg 0] {
-    "8" {
-    #<<< PING :irc1.hebeo.fr
-      ::irc::send "9 $::irc::servername [lindex $arg 1]"; return
-=======
   #if {[lrange $arg 1 end]=="NOTICE AUTH :*** Looking up your hostname..."} { ::irc::netsync; return }
 
   switch [lindex $arg 0] {
@@ -61,7 +44,6 @@ proc ::irc::socket_control {} {
     PING {
     #<<< PING :irc1.hebeo.fr
       ::irc::send "[tok PONG] $::irc::servername [lindex $arg 1]"; ::irc::reset_timeout; return
->>>>>>> dlgg/master
     }
     PASS {
     #<<< PASS :tclpur
@@ -78,16 +60,6 @@ proc ::irc::socket_control {} {
     SERVER {
     #<<< SERVER irc1.hebeo.fr 1 :U2310-Fhin6XeOoE-1 Hebeo irc1 server
       set hubname [lindex $arg 1]
-<<<<<<< HEAD
-      set numeric [lindex [split [lindex $arg 3] '-'] 2]
-      set description [lrange $arg 4 end]
-      if {[::tools::testcs $hubname $::irc::hub]} {
-        if {$::debug==1} { puts "Received hubname is OK ! Numeric : $numeric" }
-        set ::irc::srvname2num($numeric) $hubname
-        return
-      } else {
-        puts "Received hubname is not OK ! Link abort !"
-=======
       #set hop [lindex $arg 2]
       set unrealversion [string range [lindex $arg 3] 2 5]
       set numeric [lindex [split [lindex $arg 3] '-'] 2]
@@ -99,7 +71,6 @@ proc ::irc::socket_control {} {
       }
       if {![::tools::testcs $hubname $::irc::hub]} {
         puts "Received hubname is not OK ! Link abort ! I have received $hubname but I am waiting for $::irc::hub"
->>>>>>> dlgg/master
         close $::irc::sock
         exit 0
       }
@@ -108,12 +79,8 @@ proc ::irc::socket_control {} {
       set ::irc::srvname2num($hubname) $numeric
       return
     }
-<<<<<<< HEAD
-    "AO" {
-=======
     AO -
     NETINFO {
->>>>>>> dlgg/master
     #<<< NETINFO 5 1326465580 2310 MD5:4609f507a584411d7327af344c3ef61c 0 0 0 :Hebeo
       #set maxglobal [lindex $arg 1]
       set hubtime [lindex $arg 2]
@@ -135,17 +102,11 @@ proc ::irc::socket_control {} {
         return
       }
     }
-<<<<<<< HEAD
-    "&" {
-    #<<< NICK Yume       1 1326268587 chaton 192.168.42.1 1 0 +iowghaAxNz * 851AC590.11BF4B94.149A40B0.IP :Structure of Body
-    #<<< NICK GameServer 1 1326702996 tclsh  tcl.hebeo.fr g 0 +oSqB       * heb1-EAB106C8.hebeo.fr        :TCL GameServer Controller
-=======
     "&" -
     NICK {
     #<<< NICK Yume       1        1326268587 chaton   192.168.42.1 1      0            +iowghaAxNz *           851AC590.11BF4B94.149A40B0.IP :Structure of Body
     #<<< NICK GameServer 1        1326702996 tclsh    tcl.hebeo.fr g      0            +oSqB       *           heb1-EAB106C8.hebeo.fr        :TCL GameServer Controller
     #    NICK nick       hopcount timestamp  username hostname     server servicestamp +usermodes  virtualhost cloakhost                     :realname
->>>>>>> dlgg/master
       set nickname [lindex $arg 1]
       #set hopcount [lindex $arg 2]
       #set timestamp [lindex $arg 3]
@@ -165,7 +126,7 @@ proc ::irc::socket_control {} {
       ::irc::parse_umodes $nickname $umodes
       return
     }
-    "-" {
+    SQUIT {
     #<<< SQUIT irc2.hebeo.fr :Yume
     # TODO : remove srvname2num($numeric) corresponding to server
       set servername [lindex $arg 1]
@@ -175,12 +136,8 @@ proc ::irc::socket_control {} {
         ::irc::user_quit $user
       }
       unset ::irc::users([string tolower $servername])
-<<<<<<< HEAD
-#      unset ::irc::srvname2num($numeric)
-=======
       array unset srvname2num $numeric
       array unset srvname2num $servername
->>>>>>> dlgg/master
       return
     }
   }
@@ -191,12 +148,8 @@ proc ::irc::socket_control {} {
 ###
 
   switch [lindex $arg 1] {
-<<<<<<< HEAD
-    "!" {
-=======
     "!" -
     PRIVMSG {
->>>>>>> dlgg/master
     # PRIVMSG
       set from [string range [lindex $arg 0] 1 end]
       set to [lindex $arg 2]
@@ -212,14 +165,6 @@ proc ::irc::socket_control {} {
       # Some admins commands to manage the service
       if {[::irc::is_admin $from] && [::tools::test [string index [lindex $comm 0] 0] $::irc::cmdchar]} {
         switch [string range [lindex $comm 0] 1 end] {
-<<<<<<< HEAD
-          error { set errorInfo; ::irc::send ":$::irc::nick ! $::irc::adminchan :[::msgcat::mc cont_errorcmd $from]" }
-          rehash { ::irc::rehash ; ::irc::send ":$::irc::nick ! $::irc::adminchan :[::msgcat::mc cont_rehash $from]" }
-          source {
-            if {[file exists [lindex $comm 1]]} {
-              if {[catch {source [lindex $comm 1]} error]} { puts "Error while loading [lindex $comm 1] : $error" }
-              ::irc::send ":$::irc::nick ! $::irc::adminchan :[::msgcat::mc cont_source $comm $from]"
-=======
           raw { set sraw [lrange [join $comm] 1 end]; ::irc::send $sraw; ::irc::send ":$::irc::nick PRIVMSG $::irc::adminchan :[::msgcat::mc cont_send $from $sraw]" }
           rehash { ::irc::rehash ; ::irc::send ":$::irc::nick [tok PRIVMSG] $::irc::adminchan :[::msgcat::mc cont_rehash $from]" }
           source {
@@ -241,7 +186,6 @@ proc ::irc::socket_control {} {
               ::irc::send ":$::irc::nick [tok PRIVMSG] $::irc::adminchan :SSL Status : Cert serial  : $sslstatus(serial)"
             } else {
               ::irc::send ":$::irc::nick [tok PRIVMSG] $::irc::adminchan :[::msgcat::mc cont_nossl]"
->>>>>>> dlgg/master
             }
           }
           tok { if {[catch {::irc::send ":$::irc::nick [tok PRIVMSG] $::irc::adminchan :PRIVMSG Token test"} error]} { puts "Error token : $error" } }
@@ -254,9 +198,6 @@ proc ::irc::socket_control {} {
       }
       return
     }
-<<<<<<< HEAD
-    "&" {
-=======
     ES -
     EOS {
     # <<< :irc1.hebeo.fr ES
@@ -276,7 +217,6 @@ proc ::irc::socket_control {} {
     }
     "&" -
     NICK {
->>>>>>> dlgg/master
     #<<< :Yume NICK Yuki 1326485191
       set oldnick [string range [lindex $arg 0] 1 end]
       set newnick [lindex $arg 2]
@@ -288,12 +228,8 @@ proc ::irc::socket_control {} {
       if {([string index $to 0]=="#") && ([info exists ::irc::hook(nick)])} { foreach hookp $::irc::hook(nick) { $hookp $oldnick $newnick } }
       return
     }
-<<<<<<< HEAD
-    "G" {
-=======
     G -
     MODE {
->>>>>>> dlgg/master
     # :user MODE user +/-xxxx
       #set nick [lindex $arg 2]
       #set modes [lindex $arg 3]
@@ -303,12 +239,8 @@ proc ::irc::socket_control {} {
       [is_chan $target] { return } { ::irc::parse_umodes $nick $modes }
       return
     }
-<<<<<<< HEAD
-    "|" {
-=======
     "|" -
     UMODE2 {
->>>>>>> dlgg/master
     #<<< :Yume UMODE2 +oghaAN
     #<<< :Yume UMODE2 +owghaANqHp
       set nick [string range [lindex $arg 0] 1 end]
@@ -316,13 +248,9 @@ proc ::irc::socket_control {} {
       ::irc::parse_umodes $nick $modes
       return
     }
-<<<<<<< HEAD
-    "v" {
-=======
     n -
     v -
     SVS2MODE {
->>>>>>> dlgg/master
     #<<< @10 SVS2MODE Poker-egg +d 1
     #<<< @10 SVS2MODE Yuki -r+d 1
     #<<< @10 SVS2MODE Yume +rd 1327415440
@@ -332,12 +260,8 @@ proc ::irc::socket_control {} {
       ::irc::parse_umodes $nick $modes
       return
     }
-<<<<<<< HEAD
-    "," {
-=======
     "," -
     QUIT {
->>>>>>> dlgg/master
     #<<< :s220nov8kjwu9p9 QUIT :Client exited
     #<<< :Poker-egg QUIT :\[irc1.hebeo.fr\] Local kill by Yume (calin :D)
       set nickname [string range [lindex $arg 0] 1 end]
@@ -348,12 +272,8 @@ proc ::irc::socket_control {} {
       if {[info exists ::irc::hook(quit)]} { foreach hookj $::irc::hook(quit) { $hookj $nickname $reason } }
       return
     }
-<<<<<<< HEAD
-    "." {
-=======
     "." -
     KILL {
->>>>>>> dlgg/master
     #<<< :Yume KILL Poker-egg :851AC590.11BF4B94.149A40B0.IP!Yume (salope)
     #<<< :irc1.hebeo.fr KILL UNO :irc1.hebeo.fr (Nick Collision)
       set killer [string range [lindex $arg 0] 1 end]
@@ -370,33 +290,6 @@ proc ::irc::socket_control {} {
       foreach n $::irc::botlist { if {[::tools::test $nickname $n]} { ::irc::send "[tok QUIT] $n :Kill by $killer : $reason" } }
       return
     }
-<<<<<<< HEAD
-    "AA" {
-      # not in use
-      return
-    }
-    "AL" {
-      # not in use
-      return
-    }
-    "AD" {
-      # not in use
-      return
-    }
-    "AZ" {
-      # not in use
-      return
-    }
-    "AE" {
-      # not in use
-      return
-    }
-    "BK" {
-      # not in use
-      return
-    }
-    "#" {
-=======
     AA -
     SETHOST {
       # not in use
@@ -429,28 +322,18 @@ proc ::irc::socket_control {} {
     }
     "#" -
     WHOIS {
->>>>>>> dlgg/master
     #<<< :Yume WHOIS Uno :uno
       set source [string range [lindex $arg 0] 1 end]
       set target [string range [lindex $arg 3] 1 end]
       if {[lsearch [string tolower $::irc::botlist] [string tolower $target]]<0} { return }
-<<<<<<< HEAD
-      ::irc::send ":$::irc::nick ! $::irc::adminchan :[::msgcat::mc cont_whois0 $source $target]"
-      ::irc::send ":$::irc::nick B $source :[::msgcat::mc cont_whois1 $target]"
-=======
       ::irc::send ":$::irc::nick [tok PRIVMSG] $::irc::adminchan :[::msgcat::mc cont_whois0 $source $target]"
       ::irc::send ":$::irc::nick [tok NOTICE] $source :[::msgcat::mc cont_whois1 $target]"
->>>>>>> dlgg/master
       #::irc::send ":$target 320 whois is not implemented."
       #::irc::send ":$target 318 :End of /WHOIS list."
       return
     }
-<<<<<<< HEAD
-    "BA" {
-=======
     BA -
     SWHOIS {
->>>>>>> dlgg/master
     #<<< @1 SWHOIS Yume :a trouve le passe de la oline magique
       # not in use
       return
@@ -471,17 +354,6 @@ proc ::irc::socket_control {} {
       if {$::debug==1} { puts "Adding server numeric $numeric for server $servername." }
       return
     }
-<<<<<<< HEAD
-    "AG" {
-      # not in use
-      return
-    }
-    "2" {
-      # not in use
-      return
-    }
-    "~" {
-=======
     AG -
     SDESC {
       # not in use
@@ -499,7 +371,6 @@ proc ::irc::socket_control {} {
     #<<< :irc1.hebeo.fr SJOIN 1329117449 # :Yuki2 YumeNoYuki @Yume &yuki!*@* \"Yume!*@* \'yume!*@*
     #<<< :irc1.hebeo.fr SJOIN 1329117447 #opers +sntrO :Yuki2 YumeNoYuki @~Hebeo @*Yume 
     # After netsync
->>>>>>> dlgg/master
     #<<< @1 SJOIN 1325144112 #Poker :Yume 
     #<<< @1 SJOIN 1327468838 #UNO   :@Yume 
     # *owner ~protect @op %halfop +voice
@@ -556,12 +427,8 @@ proc ::irc::socket_control {} {
         }
       }
     }
-<<<<<<< HEAD
-    "C" {
-=======
     C -
     JOIN {
->>>>>>> dlgg/master
     #<<< :Yume JOIN #blabla,#opers
       set nick [string range [lindex $arg 0] 1 end]
       set chans [join [split [lindex $arg 2] ,]]
@@ -571,12 +438,8 @@ proc ::irc::socket_control {} {
       }
       return
     }
-<<<<<<< HEAD
-    "D" {
-=======
     D -
     PART {
->>>>>>> dlgg/master
     #<<< :Yume PART #Poker
     #<<< :Yume PART #test :bla bla ?
       set nick [string range [lindex $arg 0] 1 end]
@@ -590,12 +453,8 @@ proc ::irc::socket_control {} {
       if {[info exists ::irc::hook(part-[string tolower $chan])]} { $::irc::hook(part-[string tolower $chan]) $nick $reason }
       return
     }
-<<<<<<< HEAD
-    "H" {
-=======
     H -
     KICK {
->>>>>>> dlgg/master
     # <<< :Yume KICK # Yuki2 :<3 je t\'aime
       set kicker [string range [lindex $arg 0] 1 end]
       set chan [lindex $arg 2]
