@@ -548,7 +548,7 @@ proc ::irc::user_quit { nick } {
   set ::irc::userlist [::tools::lremove $::irc::userlist $nick]
   foreach arr [array names ::irc::users *] {
     set ::irc::users($arr) [::tools::lremove $::irc::users($arr) $nick]
-    if {[llength $::irc::users($arr)==0]} {
+    if {[llength $::irc::users($arr)]==0} {
       if {[::irc::is_chan $arr]} {
         if {$::debug==1} { puts "Removing $arr from ::irc::chanlist" }
         set ::irc::chanlist [::tools::lremove $::irc::chanlist $arr]
