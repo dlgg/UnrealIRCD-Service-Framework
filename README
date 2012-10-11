@@ -193,12 +193,12 @@ You'll find below the variables that are not explain in the config part.
 ::irc::mychans            Keep list of chans where the bots of
                           framework are.
 ::irc::userlist           Keep list of all users on the network.
-::irc::chanlist           Keep list of all the chans.
+::irc::chanlist           Keep list of all chans.
 ::irc::users($chan)       Keep list of users on a chan. 
 ::irc::users($servername) Keep list of users on a server.
 ::irc::regusers           Keep list of registered users.
 ::irc::srvname2num($servername)
-::irc::srvname2num($numeric) Keep a map betweenn servernames and numeric
+::irc::srvname2num($numeric) Keep a map between servernames and numeric
                              in decimal format.
 ::tools::ub64chars        Base64 map for unreal numeric NICK and SJOIN
 ::tools::ub64charsnickip  Base64 map for unreal NICKIP
@@ -231,7 +231,7 @@ llreplace $list $oldelement $newelement
    Return $list with $oldelement replaced by $newelement
 
 nodouble $list
-   Return $list without having an element who appear two times
+   Return $list without any duplicated elements
 
 duration
    Return a time in seconds in "xx days xx hours xx minutes xx seconds"
@@ -258,7 +258,7 @@ bot_init $nick $username $hostname $gecos
     Connect a virtual bot with given nick, username, hostname and gecos
 
 join_chan $bot $chan
-    Make a virtual bot join a chan and being +ao
+    Make a virtual bot join a chan and get +ao chanmodes
 
 is_admin $nick
     Return TRUE if the given nick is admin on the service
@@ -269,14 +269,17 @@ is_chan $string
 
     d. Hooks for developping modules
     --------------------------------
-For register a hook use the proc ::irc::hook_register follow by the
+For register a hook use the proc ::irc::hook_register followed by the
 signal you want to hook and the full name of your proc.
 Hooks are done in front of events so before updating variables. Thinks
 of this when you use ::irc:: variables.
 
+Below you'll found a list of hooks with the parameters sent to the 
+called proc.
+
 sync
     List of procs to call during netsync. This is the best place to use
-    for making your module bot to connect and join the chans
+    for making your module bot to connect and join chans
 
 init
     List of procs to call after netsync completion.
@@ -286,23 +289,23 @@ join $nick $chan
     who match on all chans of network
 
 join-$chan $nick
-    List of procs to call when $nick join the specific $chan.
+    List of procs to call when $nick join the given $chan.
 
 part $nick $chan $reason
-    List of procs to call when $nick part a chan. This is a global hook
+    List of procs to call when $nick left a chan. This is a global hook
     who match on all chans of network
 
-part-chan $nick $reason
-    List of procs to call when $nick part the specific $chan.
+part-$chan $nick $reason
+    List of procs to call when $nick part the given $chan.
 
 kick $kicker $chan $nick $reason
-    List of procs to call when $nick is kicked by $kicker from a $chan
-    for the $reason.
+    List of procs to call when $nick is kicked by $kicker from $chan
+    for $reason.
     This is a global hook who match on all chans of network
 
-kick-chan $kicker $nick $reason
+kick-$chan $kicker $nick $reason
     List of procs to call when $nick is kicked by $kicker from the
-    specific $chan.
+    given $chan for $reason.
 
 quit $nick $reason
     List of procs to call when $nick quit with the reason $reason.
@@ -323,18 +326,18 @@ privmsgchan $nick $chan $text
     $text is send escaped for security
 
 privmsg-#$chan $nick $text
-    List of procs to call when a PRIVMSG is send to a specific $chan.
+    List of procs to call when a PRIVMSG is send to a given $chan.
     $text is send escaped for security
 
 privmsg-$bot $nick $text
-    List of procs to call when a PRIVMSG is send to a specific $bot.
+    List of procs to call when a PRIVMSG is send to a given $bot.
     $text is send escaped for security
     
 
     e. Specific IRC TCL proc
     ------------------------
 All procs below are in namespace ::pl so you need to prefix each of
-followings procs by ::pl:: or export it in your namespace.
+following procs by ::pl:: or export it in your namespace.
 
 send $sock $raw
     Send a raw message to a pl sock
