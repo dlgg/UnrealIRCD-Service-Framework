@@ -124,6 +124,8 @@ proc ::irc::socket_control {} {
       #set vhost [lindex $arg 10]
       #set gecos [string range [lrange $arg 11 end] 1 end]
       lappend ::irc::userlist $nickname
+      lappend ::irc::regusers $nickname
+
       set ::irc::userlist [::tools::nodouble $::irc::userlist]
       lappend ::irc::users($::irc::srvname2num($numericdec)) $nickname
       set ::irc::users($::irc::srvname2num($numericdec)) [::tools::nodouble $::irc::users($::irc::srvname2num($numericdec))]
