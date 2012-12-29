@@ -86,7 +86,11 @@ proc ::irc::socket_control {} {
       set hubtime [lindex $arg 2]
       set currtime [::tools::unixtime]
       set netname "[string range [lrange $arg 8 end] 1 end]"
-      if {$hubtime != $currtime} { puts "Cloak are not sync. Difference is [expr $currtime - $hubtime] seconds." }
+      if {$hubtime != $currtime} { 
+        puts "Cloak are not sync. Difference is [expr $currtime - $hubtime] seconds." 
+        ::irc::send ":$::irc::servername [tok TSCTL] OFFSET [string range [expr $currtime - $hubtime] 0 1] [string range [expr $currtime - $hubtime] 1 [string length [expr $currtime - $hubtime]]] "
+        puts "Cloak are now synced" 
+      }
       if {![::tools::testcs $netname $::irc::netname]} {
         puts "Received network name doesn't correspond to given network name in configuration. I have received $netname but I am waiting for $::irc::netname. Abort link."
         ::irc::send ":$::irc::servername [tok SQUIT] $::irc::hub :Configuration error."
@@ -120,6 +124,8 @@ proc ::irc::socket_control {} {
       #set vhost [lindex $arg 10]
       #set gecos [string range [lrange $arg 11 end] 1 end]
       lappend ::irc::userlist $nickname
+      lappend ::irc::regusers $nickname
+
       set ::irc::userlist [::tools::nodouble $::irc::userlist]
       lappend ::irc::users($::irc::srvname2num($numericdec)) $nickname
       set ::irc::users($::irc::srvname2num($numericdec)) [::tools::nodouble $::irc::users($::irc::srvname2num($numericdec))]
@@ -155,6 +161,7 @@ proc ::irc::socket_control {} {
       set to [lindex $arg 2]
       set commc [list [string range [lindex $arg 3] 1 end] [lrange $arg 4 end]]
       set comm [::tools::stripmirc $commc]
+      set text [::tools::stripmirc [lrange $arg 4 end]]
       # Hooks for global PRIVMSG
       if {$::debug==1} { puts "First char of \$to is [string index $to 0]"; puts "::irc::hook(privmsgchan) exist ? [info exists ::irc::hook(privmsgchan)]" }
       if {([string index $to 0]=="#") && ([info exists ::irc::hook(privmsgchan)])} { foreach hookp $::irc::hook(privmsgchan) { $hookp $from $to "$commc" } }
@@ -188,12 +195,12 @@ proc ::irc::socket_control {} {
               ::irc::send ":$::irc::nick [tok PRIVMSG] $::irc::adminchan :[::msgcat::mc cont_nossl]"
             }
           }
-          tok { if {[catch {::irc::send ":$::irc::nick [tok PRIVMSG] $::irc::adminchan :PRIVMSG Token test"} error]} { puts "Error token : $error" } }
+          tok { if {[catch {::irc::send ":$::irc::nick [tok PRIVMSG] $from :Token OK"} error]} { puts "Error token : $error" } }
           dcc {
             ::irc::send ":$::irc::nick [tok PRIVMSG] $from :\001DCC CHAT chat [::tools::intip $::pl::myip] $::pl::port\001"
             ::irc::send ":$::irc::nick [tok PRIVMSG] $::irc::adminchan :[::msgcat::mc cont_dcc $from]"
           }
-          die { ::irc::shutdown $from }
+          die { ::irc::shutdown $from $text }
         }
       }
       return
@@ -225,7 +232,7 @@ proc ::irc::socket_control {} {
       set ::irc::regusers [::tools::llreplace $::irc::regusers $oldnick $newnick]
       foreach arr [array names ::irc::users *] { set ::irc::users($arr) [::tools::llreplace $::irc::users($arr) $oldnick $newnick] }
       # Hooks for nickchange
-      if {([string index $to 0]=="#") && ([info exists ::irc::hook(nick)])} { foreach hookp $::irc::hook(nick) { $hookp $oldnick $newnick } }
+      #if {([string index $to 0]=="#") && ([info exists ::irc::hook(nick)])} { foreach hookp $::irc::hook(nick) { $hookp $oldnick $newnick } }
       return
     }
     G -
@@ -423,7 +430,7 @@ proc ::irc::socket_control {} {
             }
           }
           # Updating global variables
-          ::irc::user_join $param $chan
+          ::irc::user_join $param $chan $chrights
         }
       }
     }

@@ -81,8 +81,8 @@ namespace eval youtube {
       }
       switch $::youtube::mode {
         full {
-          ::irc::send ":$::irc::nick PRIVMSG [join [list $chan $::irc::admin] ,]  :$::youtube::logo \002$author\002 : $title | \002Dur?e\002 :[::tools::duration $duration] | \002Vues\002 : $view | \002Favoris\002 : $favs"
-          ::irc::send ":$::irc::nick PRIVMSG [join [list $chan $::irc::admin] ,]  :$::youtube::logo \002Note moyenne\002 : $average/5 \002par\002 $raters personnes | \002Commentaires\002 : $comms | \002J'aime\002 : $like | \002Je n'aime pas\002 : $dislike"
+          ::irc::send ":$::irc::nick PRIVMSG $chan :$::youtube::logo \002$author\002 : $title | \002Durée\002 :[::tools::duration $duration] | \002Vues\002 : $view | \002Favoris\002 : $favs"
+          ::irc::send ":$::irc::nick PRIVMSG $chan :$::youtube::logo \002Note moyenne\002 : $average/5 \002par\002 $raters personnes | \002Commentaires\002 : $comms | \002J'aime\002 : $like | \002Je n'aime pas\002 : $dislike"
         }
         light { ::irc::send ":$::irc::nick PRIVMSG [join [list $chan $::irc::admin] ,]  :$::youtube::logo \002$author\002 : $title | \002Dur?e\002 :[::tools::duration $duration] | \002Vues\002 : $view | \002Favoris\002 : $favs | \002Note moyenne\002 : $average/5 \002par\002 $raters personnes" }
         default { ::irc::send ":$::irc::nick PRIVMSG $::irc::admin :$::youtube::logo Bad mode for output : $::youtube::mode" }

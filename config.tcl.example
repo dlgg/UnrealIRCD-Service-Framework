@@ -57,8 +57,12 @@ namespace eval irc {
   variable realname   "UnrealIRCD Service Framework Controller"
   variable adminchan  "#Services"
   variable chanlist   "#opers #logs"
-  variable root       "Root"
+  variable root       [list "Root" "Root2"]
   variable cmdchar    "."
+
+  # Module ShoutCast
+  variable shoutcast_host xxx.xxx.xxx.xxx
+  variable shoutcast_port 8000
 
   # Modules to load
   variable modules    ""

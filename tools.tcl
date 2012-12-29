@@ -92,7 +92,14 @@ namespace eval tools {
   proc rand { multiplier } {
     return [expr { int( rand() * $multiplier ) }]
   }
-
+  
+  proc rand { min max } {
+    set maxFactor [expr [expr $max + 1] - $min]
+    set value [expr int([expr rand() * 100])]
+    set value [expr [expr $value % $maxFactor] + $min]
+    return $value
+  }
+  
   # Conversion of unreal server numeric from unreal specific base 64 to decimal
   set ub64chars { 0 1 2 3 4 5 6 7 8 9 A B C D E F G H I J K L M N O P Q R S T U V W X Y Z a b c d e f g h i j k l m n o p q r s t u v w x y z \{ \} }
   set ub64charsnickip { A B C D E F G H I J K L M N O P Q R S T U V W X Y Z a b c d e f g h i j k l m n o p q r s t u v w x y z 0 1 2 3 4 5 6 7 8 9 + / }
@@ -177,9 +184,21 @@ namespace eval tools {
   proc timerexists {command} { return }
   proc utimerexists {command} { return }
   
-  proc every {seconds body} { eval $body; after [expr {$seconds * 1000}] [list ::tools::every $seconds $body]; return }
-  proc everym {m body} { eval $body; timer $m [list everym $m $body]; return }
-  proc everys {s body} { eval $body; timer $s [list everys $s $body]; return }
+  proc every {seconds body} { 
+    eval $body
+    after [expr {$seconds * 1000}] [list ::tools::every $seconds $body]
+    return 
+  }
+
+  proc everym {m body} { 
+    eval $body; timer $m [list everym $m $body]
+    return 
+  }
+
+  proc everys {s body} { 
+    eval $body; timer $s [list everys $s $body]
+    return 
+  }
 
   proc tok { cmd } {
     if {$::irc::token} {
@@ -312,7 +331,32 @@ namespace eval tools {
     foreach oct $octets { if {$oct < 0 || $oct > 255} { return -code error "invalid ip address" } }
     return [binary format c4 $octets]
   }
+  
+  package provide extend 1.0
+  package require Tcl 8.5
 
+  proc extend {cmd body} {
+    if {![namespace exists ${cmd}]} {
+        set wrapper [string map [list %C $cmd %B $body] {
+            namespace eval %C {}
+            rename %C %C::%C
+            namespace eval %C {
+                proc _unknown {junk subc args} {
+                    return [list %C::%C $subc]
+                }
+                namespace ensemble create -unknown %C::_unknown
+            }
+        }]
+    }
+
+    append wrapper [string map [list %C $cmd %B $body] {
+        namespace eval %C {
+            %B
+            namespace export -clear *
+        }
+    }]
+    uplevel 1 $wrapper
+  }
 }
 
 # Link to IRC Network
@@ -335,7 +379,13 @@ proc ::irc::socket_connect {} {
 }
 
 proc ::irc::netsync {} {
-  if {$::irc::token} { ::irc::send "PROTOCTL NOQUIT NICKv2 UMODE2 VL NS TKLEXT CLK SJOIN SJOIN2 SJ3 TOKEN" } else { ::irc::send "PROTOCTL NOQUIT NICKv2 UMODE2 VL NS TKLEXT CLK SJOIN SJOIN2 SJ3" }
+  set protoctl [ list "PROTOCTL" "NOQUIT" "NICKv2" "UMODE2" "VL" "NS" "TKLEXT" "CLK" "SJOIN" "SJOIN2" "SJ3" ]
+   
+  if {$::irc::token} { 
+    lappend protoctl "TOKEN"
+  }
+  ::irc::send [join $protoctl " "]
+  
   ::irc::send "PASS $::irc::password"
   ::irc::send "SERVER $::irc::servername 1 :U$::irc::uversion-Fh6XiOoEe-$::irc::numeric UnrealIRCD Service Framework V.$::irc::version"
   ::irc::bot_init $::irc::nick $::irc::username $::irc::hostname $::irc::realname
@@ -471,7 +521,15 @@ proc ::irc::join_chan {bot chan} {
   return
 }
 
-proc ::irc::is_admin { nick } { [string equal -nocase $nick $::irc::root] { return [expr {[lsearch -exact $::irc::regusers $nick] >= 0}] } { return 0 } }
+proc ::irc::is_admin { nick } { 
+  puts [lsearch -exact $::irc::root $nick]
+ if {[lsearch -exact $::irc::root $nick] != "-1"} { 
+    return 1
+  } else { 
+    return 0 
+  } 
+}
+
 proc ::irc::is_chan { chan } { [string equal [string index $chan 0] "#"] { return 1 } { return 0 } }
 
 proc ::irc::parse_umodes { nick modes } {
@@ -522,12 +580,16 @@ proc ::irc::reg_user { mode nick } {
   return
 }
 
-proc ::irc::user_join { nick chan } {
+proc ::irc::user_join { nick chan modes } {
   set chan [string tolower $chan]
   lappend ::irc::users($chan) $nick
   set ::irc::users($chan) [::tools::nodouble $::irc::users($chan)]
+  
   lappend ::irc::chanlist $chan
   set ::irc::chanlist [::tools::nodouble $::irc::chanlist]
+  
+  lappend ::irc::modeslist($chan) ($nick, $modes)
+	
   # Hooks for global join
   if {[info exists ::irc::hook(join)]} { foreach hookj $::irc::hook(join) { $hookj $nick $chan } }
   # Hooks for specific join on a chan
@@ -559,11 +621,13 @@ proc ::irc::user_quit { nick } {
   return
 }
 
-proc ::irc::shutdown { nick } {
+proc ::irc::shutdown { nick reason } {
   if {[info exists ::pl]} { if {$::pl==1} {
     foreach s $::pl::socks { ::pl::closepl $s $nick }
   } }
-  set quitmsg [::msgcat::mc cont_shutdown $nick]
+
+  if {$reason != ""} { set quitmsg "[::msgcat::mc cont_shutdown $nick] (Raison : $reason)" } else { set quitmsg "[::msgcat::mc cont_shutdown $nick]" } 
+
   ::irc::send ":$::irc::nick [tok QUIT] :$quitmsg"
   foreach bot $::irc::botlist { ::irc::send ":$bot [tok QUIT] :$quitmsg" }
   ::irc::send ":$::irc::servername [tok SQUIT] $::irc::hub :$quitmsg"

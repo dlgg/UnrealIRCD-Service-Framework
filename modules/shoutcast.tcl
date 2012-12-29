@@ -36,6 +36,50 @@ namespace eval shoutcast {
 
   variable host $::irc::shoutcast_host
   variable port $::irc::shoutcast_port
+
+  variable current_song ''
+}
+
+proc ::shoutcast::getcurrentsong { nick chan text } {
+  set sock [socket $::shoutcast::host $::shoutcast::port]
+  puts $sock "GET /7.html HTTP/1.0"
+  puts $sock "User-Agent: Mozilla/5.0 (X11; U; Linux i686; en-US; rv:0.9.9)"
+  puts $sock "Host: $::shoutcast::host"
+  puts $sock "Connection: close"
+  puts $sock ""
+  flush $sock
+
+  while {[eof $sock] != 1} {
+    regexp -all {<body>(.+)</body>} [gets $sock] x match
+    if {[info exists match]} {
+      set get [split $match ',']
+      
+      ::irc::send ":$::irc::nick ! $chan :Titre en cours de lecture : [lindex $get 6]"
+      
+      set ::shoutcast::current_song [lindex $get 6]
+    }
+  }
+  close $sock
+}
+
+
+proc ::shoutcast::getauditeurs { nick chan text } {
+  set sock [socket $::shoutcast::host $::shoutcast::port]
+  puts $sock "GET /7.html HTTP/1.0"
+  puts $sock "User-Agent: Mozilla/5.0 (X11; U; Linux i686; en-US; rv:0.9.9)"
+  puts $sock "Host: $::shoutcast::host"
+  puts $sock "Connection: close"
+  puts $sock ""
+  flush $sock
+
+  while {[eof $sock] != 1} {
+    regexp -all {<body>(.+)</body>} [gets $sock] x match
+    if {[info exists match]} {
+      set get [split $match ',']
+      ::irc::send ":$::irc::nick ! $chan :Actuellement [lindex $get 0] auditeur[::tools::pluralize [lindex $get 0]]"
+    }
+  }
+  close $sock
 }
 
 proc ::shoutcast::control { nick chan text } {
@@ -47,40 +91,10 @@ proc ::shoutcast::control { nick chan text } {
 
     switch $cmd {
       radio {
-        set sock [socket $::shoutcast::host $::shoutcast::port]
-        puts $sock "GET /7.html HTTP/1.0"
-        puts $sock "User-Agent: Mozilla/5.0 (X11; U; Linux i686; en-US; rv:0.9.9)"
-        puts $sock "Host: $::shoutcast::host"
-        puts $sock "Connection: close"
-        puts $sock ""
-        flush $sock
-
-        while {[eof $sock] != 1} {
-          regexp -all {<body>(.+)</body>} [gets $sock] x match
-          if {[info exists match]} {
-            set get [split $match ',']
-            ::irc::send ":$::irc::nick ! $chan :Titre en cours de lecture : [lindex $get 6]"
-          }
-        }
-        close $sock
+        ::shoutcast::getcurrentsong $nick $chan $text
       }
       auditeurs {
-        set sock [socket $::shoutcast::host $::shoutcast::port]
-        puts $sock "GET /7.html HTTP/1.0"
-        puts $sock "User-Agent: Mozilla/5.0 (X11; U; Linux i686; en-US; rv:0.9.9)"
-        puts $sock "Host: $::shoutcast::host"
-        puts $sock "Connection: close"
-        puts $sock ""
-        flush $sock
-
-        while {[eof $sock] != 1} {
-          regexp -all {<body>(.+)</body>} [gets $sock] x match
-          if {[info exists match]} {
-            set get [split $match ',']
-            ::irc::send ":$::irc::nick ! $chan :Actuellement [lindex $get 0] auditeur[::tools::pluralize [lindex $get 0]]"
-          }
-        }
-        close $sock
+        ::shoutcast::getauditeurs $nick $chan $text
       }
     }
   }  
