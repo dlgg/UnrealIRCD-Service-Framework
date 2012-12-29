@@ -611,11 +611,13 @@ proc ::irc::user_quit { nick } {
   return
 }
 
-proc ::irc::shutdown { nick } {
+proc ::irc::shutdown { nick reason } {
   if {[info exists ::pl]} { if {$::pl==1} {
     foreach s $::pl::socks { ::pl::closepl $s $nick }
   } }
-  set quitmsg [::msgcat::mc cont_shutdown $nick]
+
+  if {$reason != ""} { set quitmsg "[::msgcat::mc cont_shutdown $nick] (Raison : $reason)" } else { set quitmsg "[::msgcat::mc cont_shutdown $nick]" } 
+
   ::irc::send ":$::irc::nick [tok QUIT] :$quitmsg"
   foreach bot $::irc::botlist { ::irc::send ":$bot [tok QUIT] :$quitmsg" }
   ::irc::send ":$::irc::servername [tok SQUIT] $::irc::hub :$quitmsg"
