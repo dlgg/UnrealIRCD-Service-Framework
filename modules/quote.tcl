@@ -37,18 +37,25 @@ proc ::quote::control { nick chan text } {
   if {[::tools::test [string index [lindex $textnc 0] 0] $::fantasy::cmdchar]} {
     set cmd [string range [lindex $textnc 0] 1 end]
     set paramsnc [join [lrange $textnc 1 end]]
-    
+    regsub -all {[\000-\010]|[\013-\037]|[\177]} $paramsnc {} paramsnc
+        
     switch $cmd {
 	quote {
 	  set fd [open $::quote::quotefile "r"]
 	  set data [read $fd]
 	  close $fd
 	  set data [split $data \n]
-	  ::irc::send ":$::irc::nick [tok PRIVMSG] $chan :[lindex $data [::tools::rand 0 [llength $data]]]"
+
+	  set random [::tools::rand 1 [llength $data]]
+
+	  ::irc::send ":$::irc::nick [tok PRIVMSG] $chan : Quote $random / [llength $data] : [lindex $data [expr $random - 1]]"
 	}
 	
 	add_quote {
-	  
+	  set fd [open $::quote::quotefile "a"]
+	  puts $fd $paramsnc
+	  close $fd
+	  ::irc::send ":$::irc::nick [tok PRIVMSG] $chan :Quote ajoutée"
 	}
     }
   }
