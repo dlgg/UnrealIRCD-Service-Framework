@@ -517,7 +517,6 @@ proc ::irc::join_chan {bot chan} {
 proc ::irc::is_admin { nick } { 
   puts [lsearch -exact $::irc::root $nick]
  if {[lsearch -exact $::irc::root $nick] != "-1"} { 
-    puts "$nick is root"
     return 1
   } else { 
     return 0 
