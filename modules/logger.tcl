@@ -26,11 +26,14 @@ namespace eval logger {
 # Register Master Bot Addon
   ::irc::hook_register privmsgchan "::logger::log_privmsg"
 
-# Vars for addon
-  
+# Vars for addon  
 }
 
 proc ::logger::log_privmsg { nick chan text } {
+  if {![file isdirectory "files/logs"]} {
+    file mkdir "files/logs"
+  }
+
   set textnc [::tools::stripmirc $text]
   regsub -all {[\000-\010]|[\013-\037]|[\177]} $textnc {} textnc
   
