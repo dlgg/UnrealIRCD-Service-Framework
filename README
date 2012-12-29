@@ -108,9 +108,7 @@ debug             0 for no debug / 1 (default) for debug informations
                     The masters bots addons will be active on all chans
                     by default unless they are coded for filtering the
                     chans.
-::irc::root         Name of the main adminsitrator of the service. For
-                    the moment this is the only one person who can use
-                    the admin commands. Administrators of the service
+::irc::root         Name of the main adminsitrator of the service.
                     will be add soon.
 ::irc::cmdchar      Character to use for prefixing the command. For not
                     confusing with other bots or hiding the commands.
