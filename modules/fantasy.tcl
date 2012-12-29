@@ -30,7 +30,7 @@ namespace eval fantasy {
   namespace import ::tools::tok
 }
 
-proc ::fantasy::error_pseudo { nick } {
+proc ::fantasy::error_nick { nick } {
   ::irc::send ":$::irc::nick [tok NOTICE] $nick :Vous devez spécifier un pseudo pour cette commande."
 }
 
@@ -62,26 +62,28 @@ proc ::fantasy::control { nick chan text } {
       }
     }
     # Commands for all users
-    switch $cmd {
-      calin       { if {[lindex $textnc 1]==""} { ::fantasy::error_pseudo $nick } else { ::irc::send ":$::irc::nick [tok PRIVMSG] $chan :\00313$nick\00310 câline tendrement \00306[lindex $textnc 1]\017." } }
-      bisous      { if {[lindex $textnc 1]==""} { ::fantasy::error_pseudo $nick } else { ::irc::send ":$::irc::nick [tok PRIVMSG] $chan :\00313$nick\00310 fait plein de gros bisous à \00306[lindex $textnc 1]\017." } }
-      bise        { if {[lindex $textnc 1]==""} { ::fantasy::error_pseudo $nick } else { ::irc::send ":$::irc::nick [tok PRIVMSG] $chan :\00313$nick\00310 fait la bise à \00306[lindex $textnc 1]\017." } }
-      amour       { if {[lindex $textnc 1]==""} { ::fantasy::error_pseudo $nick } else { ::irc::send ":$::irc::nick [tok PRIVMSG] $chan :\00313$nick\00310 ressent beaucoup d'amour pour \00306[lindex $textnc 1]\00310. Tu as de la chance, \00302tu sais\00310 ?\017" } }
-      strip       { if {[lindex $textnc 1]==""} { ::fantasy::error_pseudo $nick } else { ::irc::send ":$::irc::nick [tok PRIVMSG] $chan :\00313$nick\00310 mets de la musique, commence à se déshabiller sensuellement pour \00306[lindex $textnc 1]\00310. Tu va adorer ! \00302 \\o/\017" } }
-      viol        { if {[lindex $textnc 1]==""} { ::fantasy::error_pseudo $nick } else { ::irc::send ":$::irc::nick [tok PRIVMSG] $chan :\00313$nick\00310 déshabille à toute vitesse \00306[lindex $textnc 1]\00310, commence à lui sauter dessus et lui faire des choses bizarres...\017" } }
-      clope       { if {[lindex $textnc 1]==""} { ::fantasy::error_pseudo $nick } else { ::irc::send ":$::irc::nick [tok PRIVMSG] $chan :\00313$nick\00310 donne une cigarette à \00306[lindex $textnc 1]\00310. Tu veux quelle marque \00306[lindex $textnc 1]\00310 ? \00302Malboro\00310, \00302Luke\00310, \00302Basic\00310 ou encore \00302Phil Morris\00310 ?\00302 xD\017" } }
-      bain        { if {[lindex $textnc 1]==""} { ::fantasy::error_pseudo $nick } else { ::irc::send ":$::irc::nick [tok PRIVMSG] $chan :\00313$nick\00310 prends un bain mousseux avec \00306[lindex $textnc 1]\017." } }
-      danse       { if {[lindex $textnc 1]==""} { ::fantasy::error_pseudo $nick } else { ::irc::send ":$::irc::nick [tok PRIVMSG] $chan :\00313$nick\00310 prend la main de \00306[lindex $textnc 1]\00310 et l'entraine sur la piste de danse pour dandiner leur corps\017." } }
-      fouette     { if {[lindex $textnc 1]==""} { ::fantasy::error_pseudo $nick } else { ::irc::send ":$::irc::nick [tok PRIVMSG] $chan :\00313$nick\00310 fouette \00306[lindex $textnc 1]\017." } }
-      massage     { if {[lindex $textnc 1]==""} { ::fantasy::error_pseudo $nick } else { ::irc::send ":$::irc::nick [tok PRIVMSG] $chan :\00313$nick\00310 commence à masser le corps de \00306[lindex $textnc 1]\00310 sensuellement et tout doucement\017." } }
-      leche       { if {[lindex $textnc 1]==""} { ::fantasy::error_pseudo $nick } else { ::irc::send ":$::irc::nick [tok PRIVMSG] $chan :\00313$nick\00310 léchouilleuh \00306[lindex $textnc 1]\00310 sensuellement hummm... hot.\017" } }
-      mord        { if {[lindex $textnc 1]==""} { ::fantasy::error_pseudo $nick } else { ::irc::send ":$::irc::nick [tok PRIVMSG] $chan :\00313$nick\00310 mordilleuh doucement le cou de \00306[lindex $textnc 1]\00310 hummm...\017" } }
-      bonbon      { if {[lindex $textnc 1]==""} { ::fantasy::error_pseudo $nick } else { ::irc::send ":$::irc::nick [tok PRIVMSG] $chan :\00313$nick\00310 lance un bonbon à \00306[lindex $textnc 1]\017." } }
-      touche      { if {[lindex $textnc 1]==""} { ::fantasy::error_pseudo $nick } else { ::irc::send ":$::irc::nick [tok PRIVMSG] $chan :\00313$nick\00310 glisse sa main dans le string de \00313[lindex $text 1]\00310 et la caresse." } }
-      pipe        { if {[lindex $textnc 1]==""} { ::fantasy::error_pseudo $nick } else { ::irc::send ":$::irc::nick [tok PRIVMSG] $chan :\00313$nick\00310 prend le sexe de \00313[lindex $text 1]\00310 en bouche et le suce." } }
-      cuni        { if {[lindex $textnc 1]==""} { ::fantasy::error_pseudo $nick } else { ::irc::send ":$::irc::nick [tok PRIVMSG] $chan :\00313$nick\00310 retire le shorty de \00313[lindex $text 1]\00310 et viens jouer avec sa langue entre ses lèvres intimes." } }
+    if {[lindex $textnc 1]==""} { ::fantasy::error_nick $nick } {
+        switch $cmd {
+          calin       { ::irc::send ":$::irc::nick [tok PRIVMSG] $chan :\00313$nick\00310 câline tendrement \00306[lindex $textnc 1]\017." }
+          bisous      { ::irc::send ":$::irc::nick [tok PRIVMSG] $chan :\00313$nick\00310 fait plein de gros bisous à \00306[lindex $textnc 1]\017." }
+          bise        { ::irc::send ":$::irc::nick [tok PRIVMSG] $chan :\00313$nick\00310 fait la bise à \00306[lindex $textnc 1]\017." }
+          amour       { ::irc::send ":$::irc::nick [tok PRIVMSG] $chan :\00313$nick\00310 ressent beaucoup d'amour pour \00306[lindex $textnc 1]\00310. Tu as de la chance, \00302tu sais\00310 ?\017" }
+          strip       { ::irc::send ":$::irc::nick [tok PRIVMSG] $chan :\00313$nick\00310 mets de la musique, commence à se déshabiller sensuellement pour \00306[lindex $textnc 1]\00310. Tu va adorer ! \00302 \\o/\017" }
+          viol        { ::irc::send ":$::irc::nick [tok PRIVMSG] $chan :\00313$nick\00310 déshabille à toute vitesse \00306[lindex $textnc 1]\00310, commence à lui sauter dessus et lui faire des choses bizarres...\017" }
+          clope       { ::irc::send ":$::irc::nick [tok PRIVMSG] $chan :\00313$nick\00310 donne une cigarette à \00306[lindex $textnc 1]\00310. Tu veux quelle marque \00306[lindex $textnc 1]\00310 ? \00302Malboro\00310, \00302Luke\00310, \00302Basic\00310 ou encore \00302Phil Morris\00310 ?\00302 xD\017" }
+          bain        { ::irc::send ":$::irc::nick [tok PRIVMSG] $chan :\00313$nick\00310 prends un bain mousseux avec \00306[lindex $textnc 1]\017." }
+          danse       { ::irc::send ":$::irc::nick [tok PRIVMSG] $chan :\00313$nick\00310 prend la main de \00306[lindex $textnc 1]\00310 et l'entraine sur la piste de danse pour dandiner leur corps\017." }
+          fouette     { ::irc::send ":$::irc::nick [tok PRIVMSG] $chan :\00313$nick\00310 fouette \00306[lindex $textnc 1]\017." }
+          massage     { ::irc::send ":$::irc::nick [tok PRIVMSG] $chan :\00313$nick\00310 commence à masser le corps de \00306[lindex $textnc 1]\00310 sensuellement et tout doucement\017." }
+          leche       { ::irc::send ":$::irc::nick [tok PRIVMSG] $chan :\00313$nick\00310 léchouilleuh \00306[lindex $textnc 1]\00310 sensuellement hummm... hot.\017" }
+          mord        { ::irc::send ":$::irc::nick [tok PRIVMSG] $chan :\00313$nick\00310 mordilleuh doucement le cou de \00306[lindex $textnc 1]\00310 hummm...\017" }
+          bonbon      { ::irc::send ":$::irc::nick [tok PRIVMSG] $chan :\00313$nick\00310 lance un bonbon à \00306[lindex $textnc 1]\017." }
+          touche      { ::irc::send ":$::irc::nick [tok PRIVMSG] $chan :\00313$nick\00310 glisse sa main dans le string de \00313[lindex $text 1]\00310 et la caresse." }
+          pipe        { ::irc::send ":$::irc::nick [tok PRIVMSG] $chan :\00313$nick\00310 prend le sexe de \00313[lindex $text 1]\00310 en bouche et le suce." }
+          cuni        { ::irc::send ":$::irc::nick [tok PRIVMSG] $chan :\00313$nick\00310 retire le shorty de \00313[lindex $text 1]\00310 et viens jouer avec sa langue entre ses lèvres intimes." }
+        }
+      }    
     }
-  }
 }
 
 # vim: set fenc=utf-8 sw=2 sts=2 ts=2 et filetype=tcl
