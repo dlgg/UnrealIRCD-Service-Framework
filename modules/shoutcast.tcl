@@ -36,8 +36,7 @@ namespace eval shoutcast {
 
   variable host $::irc::shoutcast_host
   variable port $::irc::shoutcast_port
-  
-  variable interval_check 60000
+
   variable current_song ''
 }
 
@@ -62,6 +61,7 @@ proc ::shoutcast::getcurrentsong { nick chan text } {
   }
   close $sock
 }
+
 
 proc ::shoutcast::getauditeurs { nick chan text } {
   set sock [socket $::shoutcast::host $::shoutcast::port]
