@@ -573,12 +573,16 @@ proc ::irc::reg_user { mode nick } {
   return
 }
 
-proc ::irc::user_join { nick chan } {
+proc ::irc::user_join { nick chan modes } {
   set chan [string tolower $chan]
   lappend ::irc::users($chan) $nick
   set ::irc::users($chan) [::tools::nodouble $::irc::users($chan)]
+  
   lappend ::irc::chanlist $chan
   set ::irc::chanlist [::tools::nodouble $::irc::chanlist]
+  
+  lappend ::irc::modeslist($chan) ($nick, $modes)
+	
   # Hooks for global join
   if {[info exists ::irc::hook(join)]} { foreach hookj $::irc::hook(join) { $hookj $nick $chan } }
   # Hooks for specific join on a chan
