@@ -231,7 +231,7 @@ proc ::irc::socket_control {} {
       set ::irc::regusers [::tools::llreplace $::irc::regusers $oldnick $newnick]
       foreach arr [array names ::irc::users *] { set ::irc::users($arr) [::tools::llreplace $::irc::users($arr) $oldnick $newnick] }
       # Hooks for nickchange
-      if {([string index $to 0]=="#") && ([info exists ::irc::hook(nick)])} { foreach hookp $::irc::hook(nick) { $hookp $oldnick $newnick } }
+      #if {([string index $to 0]=="#") && ([info exists ::irc::hook(nick)])} { foreach hookp $::irc::hook(nick) { $hookp $oldnick $newnick } }
       return
     }
     G -
