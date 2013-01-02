@@ -485,7 +485,7 @@ proc ::irc::parse_umodes { nick modes } {
       a { if {$::debug==1} { puts "CHG UMODE : $nick $mode is a Services Admin" } }
       B { if {$::debug==1} { puts "CHG UMODE : $nick $mode is a bot" } }
       C { if {$::debug==1} { puts "CHG UMODE : $nick $mode is a Co-Admin" } }
-      d { if {$::debug==1} { puts "CHG UMODE : $nick $mode cannot receive msg channels" } }
+      d { if {$::debug==1} { puts "CHG UMODE : $nick $mode cannot receive msg channels or timestamp/svid to services" } }
       G { if {$::debug==1} { puts "CHG UMODE : $nick $mode badword filtering" } }
       g { if {$::debug==1} { puts "CHG UMODE : $nick $mode can send and read to globops and locops" } }
       H { if {$::debug==1} { puts "CHG UMODE : $nick $mode hide is oper status" } }
