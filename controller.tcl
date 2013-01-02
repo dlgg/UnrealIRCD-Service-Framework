@@ -65,7 +65,7 @@ proc ::irc::socket_control {} {
       set numeric [lindex [split [lindex $arg 3] '-'] 2]
       set description [lrange $arg 4 end]
       if {![::tools::test $unrealversion $::irc::uversion]} {
-        puts "Received Unreal Version is not OK ! Link abort ! I have received $unrealversion but I am waiting ofr $::irc::uversion"
+        puts "Received Unreal Version is not OK ! Link abort ! I have received $unrealversion but I am waiting for $::irc::uversion"
         close $::irc::sock
         exit 0
       }
