@@ -481,33 +481,34 @@ proc ::irc::parse_umodes { nick modes } {
     switch [string index $modes $i] {
       + { set mode "add" }
       - { set mode "del" }
-#      A { if {$::debug==1} { puts "CHG UMODE : $nick is a Server Admin" } }
-#      a { if {$::debug==1} { puts "CHG UMODE : $nick is a Services Admin" } }
-#      B { if {$::debug==1} { puts "CHG UMODE : $nick is a bot" } }
-#      C { if {$::debug==1} { puts "CHG UMODE : $nick is a Co-Admin" } }
-#      d { if {$::debug==1} { puts "CHG UMODE : $nick cannot receive msg channels" } }
-#      G { if {$::debug==1} { puts "CHG UMODE : $nick has badword filtering ON" } }
-#      g { if {$::debug==1} { puts "CHG UMODE : $nick can send and read to globops and locops" } }
-#      H { if {$::debug==1} { puts "CHG UMODE : $nick hide is oper status" } }
-#      h { if {$::debug==1} { puts "CHG UMODE : $nick is available for help" } }
-#      i { if {$::debug==1} { puts "CHG UMODE : $nick is invisible" } }
-#      N { if {$::debug==1} { puts "CHG UMODE : $nick is a Network Admin" } }
-#      O { if {$::debug==1} { puts "CHG UMODE : $nick is a locop" } }
-#      o { if {$::debug==1} { puts "CHG UMODE : $nick is a globop" } }
-#      p { if {$::debug==1} { puts "CHG UMODE : $nick hide his channels" } }
-#      q { if {$::debug==1} { puts "CHG UMODE : $nick cannot be kick" } }
-#      R { if {$::debug==1} { puts "CHG UMODE : $nick cannot receive priv msg/notice" } }
-      r { if {$::debug==1} { puts "CHG UMODE : $nick is reg. Call to ::irc::reg_user $mode $nick" }; ::irc::reg_user $mode $nick }
-#      S { if {$::debug==1} { puts "CHG UMODE : $nick is protect by services" } }
-#      s { if {$::debug==1} { puts "CHG UMODE : $nick can read server notices" } }
-#      T { if {$::debug==1} { puts "CHG UMODE : $nick cannot receive CTCP" } }
-#      t { if {$::debug==1} { puts "CHG UMODE : $nick use a /vhost" } }
-#      V { if {$::debug==1} { puts "CHG UMODE : $nick is a WebTV user" } }
-#      v { if {$::debug==1} { puts "CHG UMODE : $nick can receive DCC infect notice" } }
-#      W { if {$::debug==1} { puts "CHG UMODE : $nick view when a user whois him" } }
-#      w { if {$::debug==1} { puts "CHG UMODE : $nick can read wallops" } }
-#      x { if {$::debug==1} { puts "CHG UMODE : $nick has an hidden hostname" } }
-#      z { if {$::debug==1} { puts "CHG UMODE : $nick use SSL" } }
+      A { if {$::debug==1} { puts "CHG UMODE : $nick $mode is a Server Admin" } }
+      a { if {$::debug==1} { puts "CHG UMODE : $nick $mode is a Services Admin" } }
+      B { if {$::debug==1} { puts "CHG UMODE : $nick $mode is a bot" } }
+      C { if {$::debug==1} { puts "CHG UMODE : $nick $mode is a Co-Admin" } }
+      d { if {$::debug==1} { puts "CHG UMODE : $nick $mode cannot receive msg channels" } }
+      G { if {$::debug==1} { puts "CHG UMODE : $nick $mode badword filtering" } }
+      g { if {$::debug==1} { puts "CHG UMODE : $nick $mode can send and read to globops and locops" } }
+      H { if {$::debug==1} { puts "CHG UMODE : $nick $mode hide is oper status" } }
+      h { if {$::debug==1} { puts "CHG UMODE : $nick $mode is available for help" } }
+      i { if {$::debug==1} { puts "CHG UMODE : $nick $mode is invisible" } }
+      I { if {$::debug==1} { puts "CHG UMODE : $nick $mode hide is idle" } }
+      N { if {$::debug==1} { puts "CHG UMODE : $nick $mode is a Network Admin" } }
+      O { if {$::debug==1} { puts "CHG UMODE : $nick $mode is a locop" } }
+      o { if {$::debug==1} { puts "CHG UMODE : $nick $mode is a globop" } }
+      p { if {$::debug==1} { puts "CHG UMODE : $nick $mode hide his channels" } }
+      q { if {$::debug==1} { puts "CHG UMODE : $nick $mode cannot be kick" } }
+      R { if {$::debug==1} { puts "CHG UMODE : $nick $mode cannot receive priv msg/notice" } }
+      r { if {$::debug==1} { puts "CHG UMODE : $nick $mode is reg. Call to ::irc::reg_user $mode $nick" } ; ::irc::reg_user $mode $nick }
+      S { if {$::debug==1} { puts "CHG UMODE : $nick $mode is protect by services" } }
+      s { if {$::debug==1} { puts "CHG UMODE : $nick $mode can read server notices" } }
+      T { if {$::debug==1} { puts "CHG UMODE : $nick $mode cannot receive CTCP" } }
+      t { if {$::debug==1} { puts "CHG UMODE : $nick $mode use a /vhost" } }
+      V { if {$::debug==1} { puts "CHG UMODE : $nick $mode is a WebTV user" } }
+      v { if {$::debug==1} { puts "CHG UMODE : $nick $mode can receive DCC infect notice" } }
+      W { if {$::debug==1} { puts "CHG UMODE : $nick $mode view when a user whois him" } }
+      w { if {$::debug==1} { puts "CHG UMODE : $nick $mode can read wallops" } }
+      x { if {$::debug==1} { puts "CHG UMODE : $nick $mode has an hidden hostname" } }
+      z { if {$::debug==1} { puts "CHG UMODE : $nick $mode use SSL" } }
     }
   }
   return
