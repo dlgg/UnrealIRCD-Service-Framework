@@ -152,7 +152,7 @@ proc ::limit::loadDB {} {
   set f [open $::limit::chandb r]
   set content [read -nonewline $f]
   close $f
-  if {[info exists ::limit::chans]} { unset $::limit::chans }
+  if {[info exists ::limit::chans]} { unset ::limit::chans }
   foreach line [split $content "\n"] { lappend ::limit::chans [string tolower $line] }
   set ::limit::chans [::tools::nodouble $::limit::chans]
   return
