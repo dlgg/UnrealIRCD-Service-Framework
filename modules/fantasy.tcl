@@ -34,6 +34,10 @@ proc ::fantasy::error_pseudo { nick } {
   ::irc::send ":$::irc::nick [tok NOTICE] $nick :Vous devez spécifier un pseudo pour cette commande."
 }
 
+proc ::fantasy::set_modes { chan mode params } {
+  ::irc::send ":$::irc::nick [tok MODE] $chan $mode $params"
+}
+
 proc ::fantasy::control { nick chan text } {
   if {$::debug==1} { puts "Fantasy : " }
   set textnc [::tools::stripmirc $text]
@@ -45,16 +49,16 @@ proc ::fantasy::control { nick chan text } {
     # Commands for admins
     if {[::irc::is_admin $nick]} {
       switch $cmd {
-        owner     { if {[lrange [join $textnc] 1 end]==""} { ::irc::send ":$::irc::nick [tok MODE] $chan +q $nick" } else { ::irc::send ":$::irc::nick [tok MODE] $chan +[string repeat q [llength $paramsnc]] $paramsnc" } }
-        deowner   { if {[lrange [join $textnc] 1 end]==""} { ::irc::send ":$::irc::nick [tok MODE] $chan -q $nick" } else { ::irc::send ":$::irc::nick [tok MODE] $chan -[string repeat q [llength $paramsnc]] $paramsnc" } }
-        protect   { if {[lrange [join $textnc] 1 end]==""} { ::irc::send ":$::irc::nick [tok MODE] $chan +a $nick" } else { ::irc::send ":$::irc::nick [tok MODE] $chan +[string repeat a [llength $paramsnc]] $paramsnc" } }
-        deprotect { if {[lrange [join $textnc] 1 end]==""} { ::irc::send ":$::irc::nick [tok MODE] $chan -a $nick" } else { ::irc::send ":$::irc::nick [tok MODE] $chan -[string repeat a [llength $paramsnc]] $paramsnc" } }
-        op        { if {[lrange [join $textnc] 1 end]==""} { ::irc::send ":$::irc::nick [tok MODE] $chan +o $nick" } else { ::irc::send ":$::irc::nick [tok MODE] $chan +[string repeat o [llength $paramsnc]] $paramsnc" } }
-        deop      { if {[lrange [join $textnc] 1 end]==""} { ::irc::send ":$::irc::nick [tok MODE] $chan -o $nick" } else { ::irc::send ":$::irc::nick [tok MODE] $chan -[string repeat o [llength $paramsnc]] $paramsnc" } }
-        halfop    { if {[lrange [join $textnc] 1 end]==""} { ::irc::send ":$::irc::nick [tok MODE] $chan +h $nick" } else { ::irc::send ":$::irc::nick [tok MODE] $chan +[string repeat h [llength $paramsnc]] $paramsnc" } }
-        dehalfop  { if {[lrange [join $textnc] 1 end]==""} { ::irc::send ":$::irc::nick [tok MODE] $chan -h $nick" } else { ::irc::send ":$::irc::nick [tok MODE] $chan -[string repeat h [llength $paramsnc]] $paramsnc" } }
-        voice     { if {[lrange [join $textnc] 1 end]==""} { ::irc::send ":$::irc::nick [tok MODE] $chan +v $nick" } else { ::irc::send ":$::irc::nick [tok MODE] $chan +[string repeat v [llength $paramsnc]] $paramsnc" } }
-        devoice   { if {[lrange [join $textnc] 1 end]==""} { ::irc::send ":$::irc::nick [tok MODE] $chan -v $nick" } else { ::irc::send ":$::irc::nick [tok MODE] $chan -[string repeat v [llength $paramsnc]] $paramsnc" } }
+        owner     { if {[lrange [join $textnc] 1 end]==""} { ::fantasy::set_modes $chan "+q" $nick } else { ::fantasy::set_modes $chan "+[string repeat q [llength $paramsnc]]" $paramsnc } }
+        deowner   { if {[lrange [join $textnc] 1 end]==""} { ::fantasy::set_modes $chan "-q" $nick } else { ::fantasy::set_modes $chan "-[string repeat q [llength $paramsnc]]" $paramsnc } }
+        protect   { if {[lrange [join $textnc] 1 end]==""} { ::fantasy::set_modes $chan "+a" $nick } else { ::fantasy::set_modes $chan "+[string repeat a [llength $paramsnc]]" $paramsnc } }
+        deprotect { if {[lrange [join $textnc] 1 end]==""} { ::fantasy::set_modes $chan "-a" $nick } else { ::fantasy::set_modes $chan "-[string repeat a [llength $paramsnc]]" $paramsnc } }
+        op        { if {[lrange [join $textnc] 1 end]==""} { ::fantasy::set_modes $chan "+o" $nick } else { ::fantasy::set_modes $chan "+[string repeat o [llength $paramsnc]]" $paramsnc } }
+        deop      { if {[lrange [join $textnc] 1 end]==""} { ::fantasy::set_modes $chan "-o" $nick } else { ::fantasy::set_modes $chan "-[string repeat o [llength $paramsnc]]" $paramsnc } }
+        halfop    { if {[lrange [join $textnc] 1 end]==""} { ::fantasy::set_modes $chan "+h" $nick } else { ::fantasy::set_modes $chan "+[string repeat h [llength $paramsnc]]" $paramsnc } }
+        dehalfop  { if {[lrange [join $textnc] 1 end]==""} { ::fantasy::set_modes $chan "-h" $nick } else { ::fantasy::set_modes $chan "-[string repeat h [llength $paramsnc]]" $paramsnc } }
+        voice     { if {[lrange [join $textnc] 1 end]==""} { ::fantasy::set_modes $chan "+v" $nick } else { ::fantasy::set_modes $chan "+[string repeat v [llength $paramsnc]]" $paramsnc } }
+        devoice   { if {[lrange [join $textnc] 1 end]==""} { ::fantasy::set_modes $chan "-v" $nick } else { ::fantasy::set_modes $chan "-[string repeat v [llength $paramsnc]]" $paramsnc } }
       }
     }
     # Commands for all users
