@@ -87,7 +87,6 @@ proc ::limit::command { nick args } {
     }
     add {
       set chan [string tolower [lindex $args 2]]
-      if {$::limit::log} { ::irc::send ":$::irc::nick [tok PRIVMSG] $::irc::adminchan :\002LIMIT\002 $nick : add $chan" }
       if {![::irc::is_chan $chan]} { ::irc::send ":$::irc::nick [tok NOTICE] $nick :You need to provide a chan in parameters."; return }
       if {![::irc::is_admin $nick]} { ::irc::send ":$::irc::nick [tok NOTICE] $nick :You are not admin."; return }
       if {[lsearch -exact -nocase $::limit::chans $chan] >= 0} { ::irc::send ":$::irc::nick [tok NOTICE] $nick :limit module is already activate on $chan."; return }
@@ -96,11 +95,11 @@ proc ::limit::command { nick args } {
       forcelimit $chan
       saveDB
       ::irc::send ":$::irc::nick [tok NOTICE] $nick :limit module has been correctly activated on $chan."
+      if {$::limit::log} { ::irc::send ":$::irc::nick [tok PRIVMSG] $::irc::adminchan :\002LIMIT\002 $nick : add $chan" }
       return
     }
     del {
       set chan [string tolower [lindex $args 2]]
-      if {$::limit::log} { ::irc::send ":$::irc::nick [tok PRIVMSG] $::irc::adminchan :\002LIMIT\002 $nick : del $chan" }
       if {![::irc::is_chan $chan]} { ::irc::send ":$::irc::nick [tok NOTICE] $nick :You need to provide a chan in parameters."; return }
       if {![::irc::is_admin $nick]} { ::irc::send ":$::irc::nick [tok NOTICE] $nick :You are not admin."; return }
       if {[lsearch -exact -nocase $::limit::chans $chan] == -1} { ::irc::send ":$::irc::nick [tok NOTICE] $nick :limit module is not activate on $chan."; return }
@@ -109,23 +108,24 @@ proc ::limit::command { nick args } {
       ::irc::send ":$::irc::nick [tok MODE] $chan -l"
       saveDB
       ::irc::send ":$::irc::nick [tok NOTICE] $nick :limit module has been correctly desactivated on $chan."
+      if {$::limit::log} { ::irc::send ":$::irc::nick [tok PRIVMSG] $::irc::adminchan :\002LIMIT\002 $nick : del $chan" }
       return
     }
     show {
-      if {$::limit::log} { ::irc::send ":$::irc::nick [tok PRIVMSG] $::irc::adminchan :\002LIMIT\002 $nick : show" }
       if {![::irc::is_admin $nick]} { ::irc::send ":$::irc::nick [tok NOTICE] $nick :You are not admin."; return }
       ::irc::send ":$::irc::nick [tok NOTICE] $nick :This is the list of chans where limit module is active :"
       # TODO : make list sent by group of 10
       ::irc::send ":$::irc::nick [tok NOTICE] $nick :[join $::limit::chans]"
+      if {$::limit::log} { ::irc::send ":$::irc::nick [tok PRIVMSG] $::irc::adminchan :\002LIMIT\002 $nick : show" }
       return
     }
     force {
       set chan [string tolower [lindex $args 2]]
-      if {$::limit::log} { ::irc::send ":$::irc::nick [tok PRIVMSG] $::irc::adminchan :\002LIMIT\002 $nick : force $chan" }
       if {![::irc::is_chan $chan]} { ::irc::send ":$::irc::nick [tok NOTICE] $nick :You need to provide a chan in parameters."; return }
       if {![::irc::is_admin $nick]} { ::irc::send ":$::irc::nick [tok NOTICE] $nick :You are not admin."; return }
       if {[lsearch -exact -nocase $::limit::chans $chan] == -1} { ::irc::send ":$::irc::nick [tok NOTICE] $nick :limit module is not activated on $chan. Please activate it before."; return }
       forcelimit $chan
+      if {$::limit::log} { ::irc::send ":$::irc::nick [tok PRIVMSG] $::irc::adminchan :\002LIMIT\002 $nick : force $chan" }
       return
     }
     default {
