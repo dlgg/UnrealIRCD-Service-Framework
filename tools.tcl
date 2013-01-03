@@ -455,11 +455,10 @@ proc ::irc::join_chan {bot chan} {
   if {$chan=="0"} {
     ::irc::send ":$::irc::nick [tok PRIVMSG] $::irc::adminchan :[::msgcat::mc botjoin0 $bot]"
   } else {
+    ::irc::send ":$bot [tok JOIN] $chan"
     if {$bot==$::irc::nick} {
-      ::irc::send ":$bot [tok JOIN] $chan"
       ::irc::send ":$bot [tok MODE] $chan +qo $bot $bot"
     } else {
-      ::irc::send ":$bot [tok JOIN] $chan"
       ::irc::send ":$::irc::nick [tok MODE] $chan +ao $bot $bot"
     }
     lappend ::irc::mychans [join $chan]
