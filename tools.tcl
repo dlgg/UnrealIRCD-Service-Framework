@@ -467,6 +467,22 @@ proc ::irc::join_chan {bot chan} {
   return
 }
 
+proc ::irc::part_chan {bot chan} {
+  if {$chan=="0"} {
+    ::irc::send ":$::irc::nick [tok PRIVMSG] $::irc::adminchan :[::msgcat::mc botpart0 $bot]"
+  } else {
+    ::irc::send ":$bot [tok PART] $chan :[::msgcat::mc botpart1]"
+    set ::irc::users($chan) [::tools::lremove $::irc::users($chan) $bot]
+    if {$::debug==1} { puts "There is [llength $::irc::users($chan)] users on $chan : $::irc::users($chan)" }
+    if {[llength $::irc::users($chan)]==0} {
+      if {$::debug==1} { puts "Removing $chan from ::irc::chanlist" }
+      set ::irc::chanlist [::tools::lremove $::irc::chanlist $chan]
+      unset ::irc::users($chan)
+    }
+  }
+  return
+}
+
 proc ::irc::is_admin { nick } { if { [llength $::irc::regusers] < 1 } { return 0 }; [string equal -nocase $nick $::irc::root] { return [expr {[lsearch -exact $::irc::regusers $nick] >= 0}] } { return 0 } }
 proc ::irc::is_chan { chan } { [string equal [string index $chan 0] "#"] { return 1 } { return 0 } }
 
