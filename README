@@ -190,8 +190,6 @@ You'll find below the variables that are not explain in the config part.
 
 ::irc::botlist            Keep list of virtual users declared on the
                           framework.
-::irc::mychans            Keep list of chans where the bots of
-                          framework are.
 ::irc::userlist           Keep list of all users on the network.
 ::irc::chanlist           Keep list of all chans.
 ::irc::users($chan)       Keep list of users on a chan. 
