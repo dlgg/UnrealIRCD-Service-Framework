@@ -371,7 +371,11 @@ proc ::irc::socket_connect {} {
 
 proc ::irc::netsync {} {
   ::irc::send "PASS $::irc::password"
-  if {$::irc::token} { ::irc::send "PROTOCTL NOQUIT NICKv2 UMODE2 VL NS TKLEXT CLK SJOIN SJOIN2 SJ3 ESVID TOKEN" } else { ::irc::send "PROTOCTL NOQUIT NICKv2 UMODE2 VL NS TKLEXT CLK SJOIN SJOIN2 SJ3 ESVID" }
+  set protoctl [list "PROTOCTL" "NOQUIT" "NICKv2" "UMODE2" "VL" "NS" "TKLEXT" "CLK" "SJOIN" "SJOIN2" "SJ3" "ESVID" ]
+  if {$::irc::token} {
+    lappend protoctl "TOKEN"
+  }
+  ::irc::send [join $protoctl " "]
   ::irc::send "SERVER $::irc::servername 1 :U$::irc::uversion-Fh6XiOoEe-$::irc::numeric UnrealIRCD Service Framework V.$::irc::version"
   ::irc::bot_init $::irc::nick $::irc::username $::irc::hostname $::irc::realname
   if ([info exists ::irc::hook(sync)]) { foreach hooks $::irc::hook(sync) { if {$::debug==1} { puts "Hook sync call : $hooks" }; $hooks } }
