@@ -38,6 +38,8 @@
 ::msgcat::mcset fr closepls "Fermeture de toutes les partylines"
 ::msgcat::mcset fr rehashdone "Rehash effectué."
 ::msgcat::mcset fr botjoin0 "On a tenté de faire partir le robot %s de tous les chans via un join 0."
+::msgcat::mcset fr botpart0 "On a tenté de faire partir le robot %s de tous les chans via un part 0."
+::msgcat::mcset fr botpart1 "On m'a demandé de partir de %s"
 
 # Messages for controller
 ::msgcat::mcset fr cont_netconn "Connexion au réseau."

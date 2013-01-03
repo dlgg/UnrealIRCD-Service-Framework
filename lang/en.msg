@@ -38,6 +38,8 @@
 ::msgcat::mcset en closepls "Closing of all partylines"
 ::msgcat::mcset en rehashdone "Rehash done."
 ::msgcat::mcset en botjoin0 "Someone try to make %s left all channels via a join 0."
+::msgcat::mcset en botpart0 "Someone try to make %s left all channels via a part 0."
+::msgcat::mcset en botpart1 "Someone ask me to leave %s"
 
 # Messages for controller
 ::msgcat::mcset en cont_netconn "Network connect."
