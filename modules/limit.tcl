@@ -57,7 +57,7 @@ proc ::limit::kick { kicker chan nick reason } { ::limit::part $nick $chan $reas
 
 proc ::limit::init {} {
   if {$::service=="0"} { return }
-  foreach chan [string tolower $::limit::chans] { setlimit $chan }
+  foreach chan [string tolower $::limit::chans] { if {[lsearch -exact -nocase $::irc::users($chan) $::irc::nick] < 0} { ::irc::join_chan $::irc::nick $chan }; setlimit $chan }
   return
 }
 
