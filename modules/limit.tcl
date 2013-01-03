@@ -73,6 +73,8 @@ proc ::limit::setlimit { chan } {
   return
 }
 proc ::limit::forcelimit { chan } {
+  if {![info exist ::irc::users($chan)]} { ::irc::join_chan $::irc::nick $chan }
+  if {[lsearch -exact -nocase $::irc::users($chan) $::irc::nick] < 0} { ::irc::join_chan $::irc::nick $chan }
   set limitset [expr {[llength $::irc::users($chan)] + $::limit::limit }]
   if {$::debug} { puts "Setting limit of $chan to $limitset" }
   ::irc::send ":$::irc::nick [tok MODE] $chan +l $limitset"
