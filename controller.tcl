@@ -159,6 +159,7 @@ proc ::irc::socket_control {} {
       set to [lindex $arg 2]
       set commc [list [string range [lindex $arg 3] 1 end] [lrange $arg 4 end]]
       set comm [::tools::stripmirc $commc]
+      set text [::tools::stripmirc [lrange $arg 4 end]]
       # Hooks for global PRIVMSG
       if {$::debug==1} { puts "First char of \$to is [string index $to 0]"; puts "::irc::hook(privmsgchan) exist ? [info exists ::irc::hook(privmsgchan)]" }
       if {([string index $to 0]=="#") && ([info exists ::irc::hook(privmsgchan)])} { foreach hookp $::irc::hook(privmsgchan) { $hookp $from $to "$commc" } }
