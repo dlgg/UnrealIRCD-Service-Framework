@@ -340,7 +340,7 @@ proc ::irc::netsync {} {
   ::irc::send "SERVER $::irc::servername 1 :U$::irc::uversion-Fh6XiOoEe-$::irc::numeric UnrealIRCD Service Framework V.$::irc::version"
   ::irc::bot_init $::irc::nick $::irc::username $::irc::hostname $::irc::realname
   if ([info exists ::irc::hook(sync)]) { foreach hooks $::irc::hook(sync) { if {$::debug==1} { puts "Hook sync call : $hooks" }; $hooks } }
-  ::irc::send "NETINFO 0 [::tools::unixtime] 2310 * 0 0 0 :$::irc::netname"
+  ::irc::send "NETINFO 0 [::tools::unixtime] $::irc::uversion * 0 0 0 :$::irc::netname"
   ::irc::send "EOS"
   return 0
 }
