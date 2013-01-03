@@ -439,7 +439,7 @@ proc ::irc::socket_control {} {
       set chans [join [split [lindex $arg 2] ,]]
       foreach chan [string tolower $chans] {
         # Updating global variables and calling hooks
-        ::irc::user_join $nick $chan
+        ::irc::user_join $nick $chan $chrights
       }
       return
     }
