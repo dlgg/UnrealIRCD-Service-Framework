@@ -428,7 +428,7 @@ proc ::irc::socket_control {} {
             }
           }
           # Updating global variables
-          ::irc::user_join $param $chan
+          ::irc::user_join $param $chan $chrights
         }
       }
     }
