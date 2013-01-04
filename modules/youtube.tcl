@@ -44,7 +44,7 @@ namespace eval youtube {
   # If log is 1 then the output will be displayed on $::irc::admin chan too.
   set log 1
   set mode "light"
-  var db
+  variable db
  
   proc control { nick chan text } {
     if {$::debug==1} { puts "YouTube : " }
