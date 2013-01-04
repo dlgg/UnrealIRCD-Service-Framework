@@ -625,7 +625,7 @@ proc ::irc::user_quit { nick } {
   return
 }
 
-proc ::irc::shutdown { nick } {
+proc ::irc::shutdown { nick reason } {
   if {[info exists ::pl]} { if {$::pl==1} {
     foreach s $::pl::socks { ::pl::closepl $s $nick }
   } }
