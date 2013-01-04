@@ -38,6 +38,7 @@ namespace eval limit {
 
 ### Don't modify below this
   variable currl
+  variable chans
 # Importing tok proc
   namespace import ::tools::tok
 }
@@ -57,10 +58,11 @@ proc ::limit::kick { kicker chan nick reason } { ::limit::part $nick $chan $reas
 
 proc ::limit::init {} {
   if {$::service=="0"} { return }
+  if {![info exists ::limit::chans]} { return }
   foreach chan [string tolower $::limit::chans] {
-    if {![info exist ::irc::users($chan)]} { ::irc::join_chan $::irc::nick $chan }
+    if {![info exists ::irc::users($chan)]} { ::irc::join_chan $::irc::nick $chan }
     if {[lsearch -exact -nocase $::irc::users($chan) $::irc::nick] < 0} { ::irc::join_chan $::irc::nick $chan }
-    setlimit $chan
+    ::limit::setlimit $chan
   }
   return
 }
@@ -73,7 +75,7 @@ proc ::limit::setlimit { chan } {
   return
 }
 proc ::limit::forcelimit { chan } {
-  if {![info exist ::irc::users($chan)]} { ::irc::join_chan $::irc::nick $chan }
+  if {![info exists ::irc::users($chan)]} { ::irc::join_chan $::irc::nick $chan }
   if {[lsearch -exact -nocase $::irc::users($chan) $::irc::nick] < 0} { ::irc::join_chan $::irc::nick $chan }
   set limitset [expr {[llength $::irc::users($chan)] + $::limit::limit }]
   if {$::debug} { puts "Setting limit of $chan to $limitset" }
@@ -95,9 +97,10 @@ proc ::limit::command { nick args } {
       set chan [string tolower [lindex $args 2]]
       if {![::irc::is_chan $chan]} { ::irc::send ":$::irc::nick [tok NOTICE] $nick :You need to provide a chan in parameters."; return }
       if {![::irc::is_admin $nick]} { ::irc::send ":$::irc::nick [tok NOTICE] $nick :You are not admin."; return }
-      if {[lsearch -exact -nocase $::limit::chans $chan] >= 0} { ::irc::send ":$::irc::nick [tok NOTICE] $nick :limit module is already activate on $chan."; return }
+      if {[info exists ::limit::chans]} { if {[lsearch -exact -nocase $::limit::chans $chan] >= 0} { ::irc::send ":$::irc::nick [tok NOTICE] $nick :limit module is already active on $chan."; return } }
       set ::limit::currl($chan) 0
       lappend ::limit::chans $chan
+      set ::limit::chans [::tools::nodouble $::limit::chans]
       forcelimit $chan
       saveDB
       ::irc::send ":$::irc::nick [tok NOTICE] $nick :limit module has been correctly activated on $chan."
@@ -108,7 +111,8 @@ proc ::limit::command { nick args } {
       set chan [string tolower [lindex $args 2]]
       if {![::irc::is_chan $chan]} { ::irc::send ":$::irc::nick [tok NOTICE] $nick :You need to provide a chan in parameters."; return }
       if {![::irc::is_admin $nick]} { ::irc::send ":$::irc::nick [tok NOTICE] $nick :You are not admin."; return }
-      if {[lsearch -exact -nocase $::limit::chans $chan] == -1} { ::irc::send ":$::irc::nick [tok NOTICE] $nick :limit module is not activate on $chan."; return }
+      if {![info exists ::limit::chans]} { ::irc::send ":$::irc::nick [tok NOTICE] $nick :limit module is not active on $chan."; return }
+      if {[lsearch -exact -nocase $::limit::chans $chan] == -1} { ::irc::send ":$::irc::nick [tok NOTICE] $nick :limit module is not active on $chan."; return }
       set ::limit::chans [::tools::lremove $::limit::chans $chan]
       array unset ::limit::currl $chan
       ::irc::send ":$::irc::nick [tok MODE] $chan -l"
@@ -121,7 +125,7 @@ proc ::limit::command { nick args } {
       if {![::irc::is_admin $nick]} { ::irc::send ":$::irc::nick [tok NOTICE] $nick :You are not admin."; return }
       ::irc::send ":$::irc::nick [tok NOTICE] $nick :This is the list of chans where limit module is active :"
       # TODO : make list sent by group of 10
-      ::irc::send ":$::irc::nick [tok NOTICE] $nick :[join $::limit::chans]"
+      if {[info exists ::limit::chans]} { ::irc::send ":$::irc::nick [tok NOTICE] $nick :[join $::limit::chans]" }
       if {$::limit::log} { ::irc::send ":$::irc::nick [tok PRIVMSG] $::irc::adminchan :\002LIMIT\002 $nick : show" }
       return
     }
@@ -129,7 +133,8 @@ proc ::limit::command { nick args } {
       set chan [string tolower [lindex $args 2]]
       if {![::irc::is_chan $chan]} { ::irc::send ":$::irc::nick [tok NOTICE] $nick :You need to provide a chan in parameters."; return }
       if {![::irc::is_admin $nick]} { ::irc::send ":$::irc::nick [tok NOTICE] $nick :You are not admin."; return }
-      if {[lsearch -exact -nocase $::limit::chans $chan] == -1} { ::irc::send ":$::irc::nick [tok NOTICE] $nick :limit module is not activated on $chan. Please activate it before."; return }
+      if {![info exists ::limit::chans]} { ::irc::send ":$::irc::nick [tok NOTICE] $nick :limit module is not active on $chan. Please activate it before."; return }
+      if {[lsearch -exact -nocase $::limit::chans $chan] == -1} { ::irc::send ":$::irc::nick [tok NOTICE] $nick :limit module is not active on $chan. Please activate it before."; return }
       forcelimit $chan
       if {$::limit::log} { ::irc::send ":$::irc::nick [tok PRIVMSG] $::irc::adminchan :\002LIMIT\002 $nick : force $chan" }
       return
@@ -154,13 +159,13 @@ proc ::limit::print_help { nick } {
 }
 
 proc ::limit::loadDB {} {
-  if {![file writable $::limit::chandb]} { if {[file exists $::limit::chandb} { puts "$::limit::chandb is not writable. Please correct this."; exit } else { set f [open $::limit::chandb w]; close $f } }
+  if {![file writable $::limit::chandb]} { if {[file exists $::limit::chandb]} { puts "$::limit::chandb is not writable. Please correct this."; exit } else { set f [open $::limit::chandb w]; close $f } }
   set f [open $::limit::chandb r]
   set content [read -nonewline $f]
   close $f
   if {[info exists ::limit::chans]} { unset ::limit::chans }
   foreach line [split $content "\n"] { lappend ::limit::chans [string tolower $line] }
-  set ::limit::chans [::tools::nodouble $::limit::chans]
+  if {[info exists ::limit::chans]} { set ::limit::chans [::tools::nodouble $::limit::chans] }
   return
 }
 
@@ -173,7 +178,7 @@ proc ::limit::saveDB {} {
 
 # initialize current limit array
 ::limit::loadDB
-foreach c [string tolower $::limit::chans] { if {![info exists ::limit::currl($c)]} { set ::limit::currl($c) 0 } }
+if {[info exists ::limit::chans]} { foreach c [string tolower $::limit::chans] { if {![info exists ::limit::currl($c)]} { set ::limit::currl($c) 0 } } }
 
 if {$::debug} { puts "Starting limit timer : ::tools::every $::limit::refresh ::limit::init" }
 ::tools::every $::limit::refresh ::limit::init
