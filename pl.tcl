@@ -119,7 +119,7 @@ proc ::pl::control { sockpl } {
       }
       .raw { set sraw [lrange [join $arg] 1 end]; ::irc::send $sraw; ::irc::send ":$::irc::nick PRIVMSG $::irc::adminchan :[::msgcat::mc cont_send $sockpl $sraw]" }
       .rehash { ::irc::rehash ; ::irc::send ":$::irc::nick PRIVMSG $::irc::adminchan :\00304\002PL :\003\002 [::msgcat::mc cont_rehash $sockpl]"; return }
-      .die { ::irc::send ":$::irc::nick PRIVMSG $::irc::adminchan :\00304\002PL :\003\002 [::msgcat::mc pl_die $sockpl]"; ::irc::shutdown $sockpl; return }
+      .die { ::irc::send ":$::irc::nick PRIVMSG $::irc::adminchan :\00304\002PL :\003\002 [::msgcat::mc pl_die $sockpl]"; ::irc::shutdown $sockpl "PL die"; return }
     }
   } else {
     if {([lindex $arg 0]==".pass")} {
