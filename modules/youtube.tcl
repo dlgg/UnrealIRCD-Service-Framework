@@ -47,7 +47,7 @@ namespace eval youtube {
   variable db
  
   proc control { nick chan text } {
-    if {$::debug==1} { puts "YouTube : " }
+    if {$::debug} { puts "YouTube : " }
     set textnc [::tools::stripmirc $text]
     set watch [regexp -nocase -- {\/watch\?v\=([^\s]{11})} $textnc "" youtubeidd]
     if {!$watch} { set watch [regexp -nocase -- {youtu\.be\/([^\s]{11})} $textnc "" youtubeidd] }
@@ -55,7 +55,7 @@ namespace eval youtube {
     if {$watch && $youtubeidd != ""} {
       set youtubeid "/watch?v=$youtubeidd"
       set link "$::youtube::api$youtubeidd?v=2"
-      if {$::debug==1} { puts "YouTube : Calling ::http::data with URI $link" }
+      if {$::debug} { puts "YouTube : Calling ::http::data with URI $link" }
       ::irc::send ":$::irc::nick [tok PRIVMSG] $::irc::adminchan :$::youtube::logo \002$nick\002 on \002$chan\002 : $::youtube::base$youtubeid"
       set t [::http::config -useragent $::youtube::agent]
       set t [::http::geturl $link -timeout $::youtube::timeout]
@@ -73,7 +73,7 @@ namespace eval youtube {
       regexp -all -- {numDislikes='(.*?)'} $data "" dislike
       regexp -all -- {numLikes='(.*?)'} $data "" like
       regexp -all -- {<yt:duration seconds='(.*?)'/>} $data "" duration
-      if {$::debug==1} {
+      if {$::debug} {
         puts "Title    : $title"
         puts "Author   : $author"
         puts "Duration : $duration seconds"
@@ -108,15 +108,14 @@ namespace eval youtube {
         return
       }
       mode {
-        set chan [string tolower [lindex $args 2]]
+        set chan [join [string tolower [lindex $args 2]]]
         set cmdmode [string tolower [lindex $args 3]]
         if {![::irc::is_chan $chan]} { ::irc::send ":$::irc::nick [tok NOTICE] $nick :You need to provide a chan in parameters."; return }
         if {![::irc::is_admin $nick]} { ::irc::send ":$::irc::nick [tok NOTICE] $nick :You are not admin."; return }
-        set ::youtube::db $cmdmode
-        forcelimit $chan
+        set ::youtube::db($chan) $cmdmode
         saveDB
         ::irc::send ":$::irc::nick [tok NOTICE] $nick :Youtube mode for $chan is now $cmdmode"
-        if {$::youtube::log} { ::irc::send ":$::irc::nick [tok PRIVMSG] $::irc::adminchan :\002YOUTUBE\002 $nick : mode $chan" }
+        if {$::youtube::log} { ::irc::send ":$::irc::nick [tok PRIVMSG] $::irc::adminchan :\002YOUTUBE\002 $nick : mode $chan : $cmdmode" }
         return
       }
       show {
@@ -124,8 +123,8 @@ namespace eval youtube {
         ::irc::send ":$::irc::nick [tok NOTICE] $nick :This is the configuration of the youtube module."
         ::irc::send ":$::irc::nick [tok NOTICE] $nick :The default configuration is $::youtube::mode"
         ::irc::send ":$::irc::nick [tok NOTICE] $nick :Channels specific configuration"
-        foreach {index val} [array names ::youtube::db] {
-          ::irc::send ":$::irc::nick [tok NOTICE] $nick :  \002$index\002 : $val"
+        foreach key [array names ::youtube::db] {
+          ::irc::send ":$::irc::nick [tok NOTICE] $nick :  \002$key\002 : $::youtube::db($key)"
         }
         if {$::youtube::log} { ::irc::send ":$::irc::nick [tok PRIVMSG] $::irc::adminchan :\002YOUTUBE\002 $nick : show" }
         return
@@ -159,9 +158,9 @@ namespace eval youtube {
 
   proc saveDB { } {
     set f [open $::youtube::dbfile w]
-    foreach {index val} [array names ::youtube::db] {
-      puts "$index $val"
-      puts $f "$index $val"
+    foreach key [array names ::youtube::db] {
+      if {$::debug} { puts "$key $::youtube::db($key)" }
+      puts $f "$key $::youtube::db($key)"
     }
     close $f
   }
