@@ -479,8 +479,8 @@ proc ::pl::send {sock data} {
 }
 
 proc ::irc::bot_init { nick user host gecos } {
-  ::irc::send "[::tools::tok TKL] + Q * $nick $::irc::servername 0 [::tools::unixtime] :Reserved for $::irc::svcname"
-  ::irc::send "[::tools::tok NICK] $nick 0 [::tools::unixtime] $user $host [::tools::dec2base $::irc::numeric $::tools::ub64chars] 0 +oSqB * * :$gecos"
+  ::irc::send "[tok TKL] + Q * $nick $::irc::servername 0 [::tools::unixtime] :Reserved for $::irc::svcname"
+  ::irc::send "[tok NICK] $nick 0 [::tools::unixtime] $user $host [::tools::dec2base $::irc::numeric $::tools::ub64chars] 0 +oSqB * * :$gecos"
   if {$nick==$::irc::nick} {
     join_chan $::irc::nick $::irc::adminchan
     foreach chan $::irc::chanlist { join_chan $::irc::nick $chan }
@@ -612,7 +612,11 @@ proc ::irc::user_part { nick chan } {
   set chan [string tolower $chan]
   set ::irc::users($chan) [::tools::lremove $::irc::users($chan) $nick]
   if {$::debug} { puts "There is [llength $::irc::users($chan)] users on $chan : $::irc::users($chan)" }
-  if {([llength $::irc::users($chan)]==0) && ($::debug)} { puts "Removing $chan from ::irc::chanlist" }; set ::irc::chanlist [::tools::lremove $::irc::chanlist $chan]; unset ::irc::users($chan) }
+  if {[llength $::irc::users($chan)]==0} {
+    if {$::debug} { puts "Removing $chan from ::irc::chanlist" }
+    set ::irc::chanlist [::tools::lremove $::irc::chanlist $chan]
+    unset ::irc::users($chan)
+  }
   return
 }
 
@@ -634,7 +638,7 @@ proc ::irc::user_quit { nick } {
 }
 
 proc ::irc::shutdown { nick reason } {
-  if {[info exists ::pl]} { if {$::pl==1} {
+  if {[info exists ::pl]} { if {$::pl} {
     foreach s $::pl::socks { ::pl::closepl $s $nick }
   } }
   if {$reason != ""} { set quitmsg "[::msgcat::mc cont_shutdown $nick] (Raison : $reason)" } else { set quitmsg "[::msgcat::mc cont_shutdown $nick]" }
