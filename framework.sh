@@ -34,7 +34,7 @@ else
   pid=none
 fi
 
-# Check if TCL GameService is running. 0 for yes / 1 for no.
+# Check if UnrealIRCD Service is running. 0 for yes / 1 for no.
 testprocess() {
   if [ z${pid} == "znone" ]; then return 1; fi
   ps x | grep -v grep | grep ${pid} >/dev/null 2>&1

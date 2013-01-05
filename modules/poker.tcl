@@ -15,7 +15,7 @@
 # along with this program; if not, write to the Free Software
 # Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
 #
-# Product name :  TCL GameServer
+# Product name : poker module for UnrealIRCD Service Framework
 # Copyright (C) 2013 Damien Lesgourgues
 # Author(s): Damien Lesgourgues
 #

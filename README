@@ -1,5 +1,5 @@
 ########################################################################
-#                          TCL Game Service 
+#                   UnrealIRCD Service Framework
 ########################################################################
 
 # Index
@@ -115,7 +115,7 @@ debug             0 for no debug / 1 (default) for debug informations
     e. Modules
     ----------
 ::irc::toload       Lists of modules to load. This is the name of files
-                    under the games directory whitout the extension.
+                    under the modules directory whitout the extension.
 
     f. Partyline configuration
     --------------------------
