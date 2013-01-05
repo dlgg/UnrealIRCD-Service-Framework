@@ -53,11 +53,6 @@ namespace eval tools {
 
   # One missing command for managing lists. Remove an element from the list without replacing it with an empty string
   proc lremove { list element } { return [lsearch -all -inline -not -exact $list $element] }
-  proc lremove-old { list element } {
-    set final ""
-    foreach l $list { if {![string equal -nocase $l $element]} { lappend final $l } }
-    return $final
-  }
   proc llreplace { list old new } {
     set final ""
     foreach l $list { if {[string equal -nocase $l $old]} { lappend final $new } else { lappend final $l } }
@@ -345,7 +340,6 @@ namespace eval tools {
             }
         }]
     }
-
     append wrapper [string map [list %C $cmd %B $body] {
         namespace eval %C {
             %B
@@ -356,16 +350,21 @@ namespace eval tools {
   }
 }
 
+# Import of useful tools
+namespace eval ::irc { namespace import -force ::tools::tok }
+namespace eval ::pl  { namespace import -force ::tools::tok }
+namespace import ::tools::0 ::tools::1
+
 # Link to IRC Network
 proc ::irc::socket_connect {} {
   if {$::irc::ssl} {
     package require tls
     ::tls::init -require false -ssl3 true
-    if {$::debug==1} { puts [::msgcat::mc initssllink1 $::irc::ip $::irc::port] }
+    if {$::debug} { puts [::msgcat::mc initssllink1 $::irc::ip $::irc::port] }
     if {[catch {set ::irc::sock [::tls::socket $::irc::ip $::irc::port]} error]} { puts [::msgcat::mc sockerror $error]); after $::irc::reconnect; ::irc::socket_connect; return 0 }
     if {![::tls::handshake $::irc::sock]} { puts "Error during TLS Handshake. Shutdown of service."; exit 1 }
   } else {
-    if {$::debug==1} { puts [::msgcat::mc initlink1 $::irc::ip $::irc::port] }
+    if {$::debug} { puts [::msgcat::mc initlink1 $::irc::ip $::irc::port] }
     if {[catch {set ::irc::sock [socket $::irc::ip $::irc::port]} error]} { puts [::msgcat::mc sockerror $error]); after $::irc::reconnect; ::irc::socket_connect; return 0 }
   }
   fileevent $::irc::sock readable ::irc::socket_control
@@ -384,7 +383,7 @@ proc ::irc::netsync {} {
   ::irc::send [join $protoctl " "]
   ::irc::send "SERVER $::irc::servername 1 :U$::irc::uversion-Fh6XiOoEe-$::irc::numeric UnrealIRCD Service Framework V.$::irc::version"
   ::irc::bot_init $::irc::nick $::irc::username $::irc::hostname $::irc::realname
-  if ([info exists ::irc::hook(sync)]) { foreach hooks $::irc::hook(sync) { if {$::debug==1} { puts "Hook sync call : $hooks" }; $hooks } }
+  if ([info exists ::irc::hook(sync)]) { foreach hooks $::irc::hook(sync) { if {$::debug} { puts "Hook sync call : $hooks" }; $hooks } }
   ::irc::send "NETINFO 0 [::tools::unixtime] $::irc::uversion * 0 0 0 :$::irc::netname"
   ::irc::send "EOS"
   return 0
@@ -392,21 +391,21 @@ proc ::irc::netsync {} {
 
 # Timeout management
 proc ::irc::timeout {} {
-  if {$::debug==1} { puts "Timeout detected. Closing all sockets and cancelling all timers." }
+  if {$::debug} { puts "Timeout detected. Closing all sockets and cancelling all timers." }
   catch {close $::irc::sock}
   foreach t [after info] { after cancel $t }
-  if {$::debug==1} { puts "Timeout detected. Relink service." }
+  if {$::debug} { puts "Timeout detected. Relink service." }
   set ::irc::connectout [after 60000  ::irc::timeout]
   ::irc::socket_connect
   return
 }
 proc ::irc::reset_timeout {} {
   if {[info exists ::irc::timeout]} {
-    if {$::debug==1} { puts "Stoping timeout timer : $::irc::timeout from [::tools::getpreprocname]" }
+    if {$::debug} { puts "Stoping timeout timer : $::irc::timeout from [::tools::getpreprocname]" }
     catch { after cancel $::irc::timeout }
     unset ::irc::timeout
   }
-  if {$::debug==1} { puts "Starting timeout timer for 3 minutes from [::tools::getpreprocname]" }
+  if {$::debug} { puts "Starting timeout timer for 3 minutes from [::tools::getpreprocname]" }
   set ::irc::timeout [after 180000 ::irc::timeout]
   return
 }
@@ -414,17 +413,17 @@ proc ::irc::pinghub {} { ::irc::send "[tok PING] $::irc::servername" }
 
 # Proc to register a hook
 proc ::irc::hook_register { hook callpoint } {
-  if {$::debug==1} { puts "Registering hook : $hook => $callpoint" }
+  if {$::debug} { puts "Registering hook : $hook => $callpoint" }
   set valid 0
   foreach el $::irc::hooklist {
     if {[string match -nocase $el $hook]} { set valid 1 }
   }
   if {[string match -nocase command-* $hook]} {
     set cmd [lindex [split $hook -] 1]
-    puts "Check registering hook command : $cmd"
+    if {$::debug} { puts "Check registering hook command : $cmd" }
     foreach prot "raw rehash source ssl tok dcc die" { if {[::tools::test $prot $cmd]} { puts "Trying to register a protected command : $cmd"; return } }
   }
-  if {$valid==1} {
+  if {$valid} {
     lappend ::irc::hook($hook) $callpoint
     set ::irc::hook($hook) [::tools::nodouble $::irc::hook($hook)]
   } else {
@@ -435,7 +434,7 @@ proc ::irc::hook_register { hook callpoint } {
 
 # Proc gestion du service
 proc ::irc::rehash {} {
-  if {$::pl==1} {
+  if {$::pl} {
     puts [::msgcat::mc closepls]
     foreach pl $::pl::socks { ::pl::closepl $pl "rehash" }
   }
@@ -443,16 +442,16 @@ proc ::irc::rehash {} {
   source tools.tcl
   source controller.tcl
   source pl.tcl
-  if {$debug==1} { puts "List of modules to load : $::irc::modules" }
+  puts "List of modules to load : $::irc::modules"
   foreach file $::irc::modules {
     append file ".tcl"
     set file modules/$file
-    if {$debug==1} { puts "Checking if exist : $file" }
+    if {$debug} { puts "Checking if exist : $file" }
     if {[file exists $file]} {
-      if {$debug==1} { puts "Trying to load : $file" }
+      if {$debug} { puts "Trying to load : $file" }
       if {[catch {source $file} err]} { puts "Error loading $file \n$err"; exit }
     } else {
-      if {$debug==1} { puts "File not exists : $file" }
+      if {$debug} { puts "File not exists : $file" }
       puts [::msgcat::mc filenotexist $file]
     }
   }
@@ -462,7 +461,7 @@ proc ::irc::rehash {} {
 }
 
 proc ::irc::send {data} {
-  if {$::debug==1} {
+  if {$::debug} {
     set datanc [::tools::stripmirc $data]
     puts ">>> \002$::irc::sock\002 >>> $datanc"
   }
@@ -471,7 +470,7 @@ proc ::irc::send {data} {
 }
 proc ::pl::send {sock data} {
   # TODO check if given sock is a pl
-  if {$::debug==1} {
+  if {$::debug} {
     set datanc [::tools::stripmirc $data]
     puts ">>> \002$sock\002 >>> $datanc"
   }
@@ -480,8 +479,8 @@ proc ::pl::send {sock data} {
 }
 
 proc ::irc::bot_init { nick user host gecos } {
-  ::irc::send "[tok TKL] + Q * $nick $::irc::servername 0 [::tools::unixtime] :Reserved for $::irc::svcname"
-  ::irc::send "[tok NICK] $nick 0 [::tools::unixtime] $user $host [::tools::dec2base $::irc::numeric $::tools::ub64chars] 0 +oSqB * * :$gecos"
+  ::irc::send "[::tools::tok TKL] + Q * $nick $::irc::servername 0 [::tools::unixtime] :Reserved for $::irc::svcname"
+  ::irc::send "[::tools::tok NICK] $nick 0 [::tools::unixtime] $user $host [::tools::dec2base $::irc::numeric $::tools::ub64chars] 0 +oSqB * * :$gecos"
   if {$nick==$::irc::nick} {
     join_chan $::irc::nick $::irc::adminchan
     foreach chan $::irc::chanlist { join_chan $::irc::nick $chan }
@@ -492,7 +491,7 @@ proc ::irc::bot_init { nick user host gecos } {
   set ::irc::userlist [::tools::nodouble $::irc::userlist]
   lappend ::irc::users($::irc::servername) $nick
   set ::irc::users($::irc::servername) [::tools::nodouble $::irc::users($::irc::servername)]
-  if {$::debug==1} { puts "My bots are : $::irc::botlist" }
+  if {$::debug} { puts "My bots are : $::irc::botlist" }
   return
 }
 
@@ -540,49 +539,52 @@ proc ::irc::is_chan { chan } { [string equal [string index $chan 0] "#"] { retur
 
 proc ::irc::parse_umodes { nick modes } {
   set mode "add"
-  if {$::debug==1} { puts "CHG UMODES : allmodes : $modes" }
+  if {$::debug} { puts "CHG UMODES : allmodes : $modes" }
   for {set i 0} {$i<[string length $modes]} {incr i} {
     switch [string index $modes $i] {
       + { set mode "add" }
       - { set mode "del" }
-      A { if {$::debug==1} { puts "CHG UMODE : $nick $mode is a Server Admin" } }
-      a { if {$::debug==1} { puts "CHG UMODE : $nick $mode is a Services Admin" } }
-      B { if {$::debug==1} { puts "CHG UMODE : $nick $mode is a bot" } }
-      C { if {$::debug==1} { puts "CHG UMODE : $nick $mode is a Co-Admin" } }
-      d { if {$::debug==1} { puts "CHG UMODE : $nick $mode cannot receive msg channels or timestamp/svid to services" } }
-      G { if {$::debug==1} { puts "CHG UMODE : $nick $mode badword filtering" } }
-      g { if {$::debug==1} { puts "CHG UMODE : $nick $mode can send and read to globops and locops" } }
-      H { if {$::debug==1} { puts "CHG UMODE : $nick $mode hide is oper status" } }
-      h { if {$::debug==1} { puts "CHG UMODE : $nick $mode is available for help" } }
-      i { if {$::debug==1} { puts "CHG UMODE : $nick $mode is invisible" } }
-      I { if {$::debug==1} { puts "CHG UMODE : $nick $mode hide is idle" } }
-      N { if {$::debug==1} { puts "CHG UMODE : $nick $mode is a Network Admin" } }
-      O { if {$::debug==1} { puts "CHG UMODE : $nick $mode is a locop" } }
-      o { if {$::debug==1} { puts "CHG UMODE : $nick $mode is a globop" } }
-      p { if {$::debug==1} { puts "CHG UMODE : $nick $mode hide his channels" } }
-      q { if {$::debug==1} { puts "CHG UMODE : $nick $mode cannot be kick" } }
-      R { if {$::debug==1} { puts "CHG UMODE : $nick $mode cannot receive priv msg/notice" } }
-      r { if {$::debug==1} { puts "CHG UMODE : $nick $mode is reg. Call to ::irc::reg_user $mode $nick" } ; ::irc::reg_user $mode $nick }
-      S { if {$::debug==1} { puts "CHG UMODE : $nick $mode is protect by services" } }
-      s { if {$::debug==1} { puts "CHG UMODE : $nick $mode can read server notices" } }
-      T { if {$::debug==1} { puts "CHG UMODE : $nick $mode cannot receive CTCP" } }
-      t { if {$::debug==1} { puts "CHG UMODE : $nick $mode use a /vhost" } }
-      V { if {$::debug==1} { puts "CHG UMODE : $nick $mode is a WebTV user" } }
-      v { if {$::debug==1} { puts "CHG UMODE : $nick $mode can receive DCC infect notice" } }
-      W { if {$::debug==1} { puts "CHG UMODE : $nick $mode view when a user whois him" } }
-      w { if {$::debug==1} { puts "CHG UMODE : $nick $mode can read wallops" } }
-      x { if {$::debug==1} { puts "CHG UMODE : $nick $mode has an hidden hostname" } }
-      z { if {$::debug==1} { puts "CHG UMODE : $nick $mode use SSL" } }
+      A { if {$::debug} { puts "CHG UMODE : $nick $mode is a Server Admin" } }
+      a { if {$::debug} { puts "CHG UMODE : $nick $mode is a Services Admin" } }
+      B { if {$::debug} { puts "CHG UMODE : $nick $mode is a bot" } }
+      C { if {$::debug} { puts "CHG UMODE : $nick $mode is a Co-Admin" } }
+      d { if {$::debug} { puts "CHG UMODE : $nick $mode cannot receive msg channels or timestamp/svid to services" } }
+      G { if {$::debug} { puts "CHG UMODE : $nick $mode badword filtering" } }
+      g { if {$::debug} { puts "CHG UMODE : $nick $mode can send and read to globops and locops" } }
+      H { if {$::debug} { puts "CHG UMODE : $nick $mode hide is oper status" } }
+      h { if {$::debug} { puts "CHG UMODE : $nick $mode is available for help" } }
+      i { if {$::debug} { puts "CHG UMODE : $nick $mode is invisible" } }
+      I { if {$::debug} { puts "CHG UMODE : $nick $mode hide is idle" } }
+      N { if {$::debug} { puts "CHG UMODE : $nick $mode is a Network Admin" } }
+      O { if {$::debug} { puts "CHG UMODE : $nick $mode is a locop" } }
+      o { if {$::debug} { puts "CHG UMODE : $nick $mode is a globop" } }
+      p { if {$::debug} { puts "CHG UMODE : $nick $mode hide his channels" } }
+      q { if {$::debug} { puts "CHG UMODE : $nick $mode cannot be kick" } }
+      R { if {$::debug} { puts "CHG UMODE : $nick $mode cannot receive priv msg/notice" } }
+      r { if {$::debug} { puts "CHG UMODE : $nick $mode is reg. Call to ::irc::reg_user $mode $nick" } ; ::irc::reg_user $mode $nick }
+      S { if {$::debug} { puts "CHG UMODE : $nick $mode is protect by services" } }
+      s { if {$::debug} { puts "CHG UMODE : $nick $mode can read server notices" } }
+      T { if {$::debug} { puts "CHG UMODE : $nick $mode cannot receive CTCP" } }
+      t { if {$::debug} { puts "CHG UMODE : $nick $mode use a /vhost" } }
+      V { if {$::debug} { puts "CHG UMODE : $nick $mode is a WebTV user" } }
+      v { if {$::debug} { puts "CHG UMODE : $nick $mode can receive DCC infect notice" } }
+      W { if {$::debug} { puts "CHG UMODE : $nick $mode view when a user whois him" } }
+      w { if {$::debug} { puts "CHG UMODE : $nick $mode can read wallops" } }
+      x { if {$::debug} { puts "CHG UMODE : $nick $mode has an hidden hostname" } }
+      z { if {$::debug} { puts "CHG UMODE : $nick $mode use SSL" } }
     }
   }
   return
 }
 proc ::irc::reg_user { mode nick } {
   switch $mode {
-    add { puts "adding $nick to regusers"; lappend ::irc::regusers $nick; set ::irc::regusers [::tools::nodouble $::irc::regusers] }
+    add {
+      if {$::debug} { puts "adding $nick to regusers" }
+      lappend ::irc::regusers $nick; set ::irc::regusers [::tools::nodouble $::irc::regusers]
+    }
     del {
       if {([info exists ::irc::regusers]) && ([llength ::irc::regusers] > 0)} {
-        puts "removing $nick from regusers"
+        if {$::debug} { puts "removing $nick from regusers" }
         set ::irc::regusers [::tools::lremove $::irc::regusers $nick]
       }
     }
@@ -609,8 +611,8 @@ proc ::irc::user_join { nick chan modes } {
 proc ::irc::user_part { nick chan } {
   set chan [string tolower $chan]
   set ::irc::users($chan) [::tools::lremove $::irc::users($chan) $nick]
-  if {$::debug==1} { puts "There is [llength $::irc::users($chan)] users on $chan : $::irc::users($chan)" }
-  if {[llength $::irc::users($chan)]==0} { if {$::debug==1} { puts "Removing $chan from ::irc::chanlist" }; set ::irc::chanlist [::tools::lremove $::irc::chanlist $chan]; unset ::irc::users($chan) }
+  if {$::debug} { puts "There is [llength $::irc::users($chan)] users on $chan : $::irc::users($chan)" }
+  if {([llength $::irc::users($chan)]==0) && ($::debug)} { puts "Removing $chan from ::irc::chanlist" }; set ::irc::chanlist [::tools::lremove $::irc::chanlist $chan]; unset ::irc::users($chan) }
   return
 }
 
@@ -621,7 +623,7 @@ proc ::irc::user_quit { nick } {
     set ::irc::users($arr) [::tools::lremove $::irc::users($arr) $nick]
     if {[llength $::irc::users($arr)]==0} {
       if {[::irc::is_chan $arr]} {
-        if {$::debug==1} { puts "Removing $arr from ::irc::chanlist" }
+        if {$::debug} { puts "Removing $arr from ::irc::chanlist" }
         set ::irc::chanlist [::tools::lremove $::irc::chanlist $arr]
       }
       if {$::debug} { puts "Removing ::irc::users($arr) array key." }
@@ -642,10 +644,5 @@ proc ::irc::shutdown { nick reason } {
   close $::irc::sock
   exit 0
 }
-
-# Import of useful tools
-namespace eval ::irc { namespace import ::tools::tok }
-namespace eval ::pl  { namespace import ::tools::tok }
-namespace import ::tools::0 ::tools::1
 
 # vim: set fenc=utf-8 sw=2 sts=2 ts=2 et filetype=tcl
