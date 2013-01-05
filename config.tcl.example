@@ -20,6 +20,9 @@
 # Author(s): Damien Lesgourgues
 #
 ##############################################################################
+# set library path
+set auto_path includes/
+
 # packages needed
 package require msgcat
 
