@@ -33,7 +33,7 @@ proc ::irc::socket_control {} {
     ::irc::socket_connect
   }
   set arg [::tools::charfilter $rawarg]
-  if {$::debug==1} {
+  if {$::debug} {
     set ncarg [::tools::stripmirc $arg]
     puts "<<< IRC <<< $ncarg"
   }
@@ -49,7 +49,7 @@ proc ::irc::socket_control {} {
     #<<< PASS :tclpur
       set recv_pass [string range [lindex $arg 1] 1 end]
       if {[::tools::testcs $::irc::password $recv_pass]} {
-        if {$::debug==1} { puts "Received password is OK !" }
+        if {$::debug} { puts "Received password is OK !" }
       } else {
         puts "Received password is not OK ! Link abort ! I have received $recv_pass but I am waiting for $::irc::password"
         close $::irc::sock
@@ -74,7 +74,7 @@ proc ::irc::socket_control {} {
         close $::irc::sock
         exit 0
       }
-      if {$::debug==1} { puts "Received hubname and unreal version is OK !" }
+      if {$::debug} { puts "Received hubname and unreal version is OK !" }
       set ::irc::srvname2num($numeric) $hubname
       set ::irc::srvname2num($hubname) $numeric
       return
@@ -104,7 +104,7 @@ proc ::irc::socket_control {} {
         set ::service 1
         # Call to hooks init
         if ([info exists ::irc::hook(init)]) {
-          foreach hooki $::irc::hook(init) { if {$::debug==1} { puts "Hook init call : $hooki" }; $hooki }
+          foreach hooki $::irc::hook(init) { if {$::debug} { puts "Hook init call : $hooki" }; $hooki }
         }
         return
       }
@@ -173,7 +173,7 @@ proc ::irc::socket_control {} {
       set comm [::tools::stripmirc $commc]
       set text [::tools::stripmirc [lrange $arg 4 end]]
       # Hooks for global PRIVMSG
-      if {$::debug==1} { puts "First char of \$to is [string index $to 0]"; puts "::irc::hook(privmsgchan) exist ? [info exists ::irc::hook(privmsgchan)]" }
+      if {$::debug} { puts "First char of \$to is [string index $to 0]"; puts "::irc::hook(privmsgchan) exist ? [info exists ::irc::hook(privmsgchan)]" }
       if {([string index $to 0]=="#") && ([info exists ::irc::hook(privmsgchan)])} { foreach hookp $::irc::hook(privmsgchan) { $hookp $from $to "$commc" } }
       # Hook for PRIVMSG to specific chan or user
       if {[info exists ::irc::hook(privmsg-[string tolower $to])]} { foreach hookp $::irc::hook(privmsg-[string tolower $to]) { $hookp $from "$commc" } }
@@ -359,7 +359,7 @@ proc ::irc::socket_control {} {
     SERVER {
     #<<< @1 SERVER irc2.hebeo.fr 2 2   :Hebeo irc1 server
     #<<< @1 SERVER irc2.hebeo.fr 2 131 :Hebeo irc2 server
-    # Introducing dh istant server by hub
+    # Introducing distant server by hub
       #set srcnumeric [string range [lindex $arg 0] 1 end]
       set servername [lindex $arg 2]
       #set hopcount [lindex $arg 3]
@@ -368,7 +368,7 @@ proc ::irc::socket_control {} {
       set ::irc::srvname2num($numeric) $servername
       set ::irc::srvname2num($servername) $numeric
       set ::irc::users($servername) ""
-      if {$::debug==1} { puts "Adding server numeric $numeric for server $servername." }
+      if {$::debug} { puts "Adding server numeric $numeric for server $servername." }
       return
     }
     AG -
