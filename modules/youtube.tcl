@@ -41,7 +41,7 @@ namespace eval youtube {
   set api "https://gdata.youtube.com/feeds/api/videos/"
   set agent "Mozilla/5.0 (Windows; U; Windows NT 5.1; ru; rv:1.9.0.1) Gecko/2008070208 Firefox/3.0.1"
   set timeout 30000
-  # If log is 1 then the output will be displayed on $::irc::admin chan too.
+  # If log is 1 then the output will be displayed on $::irc::adminchan chan too.
   set log 1
   set mode "light"
   variable db
@@ -84,13 +84,13 @@ namespace eval youtube {
         puts "Likes    : $like"
         puts "Dislikes : $dislike"
       }
-      if {$::youtube::log} { set outdest [join [list $chan $::irc::admin] ,] } else { set outdest $chan }
       switch $::youtube::db($chan) {
         full { set outmode full }
         light { set outmode light }
         none { set outmode none }
         default { set outmode $::youtube::mode }
       }
+      if {$::youtube::log} { set outdest [join [list $chan $::irc::adminchan] ,] } else { set outdest $chan }
       switch $outmode {
         full {
           ::irc::send ":$::irc::nick [tok PRIVMSG] $outdest :$::youtube::logo \002$author\002 : $title | \002Dur?e\002 :[::tools::duration $duration] | \002Vues\002 : $view | \002Favoris\002 : $favs"
@@ -98,7 +98,7 @@ namespace eval youtube {
         }
         light { ::irc::send ":$::irc::nick [tok PRIVMSG] $outdest :$::youtube::logo \002$author\002 : $title | \002Dur?e\002 :[::tools::duration $duration] | \002Vues\002 : $view | \002Favoris\002 : $favs | \002Note moyenne\002 : $average/5 \002par\002 $raters personnes" }
         none { return }
-        default { ::irc::send ":$::irc::nick [tok PRIVMSG] $::irc::admin :$::youtube::logo Bad mode for output : $::youtube::db($chan)" }
+        default { ::irc::send ":$::irc::nick [tok PRIVMSG] $::irc::adminchan :$::youtube::logo Bad mode for output : $::youtube::db($chan)" }
       }
     }
   }
