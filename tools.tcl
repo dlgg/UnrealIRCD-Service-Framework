@@ -331,7 +331,6 @@ namespace eval tools {
   }
 
   package provide extend 1.0
-  package require Tcl 8.5
 
   proc extend {cmd body} {
     if {![namespace exists ${cmd}]} {

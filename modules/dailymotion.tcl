@@ -22,11 +22,9 @@
 ##############################################################################
 puts [::msgcat::mc loadaddon "Dailymotion"]
 
-package require Tcl 8.4
-package require json
-
 package require http
 package require tls
+package require json
 http::register https 443 [list ::tls::socket -require 0]
 
 namespace eval dailymotion {
