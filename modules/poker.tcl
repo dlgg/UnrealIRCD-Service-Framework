@@ -23,7 +23,7 @@
 puts [::msgcat::mc loadgame "Poker"]
 
 namespace eval poker {
-  namespace import ::tools::0 ::tools::1
+  namespace import ::tools::0 ::tools::1 ::tools::tok
   # Parametres pour le jeu Poker
   variable nick "Poker-FrameWork"
   variable username "poker"
@@ -36,7 +36,6 @@ namespace eval poker {
   ::irc::join_chan $::poker::nick $::poker::chan
   ::irc::hook_register privmsg-[string tolower $::poker::chan] "::poker::control_pub"
   ::irc::hook_register privmsg-[string tolower $::poker::nick] "::poker::control_priv"
-  namespace import ::tools::tok
 }
 
 proc ::poker::control_pub { nick text } {

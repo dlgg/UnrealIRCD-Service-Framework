@@ -53,6 +53,8 @@ puts [::msgcat::mc loadgame "UNO"]
 
 # Parametres pour le jeu UNO
 namespace eval uno {
+  namespace import ::tools::tok
+
   variable nick       "UNO"
   variable username   "uno"
   variable hostname   "uno.$::irc::hostname"
@@ -70,7 +72,7 @@ namespace eval uno {
   variable ScoreFile    "files/UnoScores"
   variable MaxNickLen   32
   variable MaxPlayers   8
-  variable NTC          "[::tools::tok NOTICE]"
+  variable NTC          "[tok NOTICE]"
 
   # Global Variables
   variable On             0
@@ -146,7 +148,6 @@ namespace eval uno {
   #::irc::hook_register join-[string tolower $chan]    "::uno::controljoin"
   ::irc::hook_register sync                           "::uno::controlsync"
 
-  namespace import ::tools::tok
 }
 
 proc ::uno::controlsync {} { ::irc::bot_init $::uno::nick $::uno::username $::uno::hostname $::uno::realname ; ::irc::join_chan $::uno::nick $::uno::chan }

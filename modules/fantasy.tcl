@@ -39,7 +39,7 @@ proc ::fantasy::set_modes { chan mode params } {
 }
 
 proc ::fantasy::control { nick chan text } {
-  if {$::debug==1} { puts "Fantasy : " }
+  if {$::debug} { puts "Fantasy : " }
   set textnc [::tools::stripmirc $text]
 
   if {[::tools::test [string index [lindex $textnc 0] 0] $::fantasy::cmdchar]} {

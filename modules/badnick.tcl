@@ -50,7 +50,7 @@ proc ::badnick::join { nick chan } {
       set mask $bad
       append mask "!*@*"
       ::irc::send ":$::irc::nick [tok MODE] $chan +b $mask"
-      if {$::badnick::log} { ::irc::send ":$::irc::nick PRIVMSG $::irc::adminchan :\002BADNICK\002 ban of $nick ($mask) on $chan" }
+      if {$::badnick::log} { ::irc::send ":$::irc::nick [tok PRIVMSG] $::irc::adminchan :\002BADNICK\002 ban of $nick ($mask) on $chan" }
       if {$bantime != 0} { after [expr {$::badnick::bantime * 1000}] {::badnick::unban $chan $mask} }
       return
     }
@@ -64,7 +64,7 @@ proc ::badnick::nick { oldnick nick } {
 }
 
 proc ::badnick::unban { chan mask } {
-  if {$::badnick::log} { ::irc::send ":$::irc::nick PRIVMSG $::irc::adminchan :\002BADNICK\002 auto unban of $mask on $chan" }
+  if {$::badnick::log} { ::irc::send ":$::irc::nick [tok PRIVMSG] $::irc::adminchan :\002BADNICK\002 auto unban of $mask on $chan" }
   ::irc::send "$::irc::nick [tok MODE] $chan -b $mask"
   return
 }

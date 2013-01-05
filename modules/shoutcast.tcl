@@ -30,6 +30,7 @@ puts [::msgcat::mc loadaddon "ShoutCast"]
 namespace eval shoutcast {
 # Register Master Bot Addon
   ::irc::hook_register privmsgchan "::shoutcast::control"
+  namespace import ::tools::tok
 
 # Vars for addon
   variable cmdchar $::irc::cmdchar
@@ -53,9 +54,7 @@ proc ::shoutcast::getcurrentsong { nick chan text } {
     regexp -all {<body>(.+)</body>} [gets $sock] x match
     if {[info exists match]} {
       set get [split $match ',']
-      
-      ::irc::send ":$::irc::nick ! $chan :Titre en cours de lecture : [lindex $get 6]"
-      
+      ::irc::send ":$::irc::nick [tok PRIVMSG] $chan :Titre en cours de lecture : [lindex $get 6]"
       set ::shoutcast::current_song [lindex $get 6]
     }
   }
@@ -76,7 +75,7 @@ proc ::shoutcast::getauditeurs { nick chan text } {
     regexp -all {<body>(.+)</body>} [gets $sock] x match
     if {[info exists match]} {
       set get [split $match ',']
-      ::irc::send ":$::irc::nick ! $chan :Actuellement [lindex $get 0] auditeur[::tools::pluralize [lindex $get 0]]"
+      ::irc::send ":$::irc::nick [tok PRIVMSG] $chan :Actuellement [lindex $get 0] auditeur[::tools::pluralize [lindex $get 0]]"
     }
   }
   close $sock
