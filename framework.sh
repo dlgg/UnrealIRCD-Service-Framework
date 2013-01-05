@@ -20,10 +20,9 @@
 # Author(s): Damien Lesgourgues
 #
 ##############################################################################
-
 # Definitions of variables
 logfile="framework.log"
-pidfile=$(grep 'mysock(pid)' config.tcl|awk '{print $3}')
+pidfile=$(grep 'variable pid' config.tcl|awk '{print $3}'|sed -e 's/"//g')
 tclsh=$(which tclsh)
 svcname="Framework"
 
