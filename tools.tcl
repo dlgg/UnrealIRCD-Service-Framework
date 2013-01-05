@@ -532,8 +532,8 @@ proc ::irc::part_chan {bot chan} {
 proc ::irc::is_admin { nick } {
   if {![info exists ::irc::regusers]} { return 0 }
   if { [llength $::irc::regusers] < 1 } { return 0 }
-  puts [lsearch -exact $::irc::root $nick]
-  if {[lsearch -exact $::irc::root $nick] != "-1"} { if {[lsearch -exact $::irc::regusers $nick] >= 0} { return 1 } }
+  puts [lsearch -nocase -exact $::irc::root $nick]
+  if {[lsearch -nocase -exact $::irc::root $nick] != "-1"} { if {[lsearch -exact $::irc::regusers $nick] >= 0} { return 1 } }
   return 0
 }
 
