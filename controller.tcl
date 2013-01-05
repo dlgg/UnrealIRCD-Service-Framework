@@ -87,9 +87,12 @@ proc ::irc::socket_control {} {
       set currtime [::tools::unixtime]
       set netname "[string range [lrange $arg 8 end] 1 end]"
       if {$hubtime != $currtime} {
-        puts "Cloak are not sync. Difference is [expr $currtime - $hubtime] seconds."
-        ::irc::send "$::irc::servername [tok TSCTL] OFFSET [string range [expr $currtime - $hubtime] 0 1] [string range [expr $currtime - $hubtime] 1 [string length [expr $currtime - $hubtime]]]"
-        puts "Cloak are now synced"
+        set diff [expr $currtime - $hubtime]
+        puts "Cloak are not sync. Difference is $diff seconds."
+        if {$diff <= 30} {
+          ::irc::send "$::irc::servername [tok TSCTL] OFFSET [string range $diff 0 1] [string range $diff 1 [string length $diff]]"
+          puts "Cloak are now synced"
+        }
       }
       if {![::tools::testcs $netname $::irc::netname]} {
         puts "Received network name doesn't correspond to given network name in configuration. I have received $netname but I am waiting for $::irc::netname. Abort link."
