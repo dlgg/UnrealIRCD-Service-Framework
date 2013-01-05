@@ -530,6 +530,7 @@ proc ::irc::part_chan {bot chan} {
 }
 
 proc ::irc::is_admin { nick } {
+  if {![info exists ::irc::regusers]} { return 0 }
   if { [llength $::irc::regusers] < 1 } { return 0 }
   puts [lsearch -exact $::irc::root $nick]
   if {[lsearch -exact $::irc::root $nick] != "-1"} { if {[lsearch -exact $::irc::regusers $nick] >= 0} { return 1 } }
@@ -580,7 +581,12 @@ proc ::irc::parse_umodes { nick modes } {
 proc ::irc::reg_user { mode nick } {
   switch $mode {
     add { puts "adding $nick to regusers"; lappend ::irc::regusers $nick; set ::irc::regusers [::tools::nodouble $::irc::regusers] }
-    del { puts "removing $nick from regusers"; set ::irc::regusers [::tools::lremove $::irc::regusers $nick] }
+    del {
+      if {([info exists ::irc::regusers]) && ([llength ::irc::regusers] > 0)} {
+        puts "removing $nick from regusers"
+        set ::irc::regusers [::tools::lremove $::irc::regusers $nick]
+      }
+    }
     default { puts "Problem to reg an user. Call is ::irc::reg_user $mode $nick" }
   }
   if {$::debug==1} { puts "List of registered users : $::irc::regusers" }
@@ -619,6 +625,7 @@ proc ::irc::user_quit { nick } {
         if {$::debug==1} { puts "Removing $arr from ::irc::chanlist" }
         set ::irc::chanlist [::tools::lremove $::irc::chanlist $arr]
       }
+      if {$::debug} { puts "Removing ::irc::users($arr) array key." }
       unset ::irc::users($arr)
     }
   }

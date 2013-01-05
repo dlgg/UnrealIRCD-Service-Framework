@@ -117,7 +117,14 @@ proc ::irc::socket_control {} {
       #set ident [lindex $arg 4]
       #set realhost [lindex $arg 5]
       set numeric [lindex $arg 6]
-      set numericdec [::tools::base2dec $numeric $::tools::ub64chars]
+      if {[string match *.* $numeric]} {
+        set numericdec $::irc::srvname2num($numeric)
+        if {$::debug} { puts "Connect of an user on a server without NS PROTOCTL : $numeric - $numericdec - $::irc::srvname2num($numericdec)" }
+      } else {
+        set numericdec [::tools::base2dec $numeric $::tools::ub64chars]
+        if {$::debug} { puts "Connect of an user on a server with NS PROTOCTL : $numeric - $numericdec - $::irc::srvname2num($numericdec)" }
+      }
+      set numericname $::irc::srvname2num($numericdec)
       #set servicestamp [lindex $arg 7]
       set umodes [lindex $arg 8]
       #set cloakhost [lindex $arg 9]
@@ -125,8 +132,9 @@ proc ::irc::socket_control {} {
       #set gecos [string range [lrange $arg 11 end] 1 end]
       lappend ::irc::userlist $nickname
       set ::irc::userlist [::tools::nodouble $::irc::userlist]
-      lappend ::irc::users($::irc::srvname2num($numericdec)) $nickname
-      set ::irc::users($::irc::srvname2num($numericdec)) [::tools::nodouble $::irc::users($::irc::srvname2num($numericdec))]
+      lappend ::irc::users($numericname) $nickname
+      set ::irc::users($numericname) [::tools::nodouble $::irc::users($numericname)]
+      if {$::debug} { puts "Adding $nickname to server $numericname userlist : $::irc::users($numericname)" }
       ::irc::parse_umodes $nickname $umodes
       return
     }
@@ -139,7 +147,7 @@ proc ::irc::socket_control {} {
       foreach user $::irc::users([string tolower $servername]) {
         ::irc::user_quit $user
       }
-      unset ::irc::users([string tolower $servername])
+      if {[info exists ::irc::users($servername)]} { unset ::irc::users($servername) }
       array unset srvname2num $numeric
       array unset srvname2num $servername
       return
