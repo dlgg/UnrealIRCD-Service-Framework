@@ -337,6 +337,11 @@ following procs by ::pl:: or export it in your namespace.
 send $sock $raw
     Send a raw message to a pl sock
 
+    f. Production modules
+    ---------------------
+This is a list of tested and ready for productions modules :
+    limit
+    youtube
 
 # 7. Credits
 ########################################################################
