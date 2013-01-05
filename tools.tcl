@@ -581,7 +581,7 @@ proc ::irc::reg_user { mode nick } {
   switch $mode {
     add { puts "adding $nick to regusers"; lappend ::irc::regusers $nick; set ::irc::regusers [::tools::nodouble $::irc::regusers] }
     del { puts "removing $nick from regusers"; set ::irc::regusers [::tools::lremove $::irc::regusers $nick] }
-    default { puts "Problem to eg an user. Call is ::irc::reg_user $mode $nick" }
+    default { puts "Problem to reg an user. Call is ::irc::reg_user $mode $nick" }
   }
   if {$::debug==1} { puts "List of registered users : $::irc::regusers" }
   return
