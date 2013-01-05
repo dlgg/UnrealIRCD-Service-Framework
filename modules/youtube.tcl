@@ -84,13 +84,8 @@ namespace eval youtube {
         puts "Likes    : $like"
         puts "Dislikes : $dislike"
       }
-      switch $::youtube::db($chan) {
-        full { set outmode full }
-        light { set outmode light }
-        none { set outmode none }
-        default { set outmode $::youtube::mode }
-      }
       if {$::youtube::log} { set outdest [join [list $chan $::irc::adminchan] ,] } else { set outdest $chan }
+      if {[info exists ::youtube::db([string tolower $chan])]} { set outmode $::youtube::db([string tolower $chan]) } else { set outmode $::youtube::mode }
       switch $outmode {
         full {
           ::irc::send ":$::irc::nick [tok PRIVMSG] $outdest :$::youtube::logo \002$author\002 : $title | \002Dur?e\002 :[::tools::duration $duration] | \002Vues\002 : $view | \002Favoris\002 : $favs"
