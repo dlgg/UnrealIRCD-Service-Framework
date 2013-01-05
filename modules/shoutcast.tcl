@@ -15,8 +15,8 @@
 # along with this program; if not, write to the Free Software
 # Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
 #
-# Product name : AddonName module for UnrealIRCD Service Framework
-# Copyright (C) 2013 Damien Lesgourgues
+# Product name : Shoutcast module for UnrealIRCD Service Framework
+# Copyright (C) 2013 COUTURIER-GUILLAUME Eric
 # Author(s): COUTURIER-GUILLAUME Eric
 #
 ##############################################################################

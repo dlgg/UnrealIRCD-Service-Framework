@@ -15,9 +15,9 @@
 # along with this program; if not, write to the Free Software
 # Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
 #
-# Product name : YouTube module for UnrealIRCD Service Framework
-# Copyright (C) 2012 Damien Lesgourgues
-# Author(s): Damien Lesgourgues
+# Product name : Dailymotion module for UnrealIRCD Service Framework
+# Copyright (C) 2013 COUTURIER-GUILLAUME Eric
+# Author(s): COUTURIER-GUILLAUME Eric
 #
 ##############################################################################
 puts [::msgcat::mc loadaddon "Dailymotion"]
