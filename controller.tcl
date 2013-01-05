@@ -125,7 +125,7 @@ proc ::irc::socket_control {} {
         if {$::debug} { puts "Connect of an user on a server with NS PROTOCTL : $numeric - $numericdec - $::irc::srvname2num($numericdec)" }
       }
       set numericname $::irc::srvname2num($numericdec)
-      #set servicestamp [lindex $arg 7]
+      set servicestamp [lindex $arg 7]
       set umodes [lindex $arg 8]
       #set cloakhost [lindex $arg 9]
       #set vhost [lindex $arg 10]
@@ -135,6 +135,7 @@ proc ::irc::socket_control {} {
       lappend ::irc::users($numericname) $nickname
       set ::irc::users($numericname) [::tools::nodouble $::irc::users($numericname)]
       if {$::debug} { puts "Adding $nickname to server $numericname userlist : $::irc::users($numericname)" }
+      if {$servicestamp != 0} { ::irc::reg_user add $nickname }
       ::irc::parse_umodes $nickname $umodes
       return
     }
