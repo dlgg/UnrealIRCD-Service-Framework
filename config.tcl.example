@@ -21,7 +21,7 @@
 #
 ##############################################################################
 # set library path
-set auto_path includes/
+lappend auto_path includes/
 
 # packages needed
 package require msgcat
