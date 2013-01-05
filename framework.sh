@@ -36,7 +36,7 @@ fi
 # Check if UnrealIRCD Service is running. 0 for yes / 1 for no.
 testprocess() {
   if [ z${pid} == "znone" ]; then return 1; fi
-  ps x | grep -v grep | grep ${pid} >/dev/null 2>&1
+  ps x | grep ${pid} | grep main.tcl | grep -v grep >/dev/null 2>&1
   return $?
 }
 
