@@ -589,7 +589,7 @@ proc ::irc::reg_user { mode nick } {
     }
     default { puts "Problem to reg an user. Call is ::irc::reg_user $mode $nick" }
   }
-  if {$::debug==1} { puts "List of registered users : $::irc::regusers" }
+  if {($::debug) && ([info exists ::irc::regusers])} { puts "List of registered users : $::irc::regusers" }
   return
 }
 
