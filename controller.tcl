@@ -180,7 +180,7 @@ proc ::irc::socket_control {} {
       # Hook for COMMAND on Master Bot
       if {[info exists ::irc::hook(command-[string tolower [lindex $comm 0]])] && [::tools::test $to $::irc::nick]} { foreach hookp $::irc::hook(command-[string tolower [lindex $comm 0]]) { $hookp $from "$commc" } }
       # Some admins commands to manage the service
-      if {[::irc::is_admin $from] && [::tools::test [string index [lindex $comm 0] 0] $::irc::cmdchar]} {
+      if {[::tools::is_admin $from] && [::tools::test [string index [lindex $comm 0] 0] $::irc::cmdchar]} {
         switch [string range [lindex $comm 0] 1 end] {
           raw { set sraw [lrange [join $comm] 1 end]; ::irc::send $sraw; ::irc::send ":$::irc::nick PRIVMSG $::irc::adminchan :[::msgcat::mc cont_send $from $sraw]" }
           rehash { ::irc::rehash ; ::irc::send ":$::irc::nick [tok PRIVMSG] $::irc::adminchan :[::msgcat::mc cont_rehash $from]" }
@@ -253,7 +253,7 @@ proc ::irc::socket_control {} {
       set source [lindex $arg 2]
       set target [lindex $arg 2]
       set modes [lindex $arg 3]
-      [is_chan $target] { return } { ::irc::parse_umodes $nick $modes }
+      [::tools::is_chan $target] { return } { ::irc::parse_umodes $nick $modes }
       return
     }
     "|" -

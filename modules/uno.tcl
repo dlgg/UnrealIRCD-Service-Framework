@@ -53,7 +53,7 @@ puts [::msgcat::mc loadgame "UNO"]
 
 # Parametres pour le jeu UNO
 namespace eval uno {
-  namespace import ::tools::tok
+  namespace import ::tools::tok ::tools::is_admin
 
   variable nick       "UNO"
   variable username   "uno"

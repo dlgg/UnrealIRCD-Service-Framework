@@ -95,8 +95,8 @@ proc ::limit::command { nick args } {
     }
     add {
       set chan [string tolower [lindex $args 2]]
-      if {![::irc::is_chan $chan]} { ::irc::send ":$::irc::nick [tok NOTICE] $nick :You need to provide a chan in parameters."; return }
-      if {![::irc::is_admin $nick]} { ::irc::send ":$::irc::nick [tok NOTICE] $nick :You are not admin."; return }
+      if {![::tools::is_chan $chan]} { ::irc::send ":$::irc::nick [tok NOTICE] $nick :You need to provide a chan in parameters."; return }
+      if {![::tools::is_admin $nick]} { ::irc::send ":$::irc::nick [tok NOTICE] $nick :You are not admin."; return }
       if {[info exists ::limit::chans]} { if {[lsearch -exact -nocase $::limit::chans $chan] >= 0} { ::irc::send ":$::irc::nick [tok NOTICE] $nick :limit module is already active on $chan."; return } }
       set ::limit::currl($chan) 0
       lappend ::limit::chans $chan
@@ -109,8 +109,8 @@ proc ::limit::command { nick args } {
     }
     del {
       set chan [string tolower [lindex $args 2]]
-      if {![::irc::is_chan $chan]} { ::irc::send ":$::irc::nick [tok NOTICE] $nick :You need to provide a chan in parameters."; return }
-      if {![::irc::is_admin $nick]} { ::irc::send ":$::irc::nick [tok NOTICE] $nick :You are not admin."; return }
+      if {![::tools::is_chan $chan]} { ::irc::send ":$::irc::nick [tok NOTICE] $nick :You need to provide a chan in parameters."; return }
+      if {![::tools::is_admin $nick]} { ::irc::send ":$::irc::nick [tok NOTICE] $nick :You are not admin."; return }
       if {![info exists ::limit::chans]} { ::irc::send ":$::irc::nick [tok NOTICE] $nick :limit module is not active on $chan."; return }
       if {[lsearch -exact -nocase $::limit::chans $chan] == -1} { ::irc::send ":$::irc::nick [tok NOTICE] $nick :limit module is not active on $chan."; return }
       set ::limit::chans [::tools::lremove $::limit::chans $chan]
@@ -122,7 +122,7 @@ proc ::limit::command { nick args } {
       return
     }
     show {
-      if {![::irc::is_admin $nick]} { ::irc::send ":$::irc::nick [tok NOTICE] $nick :You are not admin."; return }
+      if {![::tools::is_admin $nick]} { ::irc::send ":$::irc::nick [tok NOTICE] $nick :You are not admin."; return }
       ::irc::send ":$::irc::nick [tok NOTICE] $nick :This is the list of chans where limit module is active :"
       # TODO : make list sent by group of 10
       if {[info exists ::limit::chans]} { ::irc::send ":$::irc::nick [tok NOTICE] $nick :[join $::limit::chans]" }
@@ -131,8 +131,8 @@ proc ::limit::command { nick args } {
     }
     force {
       set chan [string tolower [lindex $args 2]]
-      if {![::irc::is_chan $chan]} { ::irc::send ":$::irc::nick [tok NOTICE] $nick :You need to provide a chan in parameters."; return }
-      if {![::irc::is_admin $nick]} { ::irc::send ":$::irc::nick [tok NOTICE] $nick :You are not admin."; return }
+      if {![::tools::is_chan $chan]} { ::irc::send ":$::irc::nick [tok NOTICE] $nick :You need to provide a chan in parameters."; return }
+      if {![::tools::is_admin $nick]} { ::irc::send ":$::irc::nick [tok NOTICE] $nick :You are not admin."; return }
       if {![info exists ::limit::chans]} { ::irc::send ":$::irc::nick [tok NOTICE] $nick :limit module is not active on $chan. Please activate it before."; return }
       if {[lsearch -exact -nocase $::limit::chans $chan] == -1} { ::irc::send ":$::irc::nick [tok NOTICE] $nick :limit module is not active on $chan. Please activate it before."; return }
       forcelimit $chan

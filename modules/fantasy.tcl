@@ -47,7 +47,7 @@ proc ::fantasy::control { nick chan text } {
     set paramsnc [join [lrange $textnc 1 end]]
     #set params [join [lrange $text 1 end]]
     # Commands for admins
-    if {[::irc::is_admin $nick]} {
+    if {[::tools::is_admin $nick]} {
       switch $cmd {
         owner     { if {[lrange [join $textnc] 1 end]==""} { ::fantasy::set_modes $chan "+q" $nick } else { ::fantasy::set_modes $chan "+[string repeat q [llength $paramsnc]]" $paramsnc } }
         deowner   { if {[lrange [join $textnc] 1 end]==""} { ::fantasy::set_modes $chan "-q" $nick } else { ::fantasy::set_modes $chan "-[string repeat q [llength $paramsnc]]" $paramsnc } }

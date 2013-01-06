@@ -37,8 +37,8 @@ namespace eval badnick {
   variable log 1
 
 ### Don't modify below this
-# Importing tok proc
-  namespace import ::tools::tok
+# Importing many procs
+  namespace import ::tools::tok ::tools::is_admin ::tools::is_chan
 }
 
 proc ::badnick::join { nick chan } {
@@ -59,7 +59,7 @@ proc ::badnick::join { nick chan } {
 }
 
 proc ::badnick::nick { oldnick nick } {
-  foreach arr [array names ::irc::users *] { if {[::irc::is_chan $arr]} { if {[lsearch -exact -nocase $::irc::users($arr) $nick] >= 0} { ::badnick::join $nick $arr } } }
+  foreach arr [array names ::irc::users *] { if {[is_chan $arr]} { if {[lsearch -exact -nocase $::irc::users($arr) $nick] >= 0} { ::badnick::join $nick $arr } } }
   return
 }
 
@@ -81,8 +81,8 @@ proc ::badnick::command { nick args } {
     addchan {
       set chan [string tolower [lindex $args 2]]
       if {$::badnick::log} { ::irc::send ":$::irc::nick [tok PRIVMSG] $::irc::adminchan :\002BADNICK\002 $nick : add $chan" }
-      if {![::irc::is_chan $chan]} { ::irc::send ":$::irc::nick [tok NOTICE] $nick :You need to provide a chan in parameters."; return }
-      if {![::irc::is_admin $nick]} { ::irc::send ":$::irc::nick [tok NOTICE] $nick :You are not admin."; return }
+      if {![is_chan $chan]} { ::irc::send ":$::irc::nick [tok NOTICE] $nick :You need to provide a chan in parameters."; return }
+      if {![is_admin $nick]} { ::irc::send ":$::irc::nick [tok NOTICE] $nick :You are not admin."; return }
       if {[lsearch -exact -nocase $::badnick::chans $chan] >= 0} { ::irc::send ":$::irc::nick [tok NOTICE] $nick :badnick module is already activate on $chan."; return }
       lappend ::badnick::chans $chan
       saveDB
@@ -92,8 +92,8 @@ proc ::badnick::command { nick args } {
     delchan {
       set chan [string tolower [lindex $args 2]]
       if {$::badnick::log} { ::irc::send ":$::irc::nick [tok PRIVMSG] $::irc::adminchan :\002BADNICK\002 $nick : del $chan" }
-      if {![::irc::is_chan $chan]} { ::irc::send ":$::irc::nick [tok NOTICE] $nick :You need to provide a chan in parameters."; return }
-      if {![::irc::is_admin $nick]} { ::irc::send ":$::irc::nick [tok NOTICE] $nick :You are not admin."; return }
+      if {![is_chan $chan]} { ::irc::send ":$::irc::nick [tok NOTICE] $nick :You need to provide a chan in parameters."; return }
+      if {![is_admin $nick]} { ::irc::send ":$::irc::nick [tok NOTICE] $nick :You are not admin."; return }
       if {[lsearch -exact -nocase $::badnick::chans $chan] == -1} { ::irc::send ":$::irc::nick [tok NOTICE] $nick :badnick module is not activate on $chan."; return }
       set ::badnick::chans [::tools::lremove $::badnick::chans $chan]
       saveDB
@@ -110,14 +110,14 @@ proc ::badnick::command { nick args } {
     }
     show {
       if {$::badnick::log} { ::irc::send ":$::irc::nick [tok PRIVMSG] $::irc::adminchan :\002BADNICK\002 $nick : show" }
-      if {![::irc::is_admin $nick]} { ::irc::send ":$::irc::nick [tok NOTICE] $nick :You are not admin."; return }
+      if {![is_admin $nick]} { ::irc::send ":$::irc::nick [tok NOTICE] $nick :You are not admin."; return }
       ::irc::send ":$::irc::nick [tok NOTICE] $nick :This is the list of chans where badnick module is active :"
       # TODO : make list sent by group of 10
       ::irc::send ":$::irc::nick [tok NOTICE] $nick :[join $::badnick::chans]"
       return
     }
     reload {
-      if {![::irc::is_admin $nick]} { ::irc::send ":$::irc::nick [tok NOTICE] $nick :You are not admin."; return }
+      if {![is_admin $nick]} { ::irc::send ":$::irc::nick [tok NOTICE] $nick :You are not admin."; return }
       if {$::badnick::log} { ::irc::send ":$::irc::nick [tok PRIVMSG] $::irc::adminchan :\002BADNICK\002 $nick : reload" }
       ::badnick::loadDB
       ::irc::send ":$::irc::nick [tok NOTICE] $nick :List of bad nicks patterns reloaded"

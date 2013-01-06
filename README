@@ -237,6 +237,18 @@ rand $multiplier
 dec2base/base2dec $num $baselist
    Transform from/to base $num using $baselist as map
 
+is_root $nick
+    Return TRUE if the given nick is a root of the service
+
+is_admin $nick
+    Return TRUE if the given nick is an admin of the service
+
+is_oper $nick
+    Return TRUE if the given nick is an oper of the service
+
+is_chan $string
+    Return TRUE if the given $string start with a #
+
 
     c. Specific IRC TCL proc
     ------------------------
@@ -254,12 +266,6 @@ bot_init $nick $username $hostname $gecos
 
 join_chan $bot $chan
     Make a virtual bot join a chan and get +ao chanmodes
-
-is_admin $nick
-    Return TRUE if the given nick is admin on the service
-
-is_chan $string
-    Return TRUE if the given $string start with a #
 
 
     d. Hooks for developping modules

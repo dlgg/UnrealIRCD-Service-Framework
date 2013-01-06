@@ -120,11 +120,28 @@ namespace eval tools {
     return $sum
   }
 
+  proc is_root { nick } {
+    if {![info exists ::irc::regusers]} { return 0 }
+    if { [llength $::irc::regusers] < 1 } { return 0 }
+    puts [lsearch -nocase -exact $::irc::root $nick]
+    if {[lsearch -nocase -exact $::irc::root $nick] != "-1"} { if {[lsearch -exact $::irc::regusers $nick] >= 0} { return 1 } }
+    return 0
+  }
+  proc is_admin { nick } {
+    return [::tools::is_root $nick]
+  }
+  proc is_oper { nick } {
+    return [::tools::is_root $nick]
+  }
+
+  proc is_chan { chan } { [string equal [string index $chan 0] "#"] { return 1 } { return 0 } }
+
+
   # Using an array as persistent database
   # ::tools::writeDB $array $file
   proc writeDB { var file } {
     set fp [open $file w]
-    puts $fp [list array set db [array get db]]
+    puts $fp [list array set $var [array get $var]]
     close $fp
     return
   }
@@ -527,16 +544,6 @@ proc ::irc::part_chan {bot chan} {
   return
 }
 
-proc ::irc::is_admin { nick } {
-  if {![info exists ::irc::regusers]} { return 0 }
-  if { [llength $::irc::regusers] < 1 } { return 0 }
-  puts [lsearch -nocase -exact $::irc::root $nick]
-  if {[lsearch -nocase -exact $::irc::root $nick] != "-1"} { if {[lsearch -exact $::irc::regusers $nick] >= 0} { return 1 } }
-  return 0
-}
-
-proc ::irc::is_chan { chan } { [string equal [string index $chan 0] "#"] { return 1 } { return 0 } }
-
 proc ::irc::parse_umodes { nick modes } {
   set mode "add"
   if {$::debug} { puts "CHG UMODES : allmodes : $modes" }
@@ -626,7 +633,7 @@ proc ::irc::user_quit { nick } {
   foreach arr [array names ::irc::users *] {
     set ::irc::users($arr) [::tools::lremove $::irc::users($arr) $nick]
     if {[llength $::irc::users($arr)]==0} {
-      if {[::irc::is_chan $arr]} {
+      if {[::tools::is_chan $arr]} {
         if {$::debug} { puts "Removing $arr from ::irc::chanlist" }
         set ::irc::chanlist [::tools::lremove $::irc::chanlist $arr]
       }

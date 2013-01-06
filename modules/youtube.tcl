@@ -110,8 +110,8 @@ namespace eval youtube {
       mode {
         set chan [join [string tolower [lindex $args 2]]]
         set cmdmode [string tolower [lindex $args 3]]
-        if {![::irc::is_chan $chan]} { ::irc::send ":$::irc::nick [tok NOTICE] $nick :You need to provide a chan in parameters."; return }
-        if {![::irc::is_admin $nick]} { ::irc::send ":$::irc::nick [tok NOTICE] $nick :You are not admin."; return }
+        if {![::tools::is_chan $chan]} { ::irc::send ":$::irc::nick [tok NOTICE] $nick :You need to provide a chan in parameters."; return }
+        if {![::tools::is_admin $nick]} { ::irc::send ":$::irc::nick [tok NOTICE] $nick :You are not admin."; return }
         set ::youtube::db($chan) $cmdmode
         saveDB
         ::irc::send ":$::irc::nick [tok NOTICE] $nick :Youtube mode for $chan is now $cmdmode"
@@ -119,7 +119,7 @@ namespace eval youtube {
         return
       }
       show {
-        if {![::irc::is_admin $nick]} { ::irc::send ":$::irc::nick [tok NOTICE] $nick :You are not admin."; return }
+        if {![::tools::is_admin $nick]} { ::irc::send ":$::irc::nick [tok NOTICE] $nick :You are not admin."; return }
         ::irc::send ":$::irc::nick [tok NOTICE] $nick :This is the configuration of the youtube module."
         ::irc::send ":$::irc::nick [tok NOTICE] $nick :The default configuration is $::youtube::mode"
         ::irc::send ":$::irc::nick [tok NOTICE] $nick :Channels specific configuration"

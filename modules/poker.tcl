@@ -23,7 +23,7 @@
 puts [::msgcat::mc loadgame "Poker"]
 
 namespace eval poker {
-  namespace import ::tools::0 ::tools::1 ::tools::tok
+  namespace import ::tools::0 ::tools::1 ::tools::tok ::tools::is_admin
   # Parametres pour le jeu Poker
   variable nick "Poker-FrameWork"
   variable username "poker"
