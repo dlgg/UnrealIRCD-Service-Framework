@@ -202,7 +202,7 @@ You'll find below the variables that are not explain in the config part.
     b. Specific Tools TCL proc
     --------------------------
 All procs are in namespace ::tools so you need to prefix each of
-followings procs by ::tools:: or export it in your namespace.
+followings procs by ::tools:: or import it in your namespace.
 
 charfilter $arg
     Strip $arg for escaping dangerous characters
@@ -241,7 +241,7 @@ dec2base/base2dec $num $baselist
     c. Specific IRC TCL proc
     ------------------------
 All procs are in namespace ::irc so you need to prefix each of
-followings procs by ::irc:: or export it in your namespace.
+followings procs by ::irc:: or import it in your namespace.
 
 rehash
     Rehash the service
@@ -332,7 +332,7 @@ privmsg-$bot $nick $text
     e. Specific IRC TCL proc
     ------------------------
 All procs below are in namespace ::pl so you need to prefix each of
-following procs by ::pl:: or export it in your namespace.
+following procs by ::pl:: or import it in your namespace.
 
 send $sock $raw
     Send a raw message to a pl sock
