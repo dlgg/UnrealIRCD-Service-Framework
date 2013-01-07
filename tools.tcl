@@ -120,6 +120,13 @@ namespace eval tools {
     return $sum
   }
 
+  proc is_user { nick } {
+    if {![info exists ::irc::userlist]} { return 0 }
+    if {[llength $::irc::userlist] < 1 } { return 0 }
+    if {[lsearch -nocase -exact $::irc::userlist $nick] >= 0} { return 1 }
+    return 0
+  }
+
   proc is_reg { nick } {
     if {![info exists ::irc::regusers]} { return 0 }
     if {[llength $::irc::regusers] < 1 } { return 0 }

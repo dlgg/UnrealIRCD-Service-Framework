@@ -237,6 +237,9 @@ rand $multiplier
 dec2base/base2dec $num $baselist
    Transform from/to base $num using $baselist as map
 
+is_user $nick
+    Return TRUE if the given nick is an user connected
+
 is_reg $nick
     Return TRUE if the given nick is authentified to a nickserv
     (umode +r)
