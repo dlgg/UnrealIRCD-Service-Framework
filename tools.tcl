@@ -166,6 +166,22 @@ namespace eval tools {
 
   proc is_chan { chan } { [string equal [string index $chan 0] "#"] { return 1 } { return 0 } }
 
+  proc load_rights { } {
+    if {![file writable $::irc::rightsdb]} { if {[file exists $::irc::rightsdb]} { puts "$::irc::rightsdb is not writable. Please correct this."; exit } else { set f [open $::irc::rightsdb w]; close $f } }
+    set f [open $::irc::rightsdb r]
+    set content [read -nonewline $f]
+    close $f
+    foreach line [split $content "\n"] { set ::irc::rights([lindex $line 0]) [lrange $line 1 end] }
+  }
+  proc save_rights { } {
+    set f [open $::irc::rightsdb w]
+    foreach n [array names ::irc::rights] {
+      if {$::debug} { puts "$n $::irc::rights($n)" }
+      puts $f "$n $::irc::rights($n)"
+    }
+    close $f
+  }
+
   proc pluralize { number } { if { $number > 1} { return "s" } }
   
   proc getpreprocname { } {
