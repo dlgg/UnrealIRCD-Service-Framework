@@ -32,7 +32,7 @@ set debug 1
 
 # Chargement des fichiers de langue
 foreach file [glob -directory lang/ *.msg] {
-  if {$::debug==1} { puts "Loading $file" }
+  puts "Loading $file"
   source $file
 }
 
