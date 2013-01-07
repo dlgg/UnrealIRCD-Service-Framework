@@ -33,7 +33,7 @@ source controller.tcl
 source pl.tcl
 
 # Load modules
-if {$debug==1} { puts "List of modules to load : $::irc::modules" }
+puts "List of modules to load : $::irc::modules"
 foreach file $::irc::modules {
   append file ".tcl"
   set file modules/$file
