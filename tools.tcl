@@ -166,17 +166,6 @@ namespace eval tools {
 
   proc is_chan { chan } { [string equal [string index $chan 0] "#"] { return 1 } { return 0 } }
 
-  # Using an array as persistent database
-  # ::tools::writeDB $array $file
-  proc writeDB { var file } {
-    set fp [open $file w]
-    puts $fp [list array set $var [array get $var]]
-    close $fp
-    return
-  }
-  # unset array; set array [readDB $file]
-  proc readDB { file } { source $file } 
-  
   proc pluralize { number } { if { $number > 1} { return "s" } }
   
   proc getpreprocname { } {
