@@ -174,7 +174,7 @@ namespace eval tools {
     close $fp
     return
   }
-  # unset $array; set array [readDB $file]
+  # unset array; set array [readDB $file]
   proc readDB { file } { source $file } 
   
   proc pluralize { number } { if { $number > 1} { return "s" } }
