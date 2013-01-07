@@ -120,22 +120,32 @@ namespace eval tools {
     return $sum
   }
 
-  proc is_root { nick } {
+  proc is_reg { nick } {
     if {![info exists ::irc::regusers]} { return 0 }
-    if { [llength $::irc::regusers] < 1 } { return 0 }
-    puts [lsearch -nocase -exact $::irc::root $nick]
-    if {[lsearch -nocase -exact $::irc::root $nick] != "-1"} { if {[lsearch -exact $::irc::regusers $nick] >= 0} { return 1 } }
+    if {[llength $::irc::regusers] < 1 } { return 0 }
+    if {[lsearch -nocase -exact $::irc::regusers $nick] >= 0} { return 1 }
+    return 0
+  }
+  proc is_root { nick } {
+    if {[lsearch -nocase -exact $::irc::root $nick] != "-1"} { [is_reg $nick] { return 1 } { return 0 } }
     return 0
   }
   proc is_admin { nick } {
-    return [::tools::is_root $nick]
+    [is_root $nick] { return 1 } { return 0 }
+    if {![info exists ::irc::admin]} { return 0 }
+    if {[llength $::irc::admin] < 1 } { return 0 }
+    if {[lsearch -nocase -exact $::irc::admin $nick] != "-1"} { [is_reg $nick] { return 1 } { return 0 } }
+    return 0
   }
   proc is_oper { nick } {
-    return [::tools::is_root $nick]
+    [is_admin $nick] { return 1 } { return 0 }
+    if {![info exists ::irc::oper]} { return 0 }
+    if {[llength $::irc::oper] < 1 } { return 0 }
+    if {[lsearch -nocase -exact $::irc::oper $nick] != "-1"} { [is_reg $nick] { return 1 } { return 0 } }
+    return 0
   }
 
   proc is_chan { chan } { [string equal [string index $chan 0] "#"] { return 1 } { return 0 } }
-
 
   # Using an array as persistent database
   # ::tools::writeDB $array $file
