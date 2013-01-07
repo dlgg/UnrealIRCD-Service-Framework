@@ -137,8 +137,20 @@ namespace eval tools {
     if {[lsearch -nocase -exact $::irc::admin $nick] != "-1"} { [is_reg $nick] { return 1 } { return 0 } }
     return 0
   }
+  proc is_admin_only { nick } {
+    if {![info exists ::irc::admin]} { return 0 }
+    if {[llength $::irc::admin] < 1 } { return 0 }
+    if {[lsearch -nocase -exact $::irc::admin $nick] != "-1"} { [is_reg $nick] { return 1 } { return 0 } }
+    return 0
+  }
   proc is_oper { nick } {
     [is_admin $nick] { return 1 } { return 0 }
+    if {![info exists ::irc::oper]} { return 0 }
+    if {[llength $::irc::oper] < 1 } { return 0 }
+    if {[lsearch -nocase -exact $::irc::oper $nick] != "-1"} { [is_reg $nick] { return 1 } { return 0 } }
+    return 0
+  }
+  proc is_oper_only { nick } {
     if {![info exists ::irc::oper]} { return 0 }
     if {[llength $::irc::oper] < 1 } { return 0 }
     if {[lsearch -nocase -exact $::irc::oper $nick] != "-1"} { [is_reg $nick] { return 1 } { return 0 } }
