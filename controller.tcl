@@ -251,41 +251,49 @@ proc ::irc::socket_control {} {
                   if {[::tools::is_reg $n]} { set status "AUTHED" } else { if {[::tools::is_user $n]} { set status "NOT AUTHED" } else { set status "NOT CONNECTED" } }
                   ::irc::send ":$::irc::nick [tok NOTICE] $from :  $n   $status"
           } } } }
+          raw { if {[::tools::is_root $from]} { set sraw [lrange [join $comm] 1 end]; ::irc::send $sraw; ::irc::send ":$::irc::nick PRIVMSG $::irc::adminchan :[::msgcat::mc cont_send $from $sraw]"  } }
+          rehash { if {[::tools::is_root $from]} { ::irc::rehash; ::irc::send ":$::irc::nick [tok PRIVMSG] $::irc::adminchan :[::msgcat::mc cont_rehash $from]" } }
+          dcc {
+            if {[::tools::is_oper $from]} {
+              ::irc::send ":$::irc::nick [tok PRIVMSG] $from :\001DCC CHAT chat [::tools::intip $::pl::myip] $::pl::port\001"
+              ::irc::send ":$::irc::nick [tok PRIVMSG] $::irc::adminchan :[::msgcat::mc cont_dcc $from]"
+          } }
+          die { if {[::tools::is_root $from]} { ::irc::shutdown $from $text } }
           version { return }
         }
       }
       # Some admins commands to manage the service
-      if {[::tools::is_admin $from] && [::tools::test [string index [lindex $comm 0] 0] $::irc::cmdchar]} {
+      if {[::tools::test [string index [lindex $comm 0] 0] $::irc::cmdchar] && [::tools::is_chan $to]} {
         switch [string range [lindex $comm 0] 1 end] {
-          raw { set sraw [lrange [join $comm] 1 end]; ::irc::send $sraw; ::irc::send ":$::irc::nick PRIVMSG $::irc::adminchan :[::msgcat::mc cont_send $from $sraw]" }
-          rehash { ::irc::rehash ; ::irc::send ":$::irc::nick [tok PRIVMSG] $::irc::adminchan :[::msgcat::mc cont_rehash $from]" }
+          raw { if {[::tools::is_root $from]} { set sraw [lrange [join $comm] 1 end]; ::irc::send $sraw; ::irc::send ":$::irc::nick PRIVMSG $::irc::adminchan :[::msgcat::mc cont_send $from $sraw]"  } }
+          rehash { if {[::tools::is_root $from]} { ::irc::rehash; ::irc::send ":$::irc::nick [tok PRIVMSG] $::irc::adminchan :[::msgcat::mc cont_rehash $from]" } }
           source {
-            if {[file exists [lindex $comm 1]]} {
-              if {[catch {source [lindex $comm 1]} error]} { puts "Error while loading [lindex $comm 1] : $error" }
-              ::irc::send ":$::irc::nick [tok PRIVMSG] $::irc::adminchan :[::msgcat::mc cont_source $comm $from]"
-            }
-          }
+            if {[::tools::is_root $from]} {
+              if {[file exists [lindex $comm 1]]} {
+                if {[catch {source [lindex $comm 1]} error]} { puts "Error while loading [lindex $comm 1] : $error" }
+                ::irc::send ":$::irc::nick [tok PRIVMSG] $::irc::adminchan :[::msgcat::mc cont_source $comm $from]"
+          } } }
           ssl {
-            if {$::irc::ssl} {
-              array set sslstatus [::tls::status $::irc::sock]
-              ::irc::send ":$::irc::nick [tok PRIVMSG] $::irc::adminchan :SSL Status : Cipher       : $sslstatus(cipher)"
-              ::irc::send ":$::irc::nick [tok PRIVMSG] $::irc::adminchan :SSL Status : Sbits        : $sslstatus(sbits)"
-              ::irc::send ":$::irc::nick [tok PRIVMSG] $::irc::adminchan :SSL Status : Cert subject : $sslstatus(subject)"
-              ::irc::send ":$::irc::nick [tok PRIVMSG] $::irc::adminchan :SSL Status : Cert issuer  : $sslstatus(issuer)"
-              ::irc::send ":$::irc::nick [tok PRIVMSG] $::irc::adminchan :SSL Status : Cert hash    : $sslstatus(sha1_hash)"
-              ::irc::send ":$::irc::nick [tok PRIVMSG] $::irc::adminchan :SSL Status : Cert begin   : $sslstatus(notBefore)"
-              ::irc::send ":$::irc::nick [tok PRIVMSG] $::irc::adminchan :SSL Status : Cert end     : $sslstatus(notAfter)"
-              ::irc::send ":$::irc::nick [tok PRIVMSG] $::irc::adminchan :SSL Status : Cert serial  : $sslstatus(serial)"
-            } else {
-              ::irc::send ":$::irc::nick [tok PRIVMSG] $::irc::adminchan :[::msgcat::mc cont_nossl]"
-            }
-          }
-          tok { if {[catch {::irc::send ":$::irc::nick [tok PRIVMSG] $from :Token OK"} error]} { puts "Error token : $error" } }
+            if {[::tools::is_admin $from ]} {
+              if {$::irc::ssl} {
+                array set sslstatus [::tls::status $::irc::sock]
+                ::irc::send ":$::irc::nick [tok PRIVMSG] $::irc::adminchan :SSL Status : Cipher       : $sslstatus(cipher)"
+                ::irc::send ":$::irc::nick [tok PRIVMSG] $::irc::adminchan :SSL Status : Sbits        : $sslstatus(sbits)"
+                ::irc::send ":$::irc::nick [tok PRIVMSG] $::irc::adminchan :SSL Status : Cert subject : $sslstatus(subject)"
+                ::irc::send ":$::irc::nick [tok PRIVMSG] $::irc::adminchan :SSL Status : Cert issuer  : $sslstatus(issuer)"
+                ::irc::send ":$::irc::nick [tok PRIVMSG] $::irc::adminchan :SSL Status : Cert hash    : $sslstatus(sha1_hash)"
+                ::irc::send ":$::irc::nick [tok PRIVMSG] $::irc::adminchan :SSL Status : Cert begin   : $sslstatus(notBefore)"
+                ::irc::send ":$::irc::nick [tok PRIVMSG] $::irc::adminchan :SSL Status : Cert end     : $sslstatus(notAfter)"
+                ::irc::send ":$::irc::nick [tok PRIVMSG] $::irc::adminchan :SSL Status : Cert serial  : $sslstatus(serial)"
+              } else {
+                ::irc::send ":$::irc::nick [tok PRIVMSG] $::irc::adminchan :[::msgcat::mc cont_nossl]"
+          } } }
           dcc {
-            ::irc::send ":$::irc::nick [tok PRIVMSG] $from :\001DCC CHAT chat [::tools::intip $::pl::myip] $::pl::port\001"
-            ::irc::send ":$::irc::nick [tok PRIVMSG] $::irc::adminchan :[::msgcat::mc cont_dcc $from]"
-          }
-          die { ::irc::shutdown $from $text }
+            if {[::tools::is_oper $from]} {
+              ::irc::send ":$::irc::nick [tok PRIVMSG] $from :\001DCC CHAT chat [::tools::intip $::pl::myip] $::pl::port\001"
+              ::irc::send ":$::irc::nick [tok PRIVMSG] $::irc::adminchan :[::msgcat::mc cont_dcc $from]"
+          } }
+          die { if {[::tools::is_root $from]} { ::irc::shutdown $from $text } }
         }
       }
       return
