@@ -170,7 +170,7 @@ proc ::irc::socket_control {} {
     # PRIVMSG
       set from [string range [lindex $arg 0] 1 end]
       set to [lindex $arg 2]
-      set commc [list [string range [lindex $arg 3] 1 end] [lrange $arg 4 end]]
+      set commc [join [list [string range [lindex $arg 3] 1 end] [lrange $arg 4 end]]]
       set comm [::tools::stripmirc $commc]
       set text [::tools::stripmirc [lrange $arg 4 end]]
       # Hooks for global PRIVMSG
@@ -192,13 +192,13 @@ proc ::irc::socket_control {} {
                 ::irc::send ":$::irc::nick [tok NOTICE] $from :  $n   $status"
           } } }
           admin {
-            set nick [lindex $comm 2]
+            set nick [string tolower [lindex $comm 2]]
             switch [lindex $comm 1] {
               add {
                 if {$::debug} { puts "admin add $nick" }
                 if {![::tools::is_root $from]} { return }
                 if {[::tools::is_root $nick]} { ::irc::send ":$::irc::nick [tok NOTICE] $from :$nick is on root list. Ha cannot be an admin."; return }
-                if {[::tools::is_admin_only $nick]} { ::irc::send ":$::irc::nick [tok NOTICE] $from :$nick is already on admin list."; return }
+                if {[info exists ::irc::rights(admin)]} { if {[lsearch -exact -nocase $::irc::rights(admin) $nick] >= 0} { ::irc::send ":$::irc::nick [tok NOTICE] $from :$nick is already on admin list."; return } }
                 if {![::tools::is_reg $nick]} { ::irc::send ":$::irc::nick [tok NOTICE] $from :$nick is not authentified on nickserv."; return }
                 # TODO : if nickserv module is loaded check if the nick is in db.
                 lappend ::irc::rights(admin) $nick
@@ -208,7 +208,7 @@ proc ::irc::socket_control {} {
               del {
                 if {$::debug} { puts "admin del $nick" }
                 if {![::tools::is_root $from]} { return }
-                if {![::tools::is_admin_only $nick]} { ::irc::send ":$::irc::nick [tok NOTICE] $from :$nick is not on admin list."; return }
+                if {[info exists ::irc::rights(admin)]} { if {[lsearch -exact -nocase $::irc::rights(admin) $nick]} { ::irc::send ":$::irc::nick [tok NOTICE] $from :$nick is not on admin list."; return } }
                 set ::irc::rights(admin) [::tools::lremove $::irc::rights(admin) $nick]
                 ::tools::save_rights
               }
@@ -216,28 +216,29 @@ proc ::irc::socket_control {} {
                 if {$::debug} { puts "admin list" }
                 if {![::tools::is_oper $from]} { return }
                 ::irc::send ":$::irc::nick [tok NOTICE] $from :List of admins on $::irc::netname"
-                foreach n $::irc::admin {
+                if {![info exists ::irc::rights(admin)]} { return }
+                foreach n $::irc::rights(admin) {
                   if {[::tools::is_reg $n]} { set status "AUTHED" } else { if {[::tools::is_user $n]} { set status "NOT AUTHED" } else { set status "NOT CONNECTED" } }
                   ::irc::send ":$::irc::nick [tok NOTICE] $from :  $n   $status"
           } } } }
           oper {
-            set nick [lindex $comm 2]
+            set nick [string tolower [lindex $comm 2]]
             switch [lindex $comm 1] {
               add {
                 if {$::debug} { puts "oper add $nick" }
                 if {![::tools::is_admin $from]} { return }
-                if {[::tools::is_root $nick]} { ::irc::send ":$::irc::nick [tok NOTICE] $from :$nick is on root list. Ha cannot be an admin."; return }
-                if {[::tools::is_oper_only $nick]} { ::irc::send ":$::irc::nick [tok NOTICE] $from :$nick is already on oper list."; return }
+                if {[::tools::is_root $nick]} { ::irc::send ":$::irc::nick [tok NOTICE] $from :$nick is on root list. Ha cannot be an oper."; return }
+                if {[info exists ::irc::rights(oper)]} { if {[lsearch -exact -nocase $::irc::rights(oper) $nick] >= 0} { ::irc::send ":$::irc::nick [tok NOTICE] $from :$nick is already on oper list."; return } }
                 if {![::tools::is_reg $nick]} { ::irc::send ":$::irc::nick [tok NOTICE] $from :$nick is not authentified on nickserv."; return }
                 # TODO : if nickserv module is loaded check if the nick is in db.
-                lappend ::irc::admin $nick
-                ::irc::send ":$::irc::nick [tok NOTICE] $from :$nick has been correctly added on admin list."
+                lappend ::irc::rights(oper) $nick
+                ::irc::send ":$::irc::nick [tok NOTICE] $from :$nick has been correctly added on oper list."
                 ::tools::save_rights
               }
               del {
                 if {$::debug} { puts "oper del $nick" }
                 if {![::tools::is_admin $from]} { return }
-                if {![::tools::is_oper_only $nick]} { ::irc::send ":$::irc::nick [tok NOTICE] $from :$nick is not on oper list."; return }
+                if {[info exists ::irc::rights(oper)]} { if {[lsearch -exact -nocase $::irc::rights(oper) $nick] == -1} { ::irc::send ":$::irc::nick [tok NOTICE] $from :$nick is not on oper list."; return } }
                 set ::irc::rights(oper) [::tools::lremove $::irc::rights(oper) $nick]
                 ::tools::save_rights
               }
@@ -245,6 +246,7 @@ proc ::irc::socket_control {} {
                 if {$::debug} { puts "oper list" }
                 if {![::tools::is_oper $from]} { return }
                 ::irc::send ":$::irc::nick [tok NOTICE] $from :List of opers on $::irc::netname"
+                if {![info exists ::irc::rights(oper)]} { return }
                 foreach n $::irc::rights(oper) {
                   if {[::tools::is_reg $n]} { set status "AUTHED" } else { if {[::tools::is_user $n]} { set status "NOT AUTHED" } else { set status "NOT CONNECTED" } }
                   ::irc::send ":$::irc::nick [tok NOTICE] $from :  $n   $status"
