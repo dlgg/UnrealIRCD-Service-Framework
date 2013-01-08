@@ -150,7 +150,7 @@ namespace eval youtube {
     set f [open $::youtube::dbfile r]
     set content [read -nonewline $f]
     close $f
-    if {[info exists ::youtube::db]} { unset $::youtube::db }
+    if {[info exists ::youtube::db]} { unset ::youtube::db }
     foreach line [split $content "\n"] {
       lappend ::youtube::db([lindex $line 0]) [lindex $line 1]
     }
