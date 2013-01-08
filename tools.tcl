@@ -45,12 +45,6 @@ namespace eval tools {
     return
   }
 
-  # if/then/else compacted
-  # Usage : [proc who return boolean value] { then cmd to execute } { else cmd to execute }
-  # Ex: [expr $x<100] {puts Yes} {puts No}
-  proc 0 {then else} {uplevel 1 $else}
-  proc 1 {then else} {uplevel 1 $then}
-
   # One missing command for managing lists. Remove an element from the list without replacing it with an empty string
   proc lremove { list element } { return [lsearch -all -inline -not -exact $list $element] }
   proc llreplace { list old new } {
@@ -122,49 +116,47 @@ namespace eval tools {
 
   proc is_user { nick } {
     if {![info exists ::irc::userlist]} { return 0 }
-    if {[llength $::irc::userlist] < 1 } { return 0 }
     if {[lsearch -nocase -exact $::irc::userlist $nick] >= 0} { return 1 }
     return 0
   }
-
   proc is_reg { nick } {
     if {![info exists ::irc::regusers]} { return 0 }
     if {[llength $::irc::regusers] < 1 } { return 0 }
     if {[lsearch -nocase -exact $::irc::regusers $nick] >= 0} { return 1 }
     return 0
   }
+
   proc is_root { nick } {
-    if {[lsearch -nocase -exact $::irc::root $nick] != "-1"} { [is_reg $nick] { return 1 } { return 0 } }
+    if {[lsearch -nocase -exact $::irc::root $nick] >= "0"} { if {[is_reg $nick]} { return 1 } }
     return 0
   }
+
   proc is_admin { nick } {
-    [is_root $nick] { return 1 } { return 0 }
-    if {![info exists ::irc::rights(admin)]} { return 0 }
-    if {[llength $::irc::rights(admin)] < 1 } { return 0 }
-    if {[lsearch -nocase -exact $::irc::rights(admin) $nick] != "-1"} { [is_reg $nick] { return 1 } { return 0 } }
+    if {[is_root $nick]} { return 1 }
+    if {[is_admin_only $nick]} { return 1 }
     return 0
   }
   proc is_admin_only { nick } {
     if {![info exists ::irc::rights(admin)]} { return 0 }
     if {[llength $::irc::rights(admin)] < 1 } { return 0 }
-    if {[lsearch -nocase -exact $::irc::rights(admin) $nick] != "-1"} { [is_reg $nick] { return 1 } { return 0 } }
+    if {[lsearch -nocase -exact $::irc::rights(admin) $nick] != "-1"} { if {[is_reg $nick]} { return 1 } }
     return 0
   }
+
   proc is_oper { nick } {
-    [is_admin $nick] { return 1 } { return 0 }
-    if {![info exists ::irc::rights(oper)]} { return 0 }
-    if {[llength $::irc::rights(oper)] < 1 } { return 0 }
-    if {[lsearch -nocase -exact $::irc::rights(oper) $nick] != "-1"} { [is_reg $nick] { return 1 } { return 0 } }
+    if {[is_root $nick]} { return 1 }
+    if {[is_admin_only $nick]} { return 1 }
+    if {[is_oper_only $nick]} { return 1 }
     return 0
   }
   proc is_oper_only { nick } {
     if {![info exists ::irc::rights(oper)]} { return 0 }
     if {[llength $::irc::rights(oper)] < 1 } { return 0 }
-    if {[lsearch -nocase -exact $::irc::rights(oper) $nick] != "-1"} { [is_reg $nick] { return 1 } { return 0 } }
+    if {[lsearch -nocase -exact $::irc::rights(oper) $nick] != "-1"} { if {[is_reg $nick]} { return 1 } }
     return 0
   }
 
-  proc is_chan { chan } { [string equal [string index $chan 0] "#"] { return 1 } { return 0 } }
+  proc is_chan { chan } { if {[string equal [string index $chan 0] "#"]} { return 1 } else { return 0 } }
 
   proc load_rights { } {
     if {![file writable $::irc::rightsdb]} { if {[file exists $::irc::rightsdb]} { puts "$::irc::rightsdb is not writable. Please correct this."; exit } else { set f [open $::irc::rightsdb w]; close $f } }
@@ -404,7 +396,6 @@ namespace eval tools {
 # Import of useful tools
 namespace eval ::irc { namespace import -force ::tools::tok }
 namespace eval ::pl  { namespace import -force ::tools::tok }
-namespace import ::tools::0 ::tools::1
 
 # Link to IRC Network
 proc ::irc::socket_connect {} {

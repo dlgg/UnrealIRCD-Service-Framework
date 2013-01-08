@@ -94,7 +94,7 @@ proc ::pl::control { sockpl } {
         ::pl::send $sockpl ".die       [::msgcat::mc pl_help5]"
         return
       }
-      .close { [expr {"[lindex $arg 1]" == ""}] { ::pl::closepl $sockpl $sockpl } { ::pl::closepl [lindex $arg 1] $sockpl }; return }
+      .close { if {[expr {"[lindex $arg 1]" == ""}]} { ::pl::closepl $sockpl $sockpl } else { ::pl::closepl [lindex $arg 1] $sockpl }; return }
       .who { ::pl::send $sockpl [::msgcat::mc pl_inpl $::pl::socks]; ::pl::send $sockpl [::msgcat::mc pl_inplauth $::pl::authed]; return }
       .ssl {
         if {$::irc::ssl} {

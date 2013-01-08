@@ -23,7 +23,7 @@
 puts [::msgcat::mc loadgame "Poker"]
 
 namespace eval poker {
-  namespace import ::tools::0 ::tools::1 ::tools::tok ::tools::is_admin
+  namespace import ::tools::tok
   # Parametres pour le jeu Poker
   variable nick "Poker-FrameWork"
   variable username "poker"
@@ -39,11 +39,11 @@ namespace eval poker {
 }
 
 proc ::poker::control_pub { nick text } {
-  [is_admin $nick] { ::irc::send ":$::poker::nick [tok PRIVMSG] $::poker::chan :\002PUB \002 $nick > [join $text]" } { puts "$nick not admin" }
+  if {[::tools::is_admin $nick]} { ::irc::send ":$::poker::nick [tok PRIVMSG] $::poker::chan :\002PUB \002 $nick > [join $text]" }
 }
 
 proc ::poker::control_priv { nick text } {
-  [is_admin $nick] { ::irc::send ":$::poker::nick [tok PRIVMSG] $::poker::chan :\002PRIV\002 $nick > [join $text]" } { puts "$nick not admin" }
+  if {[::tools::is_admin $nick]} { ::irc::send ":$::poker::nick [tok PRIVMSG] $::poker::chan :\002PRIV\002 $nick > [join $text]" }
 }
 
 # vim: set fenc=utf-8 sw=2 sts=2 ts=2 et filetype=tcl
