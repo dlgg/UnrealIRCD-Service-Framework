@@ -243,14 +243,22 @@ is_user $nick
 is_reg $nick
     Return TRUE if the given nick is authentified to a nickserv
     (umode +r)
+
 is_root $nick
     Return TRUE if the given nick is a root of the service
 
 is_admin $nick
+    Return TRUE if the given nick is an admin or a root of the service
+
+is_admin_only $nick
     Return TRUE if the given nick is an admin of the service
 
 is_oper $nick
     Return TRUE if the given nick is an oper of the service
+
+is_oper_only $nick
+    Return TRUE if the given nick is an oper, an admin or a root of the
+    service
 
 is_chan $string
     Return TRUE if the given $string start with a #
