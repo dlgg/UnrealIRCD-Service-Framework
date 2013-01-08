@@ -85,13 +85,13 @@ proc ::pl::control { sockpl } {
         ::pl::send $sockpl [::msgcat::mc pl_help1]
         ::pl::send $sockpl "------------------------------"
         ::pl::send $sockpl " "
-        ::pl::send $sockpl ".who       [::msgcat::mc pl_help3]"
-        ::pl::send $sockpl ".ssl       [::msgcat::mc pl_help6]"
         ::pl::send $sockpl ".close     [::msgcat::mc pl_help2]"
-        ::pl::send $sockpl ".raw       [::msgcat::mc pl_help7]"
-        ::pl::send $sockpl ".source    [::msgcat::mc pl_help8]"
-        ::pl::send $sockpl ".rehash    [::msgcat::mc pl_help4]"
         ::pl::send $sockpl ".die       [::msgcat::mc pl_help5]"
+        ::pl::send $sockpl ".raw       [::msgcat::mc pl_help7]"
+        ::pl::send $sockpl ".rehash    [::msgcat::mc pl_help4]"
+        ::pl::send $sockpl ".source    [::msgcat::mc pl_help8]"
+        ::pl::send $sockpl ".ssl       [::msgcat::mc pl_help6]"
+        ::pl::send $sockpl ".who       [::msgcat::mc pl_help3]"
         return
       }
       .close { if {[expr {"[lindex $arg 1]" == ""}]} { ::pl::closepl $sockpl $sockpl } else { ::pl::closepl [lindex $arg 1] $sockpl }; return }
