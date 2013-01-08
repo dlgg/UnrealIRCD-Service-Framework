@@ -53,7 +53,7 @@ puts [::msgcat::mc loadgame "UNO"]
 
 # Parametres pour le jeu UNO
 namespace eval uno {
-  namespace import ::tools::tok ::tools::is_admin
+  namespace import ::tools::tok ::tools::is_oper
 
   variable nick       "UNO"
   variable username   "uno"
@@ -970,7 +970,7 @@ proc ::uno::Pause {nick uhost hand chan arg} {
   if {$chan != $::uno::Chan} {return}
   if {$::uno::On != 1} {return}
   if {$::uno::Mode != 2} {return}
-  if {[is_admin $nick]} {
+  if {[is_oper $nick]} {
     if {$::uno::Paused == 0} {
       set ::uno::Paused 1
       ::uno::msg [::msgcat::mc uno_pauseon [::uno::ad] $nick]
@@ -992,7 +992,7 @@ proc ::uno::Remove {nick uhost hand chan arg} {
   # Allow Ops To Remove Another Player
   set UnoOpRemove 0
   if {[string length $arg] > 0} {
-    if {[is_admin $nick]} {
+    if {[is_oper $nick]} {
       set UnoOpRemove 1
       set UnoOpNick $nick
       set nick $arg
