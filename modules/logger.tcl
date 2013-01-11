@@ -40,6 +40,7 @@ proc ::logger::log_privmsg { nick chan text } {
   set file "files/logs/$chan.log"
   
   set fp [open $file "a"]
+  fconfigure $fp -encoding utf-8
   
   puts $fp "[clock format [clock seconds] -format %H:%M:%S] < $nick > $textnc"
   

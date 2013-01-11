@@ -161,6 +161,7 @@ proc ::limit::print_help { nick } {
 proc ::limit::loadDB {} {
   if {![file writable $::limit::chandb]} { if {[file exists $::limit::chandb]} { puts "$::limit::chandb is not writable. Please correct this."; exit } else { set f [open $::limit::chandb w]; close $f } }
   set f [open $::limit::chandb r]
+  fconfigure $f -encoding utf-8
   set content [read -nonewline $f]
   close $f
   if {[info exists ::limit::chans]} { unset ::limit::chans }
@@ -171,6 +172,7 @@ proc ::limit::loadDB {} {
 
 proc ::limit::saveDB {} {
   set f [open $::limit::chandb w]
+  fconfigure $f -encoding utf-8
   foreach c $::limit::chans { puts $f $c }
   close $f
   return

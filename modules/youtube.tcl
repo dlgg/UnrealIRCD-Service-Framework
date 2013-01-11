@@ -148,6 +148,7 @@ namespace eval youtube {
 
   proc loadDB { } {
     set f [open $::youtube::dbfile r]
+    fconfigure $f -encoding utf-8
     set content [read -nonewline $f]
     close $f
     if {[info exists ::youtube::db]} { unset ::youtube::db }
@@ -158,6 +159,7 @@ namespace eval youtube {
 
   proc saveDB { } {
     set f [open $::youtube::dbfile w]
+    fconfigure $f -encoding utf-8
     foreach key [array names ::youtube::db] {
       if {$::debug} { puts "$key $::youtube::db($key)" }
       puts $f "$key $::youtube::db($key)"

@@ -27,10 +27,10 @@
 ##############################################################################
 
 # Load internal needed scripts
-source config.tcl
-source tools.tcl
-source controller.tcl
-source pl.tcl
+source -encoding utf-8 config.tcl
+source -encoding utf-8 tools.tcl
+source -encoding utf-8 controller.tcl
+source -encoding utf-8 pl.tcl
 
 # Load modules
 puts "List of modules to load : $::irc::modules"
@@ -40,7 +40,7 @@ foreach file $::irc::modules {
   if {$debug==1} { puts "Checking if exist : $file" }
   if {[file exists $file]} {
     if {$debug==1} { puts "Trying to load : $file" }
-    if {[catch {source $file} err]} { puts "Error loading $file \n$::errorInfo"; exit }
+    if {[catch {source -encoding utf-8 $file} err]} { puts "Error loading $file \n$::errorInfo"; exit }
   } else {
     if {$debug==1} { puts "File not exists : $file" }
     puts [::msgcat::mc filenotexist $file]

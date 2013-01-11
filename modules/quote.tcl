@@ -41,6 +41,7 @@ proc ::quote::control { nick chan text } {
     switch $cmd {
       quote {
         set fd [open $::quote::quotefile "r"]
+        fconfigure $fd -encoding utf-8
         set data [read $fd]
         close $fd
         set data [split $data \n]
@@ -49,6 +50,7 @@ proc ::quote::control { nick chan text } {
       }
       add_quote {
         set fd [open $::quote::quotefile "a"]
+        fconfigure $fd -encoding utf-8
         puts $fd $paramsnc
         close $fd
         ::irc::send ":$::irc::nick [tok PRIVMSG] $chan :Quote ajoutée"

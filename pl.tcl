@@ -40,8 +40,8 @@ proc ::pl::server {} {
 
 proc ::pl::waiting { sockpl addr dstport } {
   puts [::msgcat::mc pl_incconn]
+  fconfigure $sockpl -buffering line -encoding utf-8
   fileevent $sockpl readable [list ::pl::control $sockpl]
-  fconfigure $sockpl -buffering line
   lappend ::pl::socks $sockpl
   set ::pl::socks [::tools::nodouble $::pl::socks]
   ::irc::send ":$::irc::nick [tok PRIVMSG] $::irc::adminchan :[::msgcat::mc pl_activated $sockpl $::pl::port $addr $dstport]"
@@ -113,7 +113,7 @@ proc ::pl::control { sockpl } {
       }
       .source {
         if {[file exists [lindex $arg 1]]} {
-          if {[catch {source [lindex $arg 1]} error]} { puts "Error while loading [lindex $arg 1] : $error" }
+          if {[catch {source -encoding utf-8 [lindex $arg 1]} error]} { puts "Error while loading [lindex $arg 1] : $error" }
           ::irc::send ":$::irc::nick [tok PRIVMSG] $::irc::adminchan :[::msgcat::mc cont_source [lindex $arg 1] $sockpl]"
         }
       }

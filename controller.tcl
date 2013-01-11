@@ -270,7 +270,7 @@ proc ::irc::socket_control {} {
           source {
             if {[::tools::is_root $from]} {
               if {[file exists [lindex $comm 1]]} {
-                if {[catch {source [lindex $comm 1]} error]} { puts "Error while loading [lindex $comm 1] : $error" }
+                if {[catch {source -encoding utf-8 [lindex $comm 1]} error]} { puts "Error while loading [lindex $comm 1] : $error" }
                 ::irc::send ":$::irc::nick [tok PRIVMSG] $::irc::adminchan :[::msgcat::mc cont_source $comm $from]"
           } } }
           ssl {

@@ -40,6 +40,7 @@ namespace eval tools {
   # Write the pid of the current process in a file fro crons systems
   proc write_pid { pidfile } {
     set f [open $pidfile "WRONLY CREAT TRUNC" 0600]
+    fconfigure $f -encoding utf-8
     puts $f [pid]
     close $f
     return
@@ -161,12 +162,14 @@ namespace eval tools {
   proc load_rights { } {
     if {![file writable $::irc::rightsdb]} { if {[file exists $::irc::rightsdb]} { puts "$::irc::rightsdb is not writable. Please correct this."; exit } else { set f [open $::irc::rightsdb w]; close $f } }
     set f [open $::irc::rightsdb r]
+    fconfigure $f -encoding utf-8
     set content [read -nonewline $f]
     close $f
     foreach line [split $content "\n"] { set ::irc::rights([lindex $line 0]) [lrange $line 1 end] }
   }
   proc save_rights { } {
     set f [open $::irc::rightsdb w]
+    fconfigure $f -encoding utf-8
     foreach n [array names ::irc::rights] {
       if {$::debug} { puts "$n $::irc::rights($n)" }
       puts $f "$n $::irc::rights($n)"
@@ -409,8 +412,8 @@ proc ::irc::socket_connect {} {
     if {$::debug} { puts [::msgcat::mc initlink1 $::irc::ip $::irc::port] }
     if {[catch {set ::irc::sock [socket $::irc::ip $::irc::port]} error]} { puts [::msgcat::mc sockerror $error]); after $::irc::reconnect; ::irc::socket_connect; return 0 }
   }
+  fconfigure $::irc::sock -buffering line -encoding utf-8
   fileevent $::irc::sock readable ::irc::socket_control
-  fconfigure $::irc::sock -buffering line
   ::irc::netsync
   vwait ::irc::wait
   return
@@ -478,10 +481,10 @@ proc ::irc::rehash {} {
     puts [::msgcat::mc closepls]
     foreach pl $::pl::socks { ::pl::closepl $pl "rehash" }
   }
-  source config.tcl
-  source tools.tcl
-  source controller.tcl
-  source pl.tcl
+  source -encoding utf-8 config.tcl
+  source -encoding utf-8 tools.tcl
+  source -encoding utf-8 controller.tcl
+  source -encoding utf-8 pl.tcl
   puts "List of modules to load : $::irc::modules"
   foreach file $::irc::modules {
     append file ".tcl"
@@ -489,7 +492,7 @@ proc ::irc::rehash {} {
     if {$debug} { puts "Checking if exist : $file" }
     if {[file exists $file]} {
       if {$debug} { puts "Trying to load : $file" }
-      if {[catch {source $file} err]} { puts "Error loading $file \n$err"; exit }
+      if {[catch {source -encoding utf-8 $file} err]} { puts "Error loading $file \n$err"; exit }
     } else {
       if {$debug} { puts "File not exists : $file" }
       puts [::msgcat::mc filenotexist $file]

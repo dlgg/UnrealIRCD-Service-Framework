@@ -148,6 +148,7 @@ proc ::badnick::loadDB {} {
 # load chans DB
   if {![file writable $::badnick::chandb]} { if {[file exists $::badnick::chandb]} { puts "$::badnick::chandb is not writable. Please correct this."; exit } else { set f [open $::badnick::chandb w]; close $f } }
   set f [open $::badnick::chandb r]
+  fconfigure $f -encoding utf-8
   set content [read -nonewline $f]
   close $f
   if {[info exists ::badnick::chans]} { unset $::badnick::chans }
@@ -156,6 +157,7 @@ proc ::badnick::loadDB {} {
 # load bad nick DB
   if {![file writable $::badnick::listdb]} { if {[file exists $::badnick::listdb]} { puts "$::badnick::listdb is not writable. Please correct this."; exit } else { set f [open $::badnick::listdb w]; close $f } }
   set f [open $::badnick::listdb r]
+  fconfigure $f -encoding utf-8
   set content [read -nonewline $f]
   close $f
   if {[info exists ::badnick::list]} { unset $::badnick::list }
@@ -166,9 +168,11 @@ proc ::badnick::loadDB {} {
 
 proc ::badnick::saveDB {} {
   set f [open $::badnick::chandb w]
+  fconfigure $f -encoding utf-8
   foreach c $::badnick::chans { puts $f $c }
   close $f
   set f [open $::badnick::listdb w]
+  fconfigure $f -encoding utf-8
   foreach c $::badnick::list { puts $f $c }
   close $f
   return
