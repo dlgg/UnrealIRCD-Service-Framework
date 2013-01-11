@@ -47,7 +47,7 @@ namespace eval dailymotion {
   proc control { nick chan text } {
     if {$::debug==1} { puts "Dailymotion : " }
     set textnc [::tools::stripmirc $text]
-    set watch [regexp -nocase -- {\www\.dailymotion\.com/video/(.*)([0-9a-zA-Z])} $textnc "" dailymotionidd]
+    set watch [regexp -nocase -- {\www\.dailymotion\.com/video/([0-9a-zA-Z_-]*)} $textnc "" dailymotionidd]
     if {$watch && $dailymotionidd != ""} {
       set dailymotionid "/video/$dailymotionidd"
 
