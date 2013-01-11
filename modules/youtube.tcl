@@ -147,6 +147,7 @@ namespace eval youtube {
   }
 
   proc loadDB { } {
+    if {![file writable $::youtube::dbfile]} { if {[file exists $::youtube::dbfile]} { puts "$::youtube::dbfile is not writable. Please correct this."; exit } else { set f [open $::youtube::dbfile w]; close $f } }
     set f [open $::youtube::dbfile r]
     fconfigure $f -encoding utf-8
     set content [read -nonewline $f]
@@ -169,7 +170,6 @@ namespace eval youtube {
 
 }
 
-if {![file writable $::youtube::dbfile]} { if {[file exists $::youtube::dbfile]} { puts "$::youtube::dbfile is not writable. Please correct this."; exit } else { set f [open $::youtube::dbfile w]; close $f } }
 ::youtube::loadDB
 
 # vim: set fenc=utf-8 sw=2 sts=2 ts=2 et filetype=tcl

@@ -40,6 +40,7 @@ proc ::quote::control { nick chan text } {
         
     switch $cmd {
       quote {
+        if {![file exists $::quote::quotefile]} { set f [open $::quote::quotefile w]; close $f }
         set fd [open $::quote::quotefile "r"]
         fconfigure $fd -encoding utf-8
         set data [read $fd]
@@ -60,6 +61,5 @@ proc ::quote::control { nick chan text } {
   }
 }
 
-if {![file exists $::quote::quotefile]} { set f [open $::quote::quotefile w]; close $f }
 
 # vim: set fenc=utf-8 sw=2 sts=2 ts=2 et filetype=tcl
